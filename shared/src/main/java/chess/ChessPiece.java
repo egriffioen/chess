@@ -58,6 +58,10 @@ public class ChessPiece {
                 BishopMovesCalculator moves = new BishopMovesCalculator();
                 return moves.calculateMoves(board, myPosition);
             }
+            case ROOK -> {
+                RookMovesCalculator moves = new RookMovesCalculator();
+                return moves.calculateMoves(board, myPosition);
+            }
         }
         return new ArrayList<>();
     }

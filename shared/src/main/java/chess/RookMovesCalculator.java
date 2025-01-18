@@ -2,13 +2,12 @@ package chess;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
-public class BishopMovesCalculator implements PieceMovesCalculator {
+public class RookMovesCalculator implements PieceMovesCalculator {
 
     private Collection<ChessMove> moves = new ArrayList<>();
 
-    public BishopMovesCalculator() {
+    public RookMovesCalculator() {
     }
 
     public Collection<ChessMove> calculateMoves(ChessBoard board, ChessPosition myPosition) {
@@ -16,10 +15,10 @@ public class BishopMovesCalculator implements PieceMovesCalculator {
         int down = -1;
         int left = -1;
         int right = 1;
-        addMoves(board, myPosition, right, up);
-        addMoves(board, myPosition, right, down);
-        addMoves(board, myPosition, left, up);
-        addMoves(board, myPosition, left, down);
+        addMoves(board, myPosition, right, 0);
+        addMoves(board, myPosition, 0, up);
+        addMoves(board, myPosition, left, 0);
+        addMoves(board, myPosition, 0, down);
         return moves;
     }
 
@@ -46,13 +45,13 @@ public class BishopMovesCalculator implements PieceMovesCalculator {
             if (rowMove>0) {
                 rowMove++;
             }
-            else {
+            else if (rowMove<0) {
                 rowMove--;
             }
-            if (colMove >0) {
+            else if (colMove >0) {
                 colMove++;
             }
-            else {
+            else if (colMove<0) {
                 colMove--;
             }
         }
