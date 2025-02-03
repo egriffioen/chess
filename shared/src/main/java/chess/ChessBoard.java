@@ -13,8 +13,16 @@ public class ChessBoard {
     private ChessPiece[][] squares = new ChessPiece[8][8];
 
     public ChessBoard() {
-        resetBoard();
+        //resetBoard();
     }
+    public ChessBoard(ChessBoard other) {
+        squares = other.squares;
+    }
+    @ Override
+    public ChessBoard clone() {
+        return new ChessBoard(this);
+    }
+
 
     /**
      * Adds a chess piece to the chessboard
@@ -159,4 +167,6 @@ public class ChessBoard {
                 "squares=" + Arrays.toString(squares) +
                 '}';
     }
+
+
 }
