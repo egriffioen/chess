@@ -95,7 +95,6 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        TeamColor opposingTeam = findOpposingTeamColor(teamColor);
         if (isInCheck(teamColor)) {
             Collection<Collection<ChessMove>> teamPossibleMoves = compileTeamPossibleMoves(teamColor);
             for (Collection<ChessMove> moveList: teamPossibleMoves) {
@@ -126,7 +125,25 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        if (!isInCheck(teamColor)) {
+            Collection<Collection<ChessMove>> teamPossibleMoves = compileTeamPossibleMoves(teamColor);
+            for (Collection<ChessMove> moveList: teamPossibleMoves) {
+                for(ChessMove pieceMove: moveList) {
+                    ChessBoard boardCopy = board.clone();
+                    ChessPiece piece = board.getPiece(pieceMove.getStartPosition());
+                    ChessPosition newPosition = pieceMove.getEndPosition();
+                    board.addPiece(newPosition, piece);
+                    board.removePiece(pieceMove.getStartPosition());
+                    if (!isInCheck(teamColor)){
+                        board = boardCopy.clone();
+                        return false;
+                    }
+                    board = boardCopy.clone();
+                }
+            }
+            return true;
+        }
+        return false;
     }
 
     /**
