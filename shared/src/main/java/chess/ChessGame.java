@@ -81,11 +81,14 @@ public class ChessGame {
             throw new InvalidMoveException();
         }
         Collection<ChessMove> validMoves = validMoves(move.getStartPosition());
-        if (board.getPiece(move.getStartPosition())!= null && validMoves.contains(move)) {
-            ChessPiece piece = board.getPiece(move.getStartPosition());
+        ChessPiece piece = board.getPiece(move.getStartPosition());
+        if (validMoves.contains(move)&&piece.getTeamColor()==teamColorTurn) {
             board.addPiece(move.getEndPosition(),piece);
             board.removePiece(move.getStartPosition());
             teamColorTurn = findOpposingTeamColor(piece.getTeamColor());
+        }
+        else {
+            throw new InvalidMoveException();
         }
 
     }
