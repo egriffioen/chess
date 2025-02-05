@@ -56,21 +56,18 @@ public class ChessGame {
         ChessPiece piece = board.getPiece(startPosition);
         Collection<ChessMove> pieceMoves = piece.pieceMoves(board, startPosition);
         Collection<ChessMove> validPieceMoves = new ArrayList<>();
-        if(!isInCheck(piece.getTeamColor())) {
-            for(ChessMove pieceMove:pieceMoves) {
-                ChessBoard boardCopy = board.clone();
-                ChessPosition newPosition = pieceMove.getEndPosition();
-                board.addPiece(newPosition, piece);
-                board.removePiece(pieceMove.getStartPosition());
-                if (!isInCheck(piece.getTeamColor())){
-                    board = boardCopy.clone();
-                    validPieceMoves.add(pieceMove);
-                }
+        for(ChessMove pieceMove:pieceMoves) {
+            ChessBoard boardCopy = board.clone();
+            ChessPosition newPosition = pieceMove.getEndPosition();
+            board.addPiece(newPosition, piece);
+            board.removePiece(pieceMove.getStartPosition());
+            if (!isInCheck(piece.getTeamColor())){
                 board = boardCopy.clone();
+                validPieceMoves.add(pieceMove);
             }
-            return validPieceMoves;
+            board = boardCopy.clone();
         }
-        else return new ArrayList<>();
+        return validPieceMoves;
     }
 
     /**
