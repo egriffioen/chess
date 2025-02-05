@@ -83,9 +83,24 @@ public class ChessGame {
         Collection<ChessMove> validMoves = validMoves(move.getStartPosition());
         ChessPiece piece = board.getPiece(move.getStartPosition());
         if (validMoves.contains(move)&&piece.getTeamColor()==teamColorTurn) {
-            board.addPiece(move.getEndPosition(),piece);
-            board.removePiece(move.getStartPosition());
-            teamColorTurn = findOpposingTeamColor(piece.getTeamColor());
+            if(piece.getPieceType()== ChessPiece.PieceType.PAWN && teamColorTurn ==TeamColor.WHITE&&move.getEndPosition().getRow()==8) {
+                ChessPiece.PieceType promotion = move.getPromotionPiece();
+                ChessPiece promotedPawn = new ChessPiece(teamColorTurn, promotion);
+                board.addPiece(move.getEndPosition(), promotedPawn);
+                board.removePiece(move.getStartPosition());
+            }
+            else if(piece.getPieceType()== ChessPiece.PieceType.PAWN && teamColorTurn ==TeamColor.BLACK&&move.getEndPosition().getRow()==1) {
+                ChessPiece.PieceType promotion = move.getPromotionPiece();
+                ChessPiece promotedPawn = new ChessPiece(teamColorTurn, promotion);
+                board.addPiece(move.getEndPosition(), promotedPawn);
+                board.removePiece(move.getStartPosition());
+            }
+            else {
+                board.addPiece(move.getEndPosition(),piece);
+                board.removePiece(move.getStartPosition());
+                teamColorTurn = findOpposingTeamColor(piece.getTeamColor());
+            }
+
         }
         else {
             throw new InvalidMoveException();
