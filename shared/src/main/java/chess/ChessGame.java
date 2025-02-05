@@ -267,62 +267,6 @@ public class ChessGame {
         return attackingMoves;
     }
 
-
-
-
-//    private Collection<ChessMove> kingPossibleMoves(TeamColor kingColor) {
-//        TeamColor opposingTeam = findOpposingTeamColor(kingColor);
-//        ChessPosition kingPosition = new ChessPosition(0,0);
-//        for(int i=0;i<8;i++) {
-//            for (int j = 0; j < 8; j++) {
-//                ChessPosition boardspace = new ChessPosition(i + 1, j + 1);
-//                if (board.getPiece(boardspace) != null && board.getPiece(boardspace).getTeamColor() == kingColor && board.getPiece(boardspace).getPieceType()== ChessPiece.PieceType.KING ) {
-//                    kingPosition = boardspace;
-//                }
-//            }
-//        }
-//        Collection<ChessMove> kingMoves = board.getPiece(kingPosition).pieceMoves(board, kingPosition);
-//        Collection<Collection<ChessMove>> opposingTeamMoves = compileTeamPossibleMoves(opposingTeam);
-//        Collection<ChessMove> movesToRemove = new ArrayList<>();
-//        if(!kingInDanger(opposingTeam)){
-//            return kingMoves;
-//        }
-//        else {
-//            for(Collection<ChessMove> moveList: opposingTeamMoves) {
-//                for(ChessMove attackMove: moveList) {
-//                    ChessPosition attackEndPosition = attackMove.getEndPosition();
-//                    for (ChessMove kingMove:kingMoves) {
-//                        if (kingMove.getEndPosition().equals(attackEndPosition)) {
-//                            movesToRemove.add(kingMove);
-//                        }
-//                        if (board.getPiece(attackMove.getStartPosition()).getPieceType()== ChessPiece.PieceType.PAWN) {
-//                            ChessPosition captureRight = new ChessPosition(0,0);
-//                            ChessPosition captureLeft = new ChessPosition(0,0);
-//
-//                            if(board.getPiece(attackMove.getStartPosition()).getTeamColor()==TeamColor.WHITE){
-//                                captureRight = new ChessPosition(attackMove.getStartPosition().getRow()+1,attackMove.getStartPosition().getColumn()+1);
-//                                captureLeft = new ChessPosition(attackMove.getStartPosition().getRow()+1,attackMove.getStartPosition().getColumn()-1);
-//                            }
-//                            else if (board.getPiece(attackMove.getStartPosition()).getTeamColor()==TeamColor.BLACK){
-//                                captureRight = new ChessPosition(attackMove.getStartPosition().getRow()-1,attackMove.getStartPosition().getColumn()+1);
-//                                captureLeft = new ChessPosition(attackMove.getStartPosition().getRow()-1,attackMove.getStartPosition().getColumn()-1);
-//                            }
-//                            if (kingMove.getEndPosition().equals(captureRight)) {
-//                                movesToRemove.add(kingMove);
-//                            }
-//                            if (kingMove.getEndPosition().equals(captureLeft)) {
-//                                movesToRemove.add(kingMove);
-//                            }
-//                        }
-//                    }
-//                    //kingMoves.removeIf(kingMove -> kingMove.getEndPosition().equals(attackEndPosition));
-//                }
-//            }
-//            kingMoves.removeAll(movesToRemove);
-//        }
-//        return kingMoves;
-//    }
-
     private TeamColor findOpposingTeamColor(TeamColor playerColor) {
         TeamColor opposingTeam;
         if (playerColor == TeamColor.WHITE) {
