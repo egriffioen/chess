@@ -54,8 +54,21 @@ public class ChessGame {
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         ChessPiece piece = board.getPiece(startPosition);
+        Collection<ChessMove> pieceMoves = piece.pieceMoves(board, startPosition);
+        Collection<ChessMove> validPieceMoves = new ArrayList<>();
         if(!isInCheck(piece.getTeamColor())) {
-            return piece.pieceMoves(board, startPosition);
+            for(ChessMove pieceMove:pieceMoves) {
+                ChessBoard boardCopy = board.clone();
+                ChessPosition newPosition = pieceMove.getEndPosition();
+                board.addPiece(newPosition, piece);
+                board.removePiece(pieceMove.getStartPosition());
+                if (!isInCheck(piece.getTeamColor())){
+                    board = boardCopy.clone();
+                    validPieceMoves.add(pieceMove);
+                }
+                board = boardCopy.clone();
+            }
+            return validPieceMoves;
         }
         else return new ArrayList<>();
     }
