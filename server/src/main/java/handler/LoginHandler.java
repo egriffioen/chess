@@ -2,9 +2,7 @@ package handler;
 
 import com.google.gson.Gson;
 import request.LoginRequest;
-import request.RegisterRequest;
 import result.LoginResult;
-import result.RegisterResult;
 import service.UserService;
 import spark.Request;
 import spark.Response;

@@ -7,8 +7,10 @@ import dataaccess.UserDAO;
 import model.AuthData;
 import model.UserData;
 import request.LoginRequest;
+import request.LogoutRequest;
 import request.RegisterRequest;
 import result.LoginResult;
+import result.LogoutResult;
 import result.RegisterResult;
 
 import java.util.Objects;
@@ -47,5 +49,21 @@ public class UserService {
         else {
             return new LoginResult("Error: unauthorized");
         }
+    }
+
+    public LogoutResult logout(LogoutRequest logoutRequest) {
+        AuthData authData = authTokens.getAuthToken(logoutRequest.authToken());
+        if (authData == null) {
+            return new LogoutResult("Error: unauthorized");
+        }
+        else {
+            authTokens.removeAuthToken(authData);
+            return new LogoutResult();
+        }
+    }
+
+    public void clearAllUsersAndTokens() {
+        users.clearAllUserData();
+        authTokens.clearAllAuthData();
     }
 }
