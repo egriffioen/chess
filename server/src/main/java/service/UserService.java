@@ -6,9 +6,12 @@ import dataaccess.MemoryUserDAO;
 import dataaccess.UserDAO;
 import model.AuthData;
 import model.UserData;
+import request.LoginRequest;
 import request.RegisterRequest;
+import result.LoginResult;
 import result.RegisterResult;
 
+import java.util.Objects;
 import java.util.UUID;
 
 public class UserService {
@@ -27,6 +30,22 @@ public class UserService {
         }
         else {
             return new RegisterResult("Error: already taken");
+        }
+    }
+
+    public LoginResult login(LoginRequest loginRequest) {
+        UserData user = users.getUser(loginRequest.username());
+        if (user == null) {
+            return new LoginResult("Error: unauthorized");
+        }
+        else if (Objects.equals(user.password(), loginRequest.password())) {
+            String authToken = UUID.randomUUID().toString();
+            AuthData authData = new AuthData(authToken, user.username());
+            authTokens.addAuthToken(authData);
+            return new LoginResult(loginRequest.username(), authToken);
+        }
+        else {
+            return new LoginResult("Error: unauthorized");
         }
     }
 }

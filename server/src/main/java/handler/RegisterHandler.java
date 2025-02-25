@@ -9,7 +9,12 @@ import spark.Response;
 import spark.Route;
 
 public class RegisterHandler implements Route {
-    private UserService userService = new UserService();
+    private final UserService userService;
+
+    public RegisterHandler(UserService userService) {
+        this.userService = userService;
+    }
+
     @Override
     public Object handle(Request req, Response res) throws Exception {
         RegisterRequest registerRequest = new Gson().fromJson(req.body(), RegisterRequest.class);

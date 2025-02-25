@@ -3,6 +3,7 @@ package server;
 import handler.ClearHandler;
 import handler.LoginHandler;
 import handler.RegisterHandler;
+import service.UserService;
 import spark.*;
 
 public class Server {
@@ -12,8 +13,10 @@ public class Server {
 
         Spark.staticFiles.location("web");
 
-        RegisterHandler registerHandler = new RegisterHandler();
-        LoginHandler loginHandler = new LoginHandler();
+        UserService userService = new UserService();
+
+        RegisterHandler registerHandler = new RegisterHandler(userService);
+        LoginHandler loginHandler = new LoginHandler(userService);
         ClearHandler clearHandler = new ClearHandler();
         // Register your endpoints and handle exceptions here.
         Spark.post("/user", registerHandler);
