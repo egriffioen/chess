@@ -1,5 +1,7 @@
 package server;
 
+import handler.LoginHandler;
+import handler.RegisterHandler;
 import spark.*;
 
 public class Server {
@@ -9,8 +11,11 @@ public class Server {
 
         Spark.staticFiles.location("web");
 
+        RegisterHandler registerHandler = new RegisterHandler();
+        LoginHandler loginHandler = new LoginHandler();
         // Register your endpoints and handle exceptions here.
-
+        Spark.post("/user", registerHandler);
+        Spark.post("/session", loginHandler);
         //This line initializes the server and can be removed once you have a functioning endpoint 
         Spark.init();
 
@@ -22,4 +27,5 @@ public class Server {
         Spark.stop();
         Spark.awaitStop();
     }
+
 }
