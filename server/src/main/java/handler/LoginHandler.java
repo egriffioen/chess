@@ -27,7 +27,7 @@ public class LoginHandler implements Route {
         }
         LoginResult loginResult = userService.login(loginRequest);
         if (loginResult.message()!=null) {
-            res.status(403);
+            res.status(401);
         }
         return new Gson().toJson(loginResult);
     }
