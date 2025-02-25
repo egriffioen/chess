@@ -8,7 +8,7 @@ import model.UserData;
 public class MemoryAuthDAO implements AuthDAO{
     private HashMap<String, AuthData> authTokens = new HashMap<>();
     @Override
-    public void createAuthToken(AuthData authData) {
+    public void addAuthToken(AuthData authData) {
         authTokens.put(authData.authToken(), authData);
     }
 
