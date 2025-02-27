@@ -18,7 +18,12 @@ import java.util.UUID;
 
 public class UserService {
     private UserDAO users = new MemoryUserDAO();
-    private AuthDAO authTokens = new MemoryAuthDAO();
+    private AuthDAO authTokens;
+
+    public UserService(AuthDAO authTokens) {
+        this.authTokens = authTokens;
+    }
+
     public RegisterResult register(RegisterRequest registerRequest) {
         String username = registerRequest.username();
         UserData user = users.getUser(username);
