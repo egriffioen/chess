@@ -1,9 +1,7 @@
 package handler;
 
 import com.google.gson.Gson;
-import request.CreateGameRequest;
 import request.JoinGameRequest;
-import result.CreateGameResult;
 import result.JoinGameResult;
 import service.GameService;
 import spark.Request;
@@ -38,7 +36,7 @@ public class JoinGameHandler implements Route {
             res.status(401);
             return new Gson().toJson(joinGameResult);
         }
-        if (Objects.equals(joinGameResult.message(), "Error: already taken")) {
+        else if (Objects.equals(joinGameResult.message(), "Error: already taken")) {
             res.status(403);
             return new Gson().toJson(joinGameResult);
         }

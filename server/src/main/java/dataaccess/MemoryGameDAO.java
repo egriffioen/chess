@@ -49,7 +49,7 @@ public class MemoryGameDAO implements GameDAO{
             String whiteUsername = gameData.whiteUsername();
             if (whiteUsername == null) {
                 games.remove(gameID);
-                GameData newGameData = new GameData(gameID, username, null, gameData.gameName(), gameData.game());
+                GameData newGameData = new GameData(gameID, username, gameData.blackUsername(), gameData.gameName(), gameData.game());
                 games.put(gameID, newGameData);
                 return true;
             }
@@ -61,7 +61,7 @@ public class MemoryGameDAO implements GameDAO{
             String blackUsername = gameData.blackUsername();
             if (blackUsername == null) {
                 games.remove(gameID);
-                GameData newGameData = new GameData(gameID, null, username, gameData.gameName(), gameData.game());
+                GameData newGameData = new GameData(gameID, gameData.whiteUsername(), username, gameData.gameName(), gameData.game());
                 games.put(gameID, newGameData);
                 return true;
             }
