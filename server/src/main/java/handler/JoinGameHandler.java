@@ -23,7 +23,12 @@ public class JoinGameHandler implements Route {
         String authToken = req.headers("authorization");
         JoinGameRequest joinGameRequest = new Gson().fromJson(req.body(), JoinGameRequest.class);
         joinGameRequest = new JoinGameRequest(authToken, joinGameRequest.playerColor(), joinGameRequest.gameID());
-        if (joinGameRequest.authToken()==null || joinGameRequest.gameID()==null || joinGameRequest.playerColor()==null) {
+        if (joinGameRequest.authToken()==null || joinGameRequest.gameID()==null) {
+            JoinGameResult joinGameResult = new JoinGameResult("Error: bad request");
+            res.status(400);
+            return new Gson().toJson(joinGameResult);
+        }
+        if (!Objects.equals(joinGameRequest.playerColor(), "BLACK") && !Objects.equals(joinGameRequest.playerColor(), "WHITE")) {
             JoinGameResult joinGameResult = new JoinGameResult("Error: bad request");
             res.status(400);
             return new Gson().toJson(joinGameResult);
