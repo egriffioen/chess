@@ -4,8 +4,10 @@ import dataaccess.AuthDAO;
 import dataaccess.GameDAO;
 import dataaccess.MemoryGameDAO;
 import request.CreateGameRequest;
+import request.JoinGameRequest;
 import request.ListGamesRequest;
 import result.CreateGameResult;
+import result.JoinGameResult;
 import result.ListGamesResult;
 
 import java.util.List;
@@ -40,5 +42,20 @@ public class GameService {
 
     public void clearAllGames() {
         games.clearAllGames();
+    }
+
+    public JoinGameResult joinGame(JoinGameRequest joinGameRequest) {
+        String authToken = joinGameRequest.authToken();
+        if (authTokens.getAuthToken(authToken)==null) {
+            return new JoinGameResult("Error: unauthorized");
+        }
+        String username = authTokens.getAuthToken(authToken).username();
+        boolean joinedGame = games.joinGame(joinGameRequest.playerColor(), joinGameRequest.gameID(), username);
+        if (!joinedGame) {
+            return new JoinGameResult("Error: already taken");
+        }
+        else {
+            return new JoinGameResult();
+        }
     }
 }
