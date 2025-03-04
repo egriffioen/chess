@@ -219,24 +219,6 @@ public class ChessGame {
         return compiledMoves;
     }
 
-    private Collection<ChessPosition> attackKingPiecePositions(TeamColor opposingTeam) {
-        Collection<ChessPosition> attackingPiecePositions = new ArrayList<>();
-        Collection<Collection<ChessMove>> opposingTeamMoves = compileTeamPossibleMoves(opposingTeam);
-
-        for (Collection<ChessMove> movesList : opposingTeamMoves) {
-            for (ChessMove move : movesList) {
-                ChessPiece attackingPiece = board.getPiece(move.getStartPosition());
-                ChessPiece targetPiece = board.getPiece(move.getEndPosition());
-                if (targetPiece != null && targetPiece.getPieceType() == ChessPiece.PieceType.KING) {
-                    if (targetPiece.getTeamColor() != opposingTeam) {
-                        attackingPiecePositions.add(move.getStartPosition());
-                    }
-                }
-            }
-        }
-        return attackingPiecePositions;
-    }
-
     private TeamColor findOpposingTeamColor(TeamColor playerColor) {
         TeamColor opposingTeam;
         if (playerColor == TeamColor.WHITE) {
