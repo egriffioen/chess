@@ -84,16 +84,10 @@ public class ChessGame {
         ChessPiece piece = board.getPiece(move.getStartPosition());
         if (validMoves.contains(move)&&piece.getTeamColor()==teamColorTurn) {
             if(piece.getPieceType()== ChessPiece.PieceType.PAWN && teamColorTurn ==TeamColor.WHITE&&move.getEndPosition().getRow()==8) {
-                ChessPiece.PieceType promotion = move.getPromotionPiece();
-                ChessPiece promotedPawn = new ChessPiece(teamColorTurn, promotion);
-                board.addPiece(move.getEndPosition(), promotedPawn);
-                board.removePiece(move.getStartPosition());
+                promotePawn(move);
             }
             else if(piece.getPieceType()== ChessPiece.PieceType.PAWN && teamColorTurn ==TeamColor.BLACK&&move.getEndPosition().getRow()==1) {
-                ChessPiece.PieceType promotion = move.getPromotionPiece();
-                ChessPiece promotedPawn = new ChessPiece(teamColorTurn, promotion);
-                board.addPiece(move.getEndPosition(), promotedPawn);
-                board.removePiece(move.getStartPosition());
+                promotePawn(move);
             }
             else {
                 board.addPiece(move.getEndPosition(),piece);
@@ -217,6 +211,13 @@ public class ChessGame {
             }
         }
         return true;
+    }
+
+    private void promotePawn(ChessMove move) {
+        ChessPiece.PieceType promotion = move.getPromotionPiece();
+        ChessPiece promotedPawn = new ChessPiece(teamColorTurn, promotion);
+        board.addPiece(move.getEndPosition(), promotedPawn);
+        board.removePiece(move.getStartPosition());
     }
 
 }
