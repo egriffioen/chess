@@ -138,22 +138,7 @@ public class ChessGame {
      */
     public boolean isInCheckmate(TeamColor teamColor) {
         if (isInCheck(teamColor)) {
-            Collection<Collection<ChessMove>> teamPossibleMoves = compileTeamPossibleMoves(teamColor);
-            for (Collection<ChessMove> moveList: teamPossibleMoves) {
-                for(ChessMove pieceMove: moveList) {
-                    ChessBoard boardCopy = board.clone();
-                    ChessPiece piece = board.getPiece(pieceMove.getStartPosition());
-                    ChessPosition newPosition = pieceMove.getEndPosition();
-                    board.addPiece(newPosition, piece);
-                    board.removePiece(pieceMove.getStartPosition());
-                    if (!isInCheck(teamColor)){
-                        board = boardCopy.clone();
-                        return false;
-                    }
-                    board = boardCopy.clone();
-                }
-            }
-            return true;
+            return checkPossibleMoves(teamColor);
         }
         return false;
     }
@@ -168,22 +153,7 @@ public class ChessGame {
      */
     public boolean isInStalemate(TeamColor teamColor) {
         if (!isInCheck(teamColor)) {
-            Collection<Collection<ChessMove>> teamPossibleMoves = compileTeamPossibleMoves(teamColor);
-            for (Collection<ChessMove> moveList: teamPossibleMoves) {
-                for(ChessMove pieceMove: moveList) {
-                    ChessBoard boardCopy = board.clone();
-                    ChessPiece piece = board.getPiece(pieceMove.getStartPosition());
-                    ChessPosition newPosition = pieceMove.getEndPosition();
-                    board.addPiece(newPosition, piece);
-                    board.removePiece(pieceMove.getStartPosition());
-                    if (!isInCheck(teamColor)){
-                        board = boardCopy.clone();
-                        return false;
-                    }
-                    board = boardCopy.clone();
-                }
-            }
-            return true;
+            return checkPossibleMoves(teamColor);
         }
         return false;
     }
@@ -228,6 +198,25 @@ public class ChessGame {
             opposingTeam = TeamColor.WHITE;
         }
         return opposingTeam;
+    }
+
+    private boolean checkPossibleMoves(TeamColor teamColor) {
+        Collection<Collection<ChessMove>> teamPossibleMoves = compileTeamPossibleMoves(teamColor);
+        for (Collection<ChessMove> moveList: teamPossibleMoves) {
+            for(ChessMove pieceMove: moveList) {
+                ChessBoard boardCopy = board.clone();
+                ChessPiece piece = board.getPiece(pieceMove.getStartPosition());
+                ChessPosition newPosition = pieceMove.getEndPosition();
+                board.addPiece(newPosition, piece);
+                board.removePiece(pieceMove.getStartPosition());
+                if (!isInCheck(teamColor)){
+                    board = boardCopy.clone();
+                    return false;
+                }
+                board = boardCopy.clone();
+            }
+        }
+        return true;
     }
 
 }
