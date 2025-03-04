@@ -237,36 +237,6 @@ public class ChessGame {
         return attackingPiecePositions;
     }
 
-    private Collection<ChessMove> attackingPieceMoves(TeamColor opposingTeam) {
-        Collection<ChessMove> attackingMoves = new ArrayList<>();
-        Collection<ChessPosition> attackingPieces = attackKingPiecePositions(opposingTeam);
-        for (ChessPosition piecePosition: attackingPieces) {
-            ChessPiece piece = board.getPiece(piecePosition);
-            Collection<ChessMove> pieceMoves = piece.pieceMoves(board, piecePosition);
-
-            Collection<ChessMove> validPathMoves = new ArrayList<>();
-            boolean kingFound = false;
-
-            for (ChessMove move: pieceMoves) {
-                ChessPiece targetPiece = board.getPiece(move.getEndPosition());
-                validPathMoves.add(move);
-                if (targetPiece != null && targetPiece.getPieceType() == ChessPiece.PieceType.KING
-                        && targetPiece.getTeamColor() != opposingTeam) {
-                    kingFound = true;
-                    break;
-                }
-                if(targetPiece!=null) {
-                    validPathMoves.clear();
-                    break;
-                }
-            }
-            if (kingFound) {
-                attackingMoves.addAll(validPathMoves);
-            }
-        }
-        return attackingMoves;
-    }
-
     private TeamColor findOpposingTeamColor(TeamColor playerColor) {
         TeamColor opposingTeam;
         if (playerColor == TeamColor.WHITE) {
@@ -277,19 +247,5 @@ public class ChessGame {
         }
         return opposingTeam;
     }
-
-    private ChessPosition getKingPosition(TeamColor kingColor) {
-        ChessPosition kingPosition = new ChessPosition(0,0);
-        for(int i=0;i<8;i++) {
-            for (int j = 0; j < 8; j++) {
-                ChessPosition boardspace = new ChessPosition(i + 1, j + 1);
-                if (board.getPiece(boardspace) != null && board.getPiece(boardspace).getTeamColor() == kingColor && board.getPiece(boardspace).getPieceType()== ChessPiece.PieceType.KING ) {
-                    kingPosition = boardspace;
-                }
-            }
-        }
-        return kingPosition;
-    }
-
 
 }

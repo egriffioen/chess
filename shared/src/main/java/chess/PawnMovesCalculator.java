@@ -18,11 +18,7 @@ public class PawnMovesCalculator implements PieceMovesCalculator {
         }
         return moves;
     }
-    //moves forward 1
-    //firstMove can move 2 spots if available
-    //capture diagonal
-    //promotion piece if opposite side of board
-    //COLOR MATTERS
+
     public void addMoves(ChessBoard board, ChessPosition myPosition, int rowMove, int colMove) {
         ChessPosition end = new ChessPosition(myPosition.getRow()+rowMove, myPosition.getColumn()+colMove);
         if (end.getRow()<1||end.getColumn()<1||end.getRow()>8||end.getColumn()>8) {
@@ -56,13 +52,6 @@ public class PawnMovesCalculator implements PieceMovesCalculator {
         ChessPosition captureRight = new ChessPosition(myPosition.getRow()+rowMove,myPosition.getColumn()+1);
         addCapture(board, myPosition, captureLeft);
         addCapture(board, myPosition, captureRight);
-
-//        else if (board.getPiece(end).getTeamColor()!= board.getPiece(myPosition).getTeamColor()){
-//            return;
-//        }
-//        else if (board.getPiece(end).getTeamColor()== board.getPiece(myPosition).getTeamColor()) {
-//            return;
-//        }
     }
 
     public boolean checkPromotion(ChessPosition endPos, ChessPosition myPosition, ChessBoard board) {
