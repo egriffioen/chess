@@ -31,10 +31,6 @@ public class MemoryGameDAO implements GameDAO{
             gamesList.add(gameInfo);
         }
 
-//        // Wrap in the required format
-//        Map<String, Object> finalResult = new HashMap<>();
-//        finalResult.put("games", gamesList);
-//
         return gamesList;
     }
 
@@ -69,5 +65,13 @@ public class MemoryGameDAO implements GameDAO{
                 return false;
             }
         }
+    }
+
+    public HashMap<Integer, GameData> getGames() {
+        return games;
+    }
+
+    public GameData getGame(Integer gameID) {
+        return games.get(gameID);
     }
 }

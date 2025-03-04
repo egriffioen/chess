@@ -14,11 +14,12 @@ import java.util.List;
 import java.util.Map;
 
 public class GameService {
-    private GameDAO games = new MemoryGameDAO();
+    private GameDAO games;
     private AuthDAO authTokens;
 
-    public GameService(AuthDAO authTokens) {
+    public GameService(AuthDAO authTokens, GameDAO games) {
         this.authTokens = authTokens;
+        this.games = games;
     }
 
 

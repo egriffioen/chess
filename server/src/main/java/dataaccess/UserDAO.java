@@ -8,4 +8,5 @@ public interface UserDAO {
     UserData getUser(String username);
     String getPassword(String username);
     void clearAllUserData();
+    public HashMap<String, UserData> getUsers();
 }

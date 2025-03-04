@@ -17,10 +17,11 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class UserService {
-    private UserDAO users = new MemoryUserDAO();
+    private UserDAO users;
     private AuthDAO authTokens;
 
-    public UserService(AuthDAO authTokens) {
+    public UserService(AuthDAO authTokens, UserDAO users) {
+        this.users = users;
         this.authTokens = authTokens;
     }
 
