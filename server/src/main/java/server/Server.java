@@ -5,6 +5,7 @@ import handler.*;
 import service.GameService;
 import service.UserService;
 import spark.*;
+import java.sql.SQLException;
 
 public class Server {
 
@@ -16,6 +17,12 @@ public class Server {
         AuthDAO authTokens = new MemoryAuthDAO();
         UserDAO users = new MemoryUserDAO();
         GameDAO games = new MemoryGameDAO();
+        try {
+            UserDAO dbUsers = new SQLUserDAO();
+        }
+        catch (DataAccessException | SQLException e) {
+            e.printStackTrace();  // Prints the error stack trace
+        }
         UserService userService = new UserService(authTokens, users);
         GameService gameService = new GameService(authTokens, games);
 
