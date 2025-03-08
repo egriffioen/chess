@@ -3,6 +3,7 @@ package dataaccess;
 import model.UserData;
 
 import java.sql.SQLException;
+import java.sql.*;
 import java.util.HashMap;
 
 public class SQLUserDAO implements UserDAO {
@@ -13,8 +14,9 @@ public class SQLUserDAO implements UserDAO {
 
 
     @Override
-    public void addUser(UserData user) {
-
+    public void addUser(UserData user) throws DataAccessException {
+        var statement = "INSERT INTO user (username, password, email) VALUES (?,?,?)";
+        executeUpdate(statement, user.username(), user.password(), user.email());
     }
 
     @Override
@@ -35,6 +37,29 @@ public class SQLUserDAO implements UserDAO {
     @Override
     public HashMap<String, UserData> getUsers() {
         return null;
+    }
+
+    private void executeUpdate(String statement, Object... params) throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var ps = conn.prepareStatement(statement)) {
+                for (var i = 0; i < params.length; i++) {
+                    var param = params[i];
+                    if (param instanceof String p) ps.setString(i + 1, p);
+                    else if (param instanceof Integer p) ps.setInt(i + 1, p);
+                    else if (param instanceof UserData p) ps.setString(i + 1, p.toString());
+                    //else if (param == null) ps.setNull(i + 1, NULL);
+                }
+                ps.executeUpdate();
+//                var rs = ps.getGeneratedKeys();
+//                if (rs.next()) {
+//                    return rs.getInt(1);
+//                }
+//
+//                return 0;
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException(String.format("unable to update database: %s, %s", statement, e.getMessage()));
+        }
     }
 
     private final String[] createStatements = {

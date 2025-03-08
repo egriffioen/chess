@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import request.*;
 import result.*;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,15 +18,21 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class UserServiceTest {
     @AfterEach
-    void tearDown() {
+    void tearDown() throws DataAccessException {
         clearAllGames();
         clearAllUsersAndTokens();
     }
 
     @Test
-    void validRegister() {
+    void validRegister() throws DataAccessException {
         AuthDAO authDAO = new MemoryAuthDAO();
-        UserDAO users = new MemoryUserDAO();
+        //UserDAO users = new MemoryUserDAO();
+        UserDAO users = null;
+        try {
+            users = new SQLUserDAO();
+        } catch (DataAccessException | SQLException e) {
+            e.printStackTrace();  // Prints the error stack trace
+        }
         UserService userService = new UserService(authDAO, users);
         RegisterRequest registerRequest = new RegisterRequest("user1", "1234", "user1@gmail.com");
         RegisterResult actualResult = userService.register(registerRequest);
@@ -34,19 +41,25 @@ class UserServiceTest {
     }
 
     @Test
-    void invalidRegister() {
+    void invalidRegister() throws DataAccessException {
         AuthDAO authDAO = new MemoryAuthDAO();
-        UserDAO users = new MemoryUserDAO();
+        //UserDAO users = new MemoryUserDAO();
+        UserDAO users = null;
+        try {
+            users = new SQLUserDAO();
+        } catch (DataAccessException | SQLException e) {
+            e.printStackTrace();  // Prints the error stack trace
+        }
         UserService userService = new UserService(authDAO, users);
-        RegisterRequest registerRequest = new RegisterRequest("user1", null, "user1@gmail.com");
-        RegisterResult firstResult = userService.register(registerRequest);
+        RegisterRequest registerRequest = new RegisterRequest("user1", "1234", "user1@gmail.com");
+        //RegisterResult firstResult = userService.register(registerRequest);
         RegisterResult actualResult = userService.register(registerRequest);
         RegisterResult expectedResult = new RegisterResult("Error: already taken");
         assertEquals(expectedResult, actualResult);
     }
 
     @Test
-    void validLogin() {
+    void validLogin() throws DataAccessException {
         AuthDAO authDAO = new MemoryAuthDAO();
         UserDAO users = new MemoryUserDAO();
         UserService userService = new UserService(authDAO, users);
@@ -60,7 +73,7 @@ class UserServiceTest {
     }
 
     @Test
-    void invalidLogin() {
+    void invalidLogin() throws DataAccessException {
         AuthDAO authDAO = new MemoryAuthDAO();
         UserDAO users = new MemoryUserDAO();
         UserService userService = new UserService(authDAO, users);
@@ -73,7 +86,7 @@ class UserServiceTest {
     }
 
     @Test
-    void validLogout() {
+    void validLogout() throws DataAccessException {
         AuthDAO authDAO = new MemoryAuthDAO();
         UserDAO users = new MemoryUserDAO();
         UserService userService = new UserService(authDAO, users);
@@ -86,7 +99,7 @@ class UserServiceTest {
     }
 
     @Test
-    void invalidLogout() {
+    void invalidLogout() throws DataAccessException {
         AuthDAO authDAO = new MemoryAuthDAO();
         UserDAO users = new MemoryUserDAO();
         UserService userService = new UserService(authDAO, users);
@@ -99,7 +112,7 @@ class UserServiceTest {
     }
 
     @Test
-    void clearAllUsersAndTokens() {
+    void clearAllUsersAndTokens() throws DataAccessException {
         AuthDAO authDAO = new MemoryAuthDAO();
         UserDAO users = new MemoryUserDAO();
         UserService userService = new UserService(authDAO, users);
@@ -111,7 +124,7 @@ class UserServiceTest {
     }
 
     @Test
-    void validCreateGame() {
+    void validCreateGame() throws DataAccessException {
         AuthDAO authDAO = new MemoryAuthDAO();
         UserDAO users = new MemoryUserDAO();
         GameDAO games = new MemoryGameDAO();
@@ -127,7 +140,7 @@ class UserServiceTest {
     }
 
     @Test
-    void invalidCreateGame() {
+    void invalidCreateGame() throws DataAccessException {
         AuthDAO authDAO = new MemoryAuthDAO();
         UserDAO users = new MemoryUserDAO();
         GameDAO games = new MemoryGameDAO();
@@ -142,7 +155,7 @@ class UserServiceTest {
     }
 
     @Test
-    void validListGames() {
+    void validListGames() throws DataAccessException {
         AuthDAO authDAO = new MemoryAuthDAO();
         UserDAO users = new MemoryUserDAO();
         GameDAO games = new MemoryGameDAO();
@@ -169,7 +182,7 @@ class UserServiceTest {
     }
 
     @Test
-    void invalidListGames() {
+    void invalidListGames() throws DataAccessException {
         AuthDAO authDAO = new MemoryAuthDAO();
         UserDAO users = new MemoryUserDAO();
         GameDAO games = new MemoryGameDAO();
@@ -186,7 +199,7 @@ class UserServiceTest {
     }
 
     @Test
-    void clearAllGames() {
+    void clearAllGames() throws DataAccessException {
         AuthDAO authDAO = new MemoryAuthDAO();
         UserDAO users = new MemoryUserDAO();
         GameDAO games = new MemoryGameDAO();
@@ -202,7 +215,7 @@ class UserServiceTest {
     }
 
     @Test
-    void validJoinGame() {
+    void validJoinGame() throws DataAccessException {
         AuthDAO authDAO = new MemoryAuthDAO();
         UserDAO users = new MemoryUserDAO();
         GameDAO games = new MemoryGameDAO();
@@ -221,7 +234,7 @@ class UserServiceTest {
     }
 
     @Test
-    void invalidJoinGame() {
+    void invalidJoinGame() throws DataAccessException {
         AuthDAO authDAO = new MemoryAuthDAO();
         UserDAO users = new MemoryUserDAO();
         GameDAO games = new MemoryGameDAO();
