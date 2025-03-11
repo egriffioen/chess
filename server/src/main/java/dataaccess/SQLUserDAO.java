@@ -30,8 +30,9 @@ public class SQLUserDAO implements UserDAO {
     }
 
     @Override
-    public void clearAllUserData() {
-
+    public void clearAllUserData() throws DataAccessException {
+        var statement = "TRUNCATE user";
+        executeUpdate(statement);
     }
 
     @Override

@@ -15,17 +15,16 @@ public class Server {
         Spark.staticFiles.location("web");
 
         AuthDAO authTokens = new MemoryAuthDAO();
-        UserDAO users = new MemoryUserDAO();
+        //UserDAO users = new MemoryUserDAO();
         GameDAO games = new MemoryGameDAO();
+        UserDAO dbUsers = null;
         try {
-            UserDAO dbUsers = new SQLUserDAO();
-        }
-        catch (DataAccessException | SQLException e) {
+            dbUsers = new SQLUserDAO();
+        } catch (DataAccessException | SQLException e) {
             e.printStackTrace();  // Prints the error stack trace
         }
-        UserService userService = new UserService(authTokens, users);
+        UserService userService = new UserService(authTokens, dbUsers);
         GameService gameService = new GameService(authTokens, games);
-
 
 
         RegisterHandler registerHandler = new RegisterHandler(userService);

@@ -4,6 +4,7 @@ import dataaccess.*;
 import model.AuthData;
 import model.GameData;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import request.*;
 import result.*;
@@ -17,6 +18,12 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 
 class UserServiceTest {
+    @BeforeEach
+    void setUp() throws DataAccessException {
+        clearAllGames();
+        clearAllUsersAndTokens();
+    }
+
     @AfterEach
     void tearDown() throws DataAccessException {
         clearAllGames();
@@ -39,6 +46,8 @@ class UserServiceTest {
         RegisterResult expectedResult = new RegisterResult("user1", actualResult.authToken());
         assertEquals(expectedResult, actualResult);
     }
+
+
 
     @Test
     void invalidRegister() throws DataAccessException {

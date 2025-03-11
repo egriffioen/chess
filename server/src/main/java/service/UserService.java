@@ -65,7 +65,7 @@ public class UserService {
         }
     }
 
-    public void clearAllUsersAndTokens() {
+    public void clearAllUsersAndTokens() throws DataAccessException {
         users.clearAllUserData();
         authTokens.clearAllAuthData();
     }
