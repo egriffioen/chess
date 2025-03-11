@@ -42,8 +42,21 @@ public class SQLUserDAO implements UserDAO {
     }
 
     @Override
-    public String getPassword(String username) {
-        return "";
+    public String getPassword(String username) throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT password FROM user WHERE username=?";
+            try (var ps = conn.prepareStatement(statement)) {
+                ps.setString(1, username);
+                try (var rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return rs.getString("password");
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException(String.format("Unable to retrieve password: %s", e.getMessage()));
+        }
+        return null;
     }
 
     @Override

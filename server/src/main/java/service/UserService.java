@@ -9,6 +9,7 @@ import request.RegisterRequest;
 import result.LoginResult;
 import result.LogoutResult;
 import result.RegisterResult;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -24,9 +25,10 @@ public class UserService {
 
     public RegisterResult register(RegisterRequest registerRequest) throws DataAccessException {
         String username = registerRequest.username();
+        String hashedPassword = BCrypt.hashpw(registerRequest.password(), BCrypt.gensalt());
         UserData user = users.getUser(username);
         if (user == null) {
-            UserData newUser = new UserData(registerRequest.username(), registerRequest.password(), registerRequest.email());
+            UserData newUser = new UserData(registerRequest.username(), hashedPassword, registerRequest.email());
             users.addUser(newUser);
             String authToken = UUID.randomUUID().toString();
             AuthData authData = new AuthData(authToken, username);
@@ -43,7 +45,8 @@ public class UserService {
         if (user == null) {
             return new LoginResult("Error: unauthorized");
         }
-        else if (Objects.equals(user.password(), loginRequest.password())) {
+
+        else if (BCrypt.checkpw(loginRequest.password(), user.password())) {
             String authToken = UUID.randomUUID().toString();
             AuthData authData = new AuthData(authToken, user.username());
             authTokens.addAuthToken(authData);
