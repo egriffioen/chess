@@ -16,9 +16,10 @@ public class Server {
 
         //AuthDAO authTokens = new MemoryAuthDAO();
         //UserDAO users = new MemoryUserDAO();
-        GameDAO games = new MemoryGameDAO();
+        //GameDAO games = new MemoryGameDAO();
         UserDAO dbUsers = null;
         AuthDAO authTokens = null;
+        GameDAO games = null;
         try {
             dbUsers = new SQLUserDAO();
         } catch (DataAccessException | SQLException e) {
@@ -29,6 +30,13 @@ public class Server {
         } catch (DataAccessException | SQLException e) {
             e.printStackTrace();  // Prints the error stack trace
         }
+
+        try {
+            games = new SQLGameDAO();
+        } catch (DataAccessException | SQLException e) {
+            e.printStackTrace();  // Prints the error stack trace
+        }
+
         UserService userService = new UserService(authTokens, dbUsers);
         GameService gameService = new GameService(authTokens, games);
 

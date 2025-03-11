@@ -42,7 +42,7 @@ public class GameService {
         return new ListGamesResult(allGames);
     }
 
-    public void clearAllGames() {
+    public void clearAllGames() throws DataAccessException {
         games.clearAllGames();
     }
 

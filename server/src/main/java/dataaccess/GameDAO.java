@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.Map;
 
 public interface GameDAO {
-    int createGame(String gameName);
+    int createGame(String gameName) throws DataAccessException;
     public List<Map<String, Object>> listGames();
-    void clearAllGames();
+    void clearAllGames() throws DataAccessException;
     boolean joinGame(String playerColor, Integer gameID, String username);
     public HashMap<Integer, GameData> getGames();
     public GameData getGame(Integer gameID);
