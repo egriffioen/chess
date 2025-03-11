@@ -38,7 +38,7 @@ public class UserService {
         }
     }
 
-    public LoginResult login(LoginRequest loginRequest) {
+    public LoginResult login(LoginRequest loginRequest) throws DataAccessException {
         UserData user = users.getUser(loginRequest.username());
         if (user == null) {
             return new LoginResult("Error: unauthorized");
