@@ -57,7 +57,7 @@ public class UserService {
         }
     }
 
-    public LogoutResult logout(LogoutRequest logoutRequest) {
+    public LogoutResult logout(LogoutRequest logoutRequest) throws DataAccessException {
         AuthData authData = authTokens.getAuthToken(logoutRequest.authToken());
         if (authData == null) {
             return new LogoutResult("Error: unauthorized");

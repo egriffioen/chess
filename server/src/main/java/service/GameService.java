@@ -1,6 +1,7 @@
 package service;
 
 import dataaccess.AuthDAO;
+import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
 import dataaccess.MemoryGameDAO;
 import request.CreateGameRequest;
@@ -23,7 +24,7 @@ public class GameService {
     }
 
 
-    public CreateGameResult createGame(CreateGameRequest createGameRequest) {
+    public CreateGameResult createGame(CreateGameRequest createGameRequest) throws DataAccessException {
         String authToken = createGameRequest.authToken();
         if (authTokens.getAuthToken(authToken)==null) {
             return new CreateGameResult("Error: unauthorized");
@@ -32,7 +33,7 @@ public class GameService {
         return new CreateGameResult(gameID);
     }
 
-    public ListGamesResult listGames(ListGamesRequest listGamesRequest) {
+    public ListGamesResult listGames(ListGamesRequest listGamesRequest) throws DataAccessException {
         String authToken = listGamesRequest.authToken();
         if (authTokens.getAuthToken(authToken)==null) {
             return new ListGamesResult("Error: unauthorized");
@@ -45,7 +46,7 @@ public class GameService {
         games.clearAllGames();
     }
 
-    public JoinGameResult joinGame(JoinGameRequest joinGameRequest) {
+    public JoinGameResult joinGame(JoinGameRequest joinGameRequest) throws DataAccessException {
         String authToken = joinGameRequest.authToken();
         if (authTokens.getAuthToken(authToken)==null) {
             return new JoinGameResult("Error: unauthorized");

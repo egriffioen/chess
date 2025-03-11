@@ -14,12 +14,18 @@ public class Server {
 
         Spark.staticFiles.location("web");
 
-        AuthDAO authTokens = new MemoryAuthDAO();
+        //AuthDAO authTokens = new MemoryAuthDAO();
         //UserDAO users = new MemoryUserDAO();
         GameDAO games = new MemoryGameDAO();
         UserDAO dbUsers = null;
+        AuthDAO authTokens = null;
         try {
             dbUsers = new SQLUserDAO();
+        } catch (DataAccessException | SQLException e) {
+            e.printStackTrace();  // Prints the error stack trace
+        }
+        try {
+            authTokens = new SQLAuthDAO();
         } catch (DataAccessException | SQLException e) {
             e.printStackTrace();  // Prints the error stack trace
         }
