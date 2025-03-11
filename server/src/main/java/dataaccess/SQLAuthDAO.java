@@ -25,7 +25,23 @@ public class SQLAuthDAO implements AuthDAO{
     }
 
     @Override
-    public AuthData getAuthToken(String authToken) {
+    public AuthData getAuthToken(String authToken) throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT authToken, username FROM auth WHERE authToken=?";
+            try (var ps = conn.prepareStatement(statement)) {
+                ps.setString(1, authToken);
+                try (var rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return new AuthData(
+                                rs.getString("authToken"),
+                                rs.getString("username")
+                        );
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
+        }
         return null;
     }
 
@@ -36,8 +52,25 @@ public class SQLAuthDAO implements AuthDAO{
     }
 
     @Override
-    public HashMap<String, AuthData> getAuthTokens() {
-        return null;
+    public HashMap<String, AuthData> getAuthTokens() throws DataAccessException {
+        HashMap<String, AuthData> allAuthTokens = new HashMap<>();
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT authToken, username FROM auth WHERE authToken=?";
+            try (var ps = conn.prepareStatement(statement)) {
+                try (var rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        AuthData authToken = new AuthData(
+                                rs.getString("authToken"),
+                                rs.getString("username")
+                        );
+                        allAuthTokens.put(authToken.authToken(), authToken);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
+        }
+        return allAuthTokens;
     }
 
     private void executeUpdate(String statement, Object... params) throws DataAccessException {

@@ -7,8 +7,8 @@ import java.util.HashMap;
 public interface AuthDAO {
     void addAuthToken(AuthData authData) throws DataAccessException;
     void removeAuthToken(AuthData authData) throws DataAccessException;
-    AuthData getAuthToken(String authToken);
+    AuthData getAuthToken(String authToken) throws DataAccessException;
     void clearAllAuthData() throws DataAccessException;
-    public HashMap<String, AuthData> getAuthTokens();
+    public HashMap<String, AuthData> getAuthTokens() throws DataAccessException;
 
 }
