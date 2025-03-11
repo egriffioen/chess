@@ -8,5 +8,5 @@ public interface UserDAO {
     UserData getUser(String username) throws DataAccessException;
     String getPassword(String username) throws DataAccessException;
     void clearAllUserData() throws DataAccessException;
-    public HashMap<String, UserData> getUsers();
+    public HashMap<String, UserData> getUsers() throws DataAccessException;
 }

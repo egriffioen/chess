@@ -66,8 +66,26 @@ public class SQLUserDAO implements UserDAO {
     }
 
     @Override
-    public HashMap<String, UserData> getUsers() {
-        return null;
+    public HashMap<String, UserData> getUsers() throws DataAccessException {
+        HashMap<String, UserData> allUsers = new HashMap<>();
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT username, password, email FROM user WHERE username=?";
+            try (var ps = conn.prepareStatement(statement)) {
+                try (var rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        UserData user = new UserData(
+                                rs.getString("username"),
+                                rs.getString("password"),
+                                rs.getString("email")
+                        );
+                        allUsers.put(user.username(), user);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
+        }
+        return allUsers;
     }
 
     private void executeUpdate(String statement, Object... params) throws DataAccessException {
