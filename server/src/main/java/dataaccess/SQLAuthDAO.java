@@ -19,8 +19,9 @@ public class SQLAuthDAO implements AuthDAO{
     }
 
     @Override
-    public void removeAuthToken(AuthData authData) {
-
+    public void removeAuthToken(AuthData authData) throws DataAccessException {
+        var statement = "DELETE FROM auth WHERE authToken=?";
+        executeUpdate(statement, authData.authToken());
     }
 
     @Override
@@ -29,8 +30,9 @@ public class SQLAuthDAO implements AuthDAO{
     }
 
     @Override
-    public void clearAllAuthData() {
-
+    public void clearAllAuthData() throws DataAccessException {
+        var statement = "TRUNCATE auth";
+        executeUpdate(statement);
     }
 
     @Override
