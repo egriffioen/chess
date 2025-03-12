@@ -81,15 +81,8 @@ public class SQLAuthDAO implements AuthDAO{
                     if (param instanceof String p) ps.setString(i + 1, p);
                     else if (param instanceof Integer p) ps.setInt(i + 1, p);
                     else if (param instanceof AuthData p) ps.setString(i + 1, p.toString());
-                    //else if (param == null) ps.setNull(i + 1, NULL);
                 }
                 ps.executeUpdate();
-//                var rs = ps.getGeneratedKeys();
-//                if (rs.next()) {
-//                    return rs.getInt(1);
-//                }
-//
-//                return 0;
             }
         } catch (SQLException e) {
             throw new DataAccessException(String.format("unable to update database: %s, %s", statement, e.getMessage()));
