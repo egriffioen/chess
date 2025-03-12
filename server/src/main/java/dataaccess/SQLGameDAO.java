@@ -3,14 +3,10 @@ package dataaccess;
 import chess.ChessGame;
 import com.google.gson.Gson;
 import model.GameData;
-import model.UserData;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 import static java.sql.Types.NULL;
@@ -31,8 +27,27 @@ public class SQLGameDAO implements GameDAO{
     }
 
     @Override
-    public List<Map<String, Object>> listGames() {
-        return List.of();
+    public List<Map<String, Object>> listGames() throws DataAccessException {
+        var gamesList = new ArrayList<Map<String, Object>>();
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT gameID, whiteUsername, blackUsername, gameName FROM games";
+            try (var ps = conn.prepareStatement(statement)) {
+                try (var rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        var gameInfo = new HashMap<String, Object>();
+                        gameInfo.put("gameID", rs.getInt("gameID"));
+                        gameInfo.put("whiteUsername", rs.getString("whiteUsername"));
+                        gameInfo.put("blackUsername", rs.getString("blackUsername"));
+                        gameInfo.put("gameName", rs.getString("gameName"));
+                        gamesList.add(gameInfo);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new DataAccessException(String.format("Unable to list data: %s", e.getMessage()));
+        }
+        return gamesList;
+
     }
 
     @Override
