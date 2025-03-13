@@ -18,23 +18,31 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 
 class UserServiceTest {
+    private UserDAO dbusers;
+    private AuthDAO dbauthTokens;
+    private GameDAO dbgames;
+
     @BeforeEach
-    void setUp() throws DataAccessException {
-        clearAllGames();
-        clearAllUsersAndTokens();
+    void setUp() throws SQLException, DataAccessException {
+        dbusers = new SQLUserDAO();
+        dbauthTokens = new SQLAuthDAO();
+        dbgames = new SQLGameDAO();
+
+        dbusers.clearAllUserData();
+        dbauthTokens.clearAllAuthData();
+        dbgames.clearAllGames();
     }
 
     @AfterEach
     void tearDown() throws DataAccessException {
-        clearAllGames();
-        clearAllUsersAndTokens();
+        dbusers.clearAllUserData();
+        dbauthTokens.clearAllAuthData();
+        dbgames.clearAllGames();
     }
 
     @Test
     void validRegister() throws DataAccessException {
-        AuthDAO authDAO = new MemoryAuthDAO();
-        UserDAO users = new MemoryUserDAO();
-        UserService userService = new UserService(authDAO, users);
+        UserService userService = new UserService(dbauthTokens, dbusers);
         RegisterRequest registerRequest = new RegisterRequest("user1", "1234", "user1@gmail.com");
         RegisterResult actualResult = userService.register(registerRequest);
         RegisterResult expectedResult = new RegisterResult("user1", actualResult.authToken());
@@ -45,9 +53,7 @@ class UserServiceTest {
 
     @Test
     void invalidRegister() throws DataAccessException {
-        AuthDAO authDAO = new MemoryAuthDAO();
-        UserDAO users = new MemoryUserDAO();
-        UserService userService = new UserService(authDAO, users);
+        UserService userService = new UserService(dbauthTokens, dbusers);
         RegisterRequest registerRequest = new RegisterRequest("user1", "1234", "user1@gmail.com");
         RegisterResult firstResult = userService.register(registerRequest);
         RegisterResult actualResult = userService.register(registerRequest);
@@ -57,9 +63,7 @@ class UserServiceTest {
 
     @Test
     void validLogin() throws DataAccessException {
-        AuthDAO authDAO = new MemoryAuthDAO();
-        UserDAO users = new MemoryUserDAO();
-        UserService userService = new UserService(authDAO, users);
+        UserService userService = new UserService(dbauthTokens, dbusers);
         RegisterRequest registerRequest = new RegisterRequest("user1", "1234", "user1@gmail.com");
         RegisterResult registerResult = userService.register(registerRequest);
         LoginRequest loginRequest = new LoginRequest("user1", "1234");
@@ -71,9 +75,7 @@ class UserServiceTest {
 
     @Test
     void invalidLogin() throws DataAccessException {
-        AuthDAO authDAO = new MemoryAuthDAO();
-        UserDAO users = new MemoryUserDAO();
-        UserService userService = new UserService(authDAO, users);
+        UserService userService = new UserService(dbauthTokens, dbusers);
         RegisterRequest registerRequest = new RegisterRequest("user1", "1234", "user1@gmail.com");
         RegisterResult registerResult = userService.register(registerRequest);
         LoginRequest loginRequest = new LoginRequest("user1", "abcd");
@@ -84,9 +86,7 @@ class UserServiceTest {
 
     @Test
     void validLogout() throws DataAccessException {
-        AuthDAO authDAO = new MemoryAuthDAO();
-        UserDAO users = new MemoryUserDAO();
-        UserService userService = new UserService(authDAO, users);
+        UserService userService = new UserService(dbauthTokens, dbusers);
         RegisterRequest registerRequest = new RegisterRequest("user1", "1234", "user1@gmail.com");
         RegisterResult registerResult = userService.register(registerRequest);
         LogoutRequest logoutRequest = new LogoutRequest(registerResult.authToken());
@@ -97,9 +97,7 @@ class UserServiceTest {
 
     @Test
     void invalidLogout() throws DataAccessException {
-        AuthDAO authDAO = new MemoryAuthDAO();
-        UserDAO users = new MemoryUserDAO();
-        UserService userService = new UserService(authDAO, users);
+        UserService userService = new UserService(dbauthTokens, dbusers);
         RegisterRequest registerRequest = new RegisterRequest("user1", "1234", "user1@gmail.com");
         RegisterResult registerResult = userService.register(registerRequest);
         LogoutRequest logoutRequest = new LogoutRequest("");
@@ -110,39 +108,31 @@ class UserServiceTest {
 
     @Test
     void clearAllUsersAndTokens() throws DataAccessException {
-        AuthDAO authDAO = new MemoryAuthDAO();
-        UserDAO users = new MemoryUserDAO();
-        UserService userService = new UserService(authDAO, users);
+        UserService userService = new UserService(dbauthTokens, dbusers);
         RegisterRequest registerRequest = new RegisterRequest("user1", "1234", "user1@gmail.com");
         RegisterResult registerResult = userService.register(registerRequest);
         userService.clearAllUsersAndTokens();
-        assertNull(authDAO.getAuthToken(registerResult.authToken()));
-        assertNull(users.getUser("user1"));
+        assertNull(dbauthTokens.getAuthToken(registerResult.authToken()));
+        assertNull(dbusers.getUser("user1"));
     }
 
     @Test
     void validCreateGame() throws DataAccessException {
-        AuthDAO authDAO = new MemoryAuthDAO();
-        UserDAO users = new MemoryUserDAO();
-        GameDAO games = new MemoryGameDAO();
-        UserService userService = new UserService(authDAO, users);
-        GameService gameService = new GameService(authDAO, games);
+        UserService userService = new UserService(dbauthTokens, dbusers);
+        GameService gameService = new GameService(dbauthTokens, dbgames);
         RegisterRequest registerRequest = new RegisterRequest("user1", "1234", "user1@gmail.com");
         RegisterResult registerResult = userService.register(registerRequest);
         CreateGameRequest createGameRequest = new CreateGameRequest(registerResult.authToken(), "chess");
         CreateGameResult createGameResult = gameService.createGame(createGameRequest);
-        GameData gameData = games.getGame(createGameResult.gameID());
+        GameData gameData = dbgames.getGame(createGameResult.gameID());
         CreateGameResult expectedResult = new CreateGameResult(gameData.gameID());
         assertEquals(expectedResult, createGameResult);
     }
 
     @Test
     void invalidCreateGame() throws DataAccessException {
-        AuthDAO authDAO = new MemoryAuthDAO();
-        UserDAO users = new MemoryUserDAO();
-        GameDAO games = new MemoryGameDAO();
-        UserService userService = new UserService(authDAO, users);
-        GameService gameService = new GameService(authDAO, games);
+        UserService userService = new UserService(dbauthTokens, dbusers);
+        GameService gameService = new GameService(dbauthTokens, dbgames);
         RegisterRequest registerRequest = new RegisterRequest("user1", "1234", "user1@gmail.com");
         RegisterResult registerResult = userService.register(registerRequest);
         CreateGameRequest createGameRequest = new CreateGameRequest("", "chess");
@@ -153,12 +143,9 @@ class UserServiceTest {
 
     @Test
     void validListGames() throws DataAccessException {
-        AuthDAO authDAO = new MemoryAuthDAO();
-        UserDAO users = new MemoryUserDAO();
-        GameDAO games = new MemoryGameDAO();
-        UserService userService = new UserService(authDAO, users);
-        GameService gameService = new GameService(authDAO, games);
-        RegisterRequest registerRequest = new RegisterRequest("user1", "1234", "user1@gmail.com");
+        UserService userService = new UserService(dbauthTokens, dbusers);
+        GameService gameService = new GameService(dbauthTokens, dbgames);
+        RegisterRequest registerRequest = new RegisterRequest("user2", "4567", "user2@gmail.com");
         RegisterResult registerResult = userService.register(registerRequest);
         CreateGameRequest createGameRequest = new CreateGameRequest(registerResult.authToken(), "chess");
         CreateGameResult createGameResult = gameService.createGame(createGameRequest);
@@ -180,11 +167,8 @@ class UserServiceTest {
 
     @Test
     void invalidListGames() throws DataAccessException {
-        AuthDAO authDAO = new MemoryAuthDAO();
-        UserDAO users = new MemoryUserDAO();
-        GameDAO games = new MemoryGameDAO();
-        UserService userService = new UserService(authDAO, users);
-        GameService gameService = new GameService(authDAO, games);
+        UserService userService = new UserService(dbauthTokens, dbusers);
+        GameService gameService = new GameService(dbauthTokens, dbgames);
         RegisterRequest registerRequest = new RegisterRequest("user1", "1234", "user1@gmail.com");
         RegisterResult registerResult = userService.register(registerRequest);
         CreateGameRequest createGameRequest = new CreateGameRequest(registerResult.authToken(), "chess");
@@ -197,27 +181,21 @@ class UserServiceTest {
 
     @Test
     void clearAllGames() throws DataAccessException {
-        AuthDAO authDAO = new MemoryAuthDAO();
-        UserDAO users = new MemoryUserDAO();
-        GameDAO games = new MemoryGameDAO();
-        UserService userService = new UserService(authDAO, users);
-        GameService gameService = new GameService(authDAO, games);
+        UserService userService = new UserService(dbauthTokens, dbusers);
+        GameService gameService = new GameService(dbauthTokens, dbgames);
         RegisterRequest registerRequest = new RegisterRequest("user1", "1234", "user1@gmail.com");
         RegisterResult registerResult = userService.register(registerRequest);
         CreateGameRequest createGameRequest = new CreateGameRequest(registerResult.authToken(), "chess");
         CreateGameResult createGameResult = gameService.createGame(createGameRequest);
         gameService.clearAllGames();
         HashMap<Integer, GameData> expectedGames = new HashMap<>();
-        assertEquals(expectedGames, games.getGames());
+        assertEquals(expectedGames, dbgames.getGames());
     }
 
     @Test
     void validJoinGame() throws DataAccessException {
-        AuthDAO authDAO = new MemoryAuthDAO();
-        UserDAO users = new MemoryUserDAO();
-        GameDAO games = new MemoryGameDAO();
-        UserService userService = new UserService(authDAO, users);
-        GameService gameService = new GameService(authDAO, games);
+        UserService userService = new UserService(dbauthTokens, dbusers);
+        GameService gameService = new GameService(dbauthTokens, dbgames);
         RegisterRequest registerRequest = new RegisterRequest("user1", "1234", "user1@gmail.com");
         RegisterResult registerResult = userService.register(registerRequest);
         CreateGameRequest createGameRequest = new CreateGameRequest(registerResult.authToken(), "chess");
@@ -232,11 +210,8 @@ class UserServiceTest {
 
     @Test
     void invalidJoinGame() throws DataAccessException {
-        AuthDAO authDAO = new MemoryAuthDAO();
-        UserDAO users = new MemoryUserDAO();
-        GameDAO games = new MemoryGameDAO();
-        UserService userService = new UserService(authDAO, users);
-        GameService gameService = new GameService(authDAO, games);
+        UserService userService = new UserService(dbauthTokens, dbusers);
+        GameService gameService = new GameService(dbauthTokens, dbgames);
         RegisterRequest registerRequest = new RegisterRequest("user1", "1234", "user1@gmail.com");
         RegisterResult registerResult = userService.register(registerRequest);
         CreateGameRequest createGameRequest = new CreateGameRequest(registerResult.authToken(), "chess");
