@@ -1,9 +1,10 @@
-package service;
+package dataaccess;
 
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
-class GameServiceTest {
+
+class GameDAOTest {
 
     @Test
     void createGame() {
@@ -19,5 +20,13 @@ class GameServiceTest {
 
     @Test
     void joinGame() {
+    }
+
+    @Test
+    void getGames() {
+    }
+
+    @Test
+    void getGame() {
     }
 }

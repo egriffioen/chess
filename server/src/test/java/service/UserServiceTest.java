@@ -33,13 +33,7 @@ class UserServiceTest {
     @Test
     void validRegister() throws DataAccessException {
         AuthDAO authDAO = new MemoryAuthDAO();
-        //UserDAO users = new MemoryUserDAO();
-        UserDAO users = null;
-        try {
-            users = new SQLUserDAO();
-        } catch (DataAccessException | SQLException e) {
-            e.printStackTrace();  // Prints the error stack trace
-        }
+        UserDAO users = new MemoryUserDAO();
         UserService userService = new UserService(authDAO, users);
         RegisterRequest registerRequest = new RegisterRequest("user1", "1234", "user1@gmail.com");
         RegisterResult actualResult = userService.register(registerRequest);
@@ -52,16 +46,10 @@ class UserServiceTest {
     @Test
     void invalidRegister() throws DataAccessException {
         AuthDAO authDAO = new MemoryAuthDAO();
-        //UserDAO users = new MemoryUserDAO();
-        UserDAO users = null;
-        try {
-            users = new SQLUserDAO();
-        } catch (DataAccessException | SQLException e) {
-            e.printStackTrace();  // Prints the error stack trace
-        }
+        UserDAO users = new MemoryUserDAO();
         UserService userService = new UserService(authDAO, users);
         RegisterRequest registerRequest = new RegisterRequest("user1", "1234", "user1@gmail.com");
-        //RegisterResult firstResult = userService.register(registerRequest);
+        RegisterResult firstResult = userService.register(registerRequest);
         RegisterResult actualResult = userService.register(registerRequest);
         RegisterResult expectedResult = new RegisterResult("Error: already taken");
         assertEquals(expectedResult, actualResult);

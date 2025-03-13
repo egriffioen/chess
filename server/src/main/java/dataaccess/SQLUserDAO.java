@@ -69,7 +69,7 @@ public class SQLUserDAO implements UserDAO {
     public HashMap<String, UserData> getUsers() throws DataAccessException {
         HashMap<String, UserData> allUsers = new HashMap<>();
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT username, password, email FROM user WHERE username=?";
+            var statement = "SELECT username, password, email FROM user";
             try (var ps = conn.prepareStatement(statement)) {
                 try (var rs = ps.executeQuery()) {
                     while (rs.next()) {
@@ -93,9 +93,15 @@ public class SQLUserDAO implements UserDAO {
             try (var ps = conn.prepareStatement(statement)) {
                 for (var i = 0; i < params.length; i++) {
                     var param = params[i];
-                    if (param instanceof String p) ps.setString(i + 1, p);
-                    else if (param instanceof Integer p) ps.setInt(i + 1, p);
-                    else if (param instanceof UserData p) ps.setString(i + 1, p.toString());
+                    if (param instanceof String p){
+                        ps.setString(i + 1, p);
+                    }
+                    else if (param instanceof Integer p) {
+                        ps.setInt(i + 1, p);
+                    }
+                    else if (param instanceof UserData p) {
+                        ps.setString(i + 1, p.toString());
+                    }
                 }
                 ps.executeUpdate();
             }

@@ -85,8 +85,22 @@ public class SQLGameDAO implements GameDAO{
     }
 
     @Override
-    public HashMap<Integer, GameData> getGames() {
-        return null;
+    public HashMap<Integer, GameData> getGames() throws DataAccessException {
+        var games = new HashMap<Integer, GameData>();
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT gameID, whiteUsername, blackUsername, gameName, json FROM games";
+            try (var ps = conn.prepareStatement(statement)) {
+                try (var rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        GameData gameData = readGame(rs);
+                        games.put(gameData.gameID(), gameData);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new DataAccessException(String.format("Unable to retrieve games: %s", e.getMessage()));
+        }
+        return games;
     }
 
     @Override

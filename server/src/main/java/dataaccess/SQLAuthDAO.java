@@ -55,7 +55,7 @@ public class SQLAuthDAO implements AuthDAO{
     public HashMap<String, AuthData> getAuthTokens() throws DataAccessException {
         HashMap<String, AuthData> allAuthTokens = new HashMap<>();
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT authToken, username FROM auth WHERE authToken=?";
+            var statement = "SELECT authToken, username FROM auth";
             try (var ps = conn.prepareStatement(statement)) {
                 try (var rs = ps.executeQuery()) {
                     while (rs.next()) {
