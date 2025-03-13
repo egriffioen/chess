@@ -6,10 +6,10 @@ import java.sql.SQLException;
 import java.sql.*;
 import java.util.HashMap;
 
-public class SQLUserDAO implements UserDAO {
+public class SQLUserDAO extends DatabaseConfigurations implements UserDAO  {
 
     public SQLUserDAO() throws DataAccessException, SQLException {
-        configureDatabase();
+        configureDatabase(createStatements);
     }
 
 
@@ -121,17 +121,5 @@ public class SQLUserDAO implements UserDAO {
             """
     };
 
-    private void configureDatabase() throws DataAccessException, SQLException {
-        DatabaseManager.createDatabase();
-        try (var conn = DatabaseManager.getConnection()) {
-            for (var statement : createStatements) {
-                try(var preparedStatement = conn.prepareStatement(statement)) {
-                    preparedStatement.executeUpdate();
-                }
-            }
-        } catch (SQLException ex) {
-            throw new DataAccessException(String.format("Unable to configure database: %s", ex.getMessage()));
-        }
 
-    }
 }

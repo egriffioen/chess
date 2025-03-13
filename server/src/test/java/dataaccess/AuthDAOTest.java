@@ -75,9 +75,8 @@ class AuthDAOTest {
 
     @Test
     void getAuthToken() throws DataAccessException {
-        String username = "User1";
         String authToken = UUID.randomUUID().toString();
-        AuthData authData = new AuthData(authToken, username);
+        AuthData authData = new AuthData(authToken, "User2");
         authTokens.addAuthToken(authData);
         AuthData actualResult = authTokens.getAuthToken(authToken);
         assertEquals(authData, actualResult);

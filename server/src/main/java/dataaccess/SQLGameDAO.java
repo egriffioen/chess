@@ -11,10 +11,10 @@ import java.util.*;
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 import static java.sql.Types.NULL;
 
-public class SQLGameDAO implements GameDAO{
+public class SQLGameDAO extends DatabaseConfigurations implements GameDAO{
 
     public SQLGameDAO() throws DataAccessException, SQLException {
-        configureDatabase();
+        configureDatabase(createStatements);
     }
 
     @Override
@@ -137,10 +137,18 @@ public class SQLGameDAO implements GameDAO{
             try (var ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
                 for (var i = 0; i < params.length; i++) {
                     var param = params[i];
-                    if (param instanceof String p) ps.setString(i + 1, p);
-                    else if (param instanceof Integer p) ps.setInt(i + 1, p);
-                    else if (param instanceof GameData p) ps.setString(i + 1, p.toString());
-                    else if (param == null) ps.setNull(i + 1, NULL);
+                    if (param instanceof String p) {
+                        ps.setString(i + 1, p);
+                    }
+                    else if (param instanceof Integer p) {
+                        ps.setInt(i + 1, p);
+                    }
+                    else if (param instanceof GameData p) {
+                        ps.setString(i + 1, p.toString());
+                    }
+                    else if (param == null) {
+                        ps.setNull(i + 1, NULL);
+                    }
                 }
                 ps.executeUpdate();
                 var rs = ps.getGeneratedKeys();
@@ -167,17 +175,4 @@ public class SQLGameDAO implements GameDAO{
             """
     };
 
-    private void configureDatabase() throws DataAccessException, SQLException {
-        DatabaseManager.createDatabase();
-        try (var conn = DatabaseManager.getConnection()) {
-            for (var statement : createStatements) {
-                try(var preparedStatement = conn.prepareStatement(statement)) {
-                    preparedStatement.executeUpdate();
-                }
-            }
-        } catch (SQLException ex) {
-            throw new DataAccessException(String.format("Unable to configure database: %s", ex.getMessage()));
-        }
-
-    }
 }

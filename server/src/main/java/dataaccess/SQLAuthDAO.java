@@ -6,10 +6,10 @@ import model.UserData;
 import java.sql.SQLException;
 import java.util.HashMap;
 
-public class SQLAuthDAO implements AuthDAO{
+public class SQLAuthDAO extends DatabaseConfigurations implements AuthDAO{
 
     public SQLAuthDAO() throws DataAccessException, SQLException {
-        configureDatabase();
+        configureDatabase(createStatements);
     }
 
     @Override
@@ -78,9 +78,15 @@ public class SQLAuthDAO implements AuthDAO{
             try (var ps = conn.prepareStatement(statement)) {
                 for (var i = 0; i < params.length; i++) {
                     var param = params[i];
-                    if (param instanceof String p) ps.setString(i + 1, p);
-                    else if (param instanceof Integer p) ps.setInt(i + 1, p);
-                    else if (param instanceof AuthData p) ps.setString(i + 1, p.toString());
+                    if (param instanceof String p) {
+                        ps.setString(i + 1, p);
+                    }
+                    else if (param instanceof Integer p) {
+                        ps.setInt(i + 1, p);
+                    }
+                    else if (param instanceof AuthData p) {
+                        ps.setString(i + 1, p.toString());
+                    }
                 }
                 ps.executeUpdate();
             }
@@ -99,17 +105,4 @@ public class SQLAuthDAO implements AuthDAO{
             """
     };
 
-    private void configureDatabase() throws DataAccessException, SQLException {
-        DatabaseManager.createDatabase();
-        try (var conn = DatabaseManager.getConnection()) {
-            for (var statement : createStatements) {
-                try(var preparedStatement = conn.prepareStatement(statement)) {
-                    preparedStatement.executeUpdate();
-                }
-            }
-        } catch (SQLException ex) {
-            throw new DataAccessException(String.format("Unable to configure database: %s", ex.getMessage()));
-        }
-
-    }
 }
