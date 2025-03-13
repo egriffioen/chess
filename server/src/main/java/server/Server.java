@@ -14,9 +14,6 @@ public class Server {
 
         Spark.staticFiles.location("web");
 
-        //AuthDAO authTokens = new MemoryAuthDAO();
-        //UserDAO users = new MemoryUserDAO();
-        //GameDAO games = new MemoryGameDAO();
         UserDAO dbUsers = null;
         AuthDAO authTokens = null;
         GameDAO games = null;
