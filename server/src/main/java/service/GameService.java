@@ -3,7 +3,6 @@ package service;
 import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
-import dataaccess.MemoryGameDAO;
 import request.CreateGameRequest;
 import request.JoinGameRequest;
 import request.ListGamesRequest;
