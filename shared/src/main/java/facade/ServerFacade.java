@@ -6,8 +6,8 @@ import exception.ResponseException;
 import model.AuthData;
 import model.UserData;
 import model.GameData;
-import request.RegisterRequest;
-import result.RegisterResult;
+import request.*;
+import result.*;
 
 import java.io.*;
 import java.net.*;
@@ -19,22 +19,40 @@ public class ServerFacade {
     public ServerFacade(String url) {
         serverUrl = url;
     }
-        //register: "POST", path:"/user"
-        //login: "POST", path:"/session"
-        //logout: "DELETE", path: "/session"
-        //createGame: "POST", path: "/game"
-        //listGames: "GET", path: "/game"
-        //joinGame: "PUT", path: "/game"
-        //clear: "DELETE", path: "/db"
 
     public void clear() throws ResponseException {
         var path = "/db";
-        this.makeRequest("DELETE", path, null, null);
+        this.makeRequest("DELETE", path, null, null, null);
     }
 
     public RegisterResult register(RegisterRequest request) throws ResponseException {
         var path = "/user";
-        return this.makeRequest("POST", path, request, RegisterResult.class);
+        return this.makeRequest("POST", path, request, RegisterResult.class, null);
+    }
+
+    public LoginResult login(LoginRequest request) throws ResponseException {
+        var path = "/session";
+        return this.makeRequest("POST", path, request, LoginResult.class, null);
+    }
+
+    public LogoutResult logout(LogoutRequest request) throws ResponseException {
+        var path = "/session";
+        return this.makeRequest("DELETE", path, request, LogoutResult.class, request.authToken());
+    }
+
+    public CreateGameResult createGame(CreateGameRequest request) throws ResponseException {
+        var path = "/game";
+        return this.makeRequest("POST", path, request, CreateGameResult.class, request.authToken());
+    }
+
+    public ListGamesResult listGames(ListGamesRequest request) throws ResponseException {
+        var path = "/game";
+        return this.makeRequest("GET", path, null, ListGamesResult.class, request.authToken());
+    }
+
+    public JoinGameResult joinGame(JoinGameRequest request) throws ResponseException {
+        var path = "/game";
+        return this.makeRequest("PUT", path, request, JoinGameResult.class, request.authToken());
     }
 
 //    public Pet addPet(Pet pet) throws ResponseException {
@@ -60,11 +78,12 @@ public class ServerFacade {
 //        return response.pet();
 //    }
 
-    private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws ResponseException {
+    private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass, String authToken) throws ResponseException {
         try {
             URL url = (new URI(serverUrl + path)).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             http.setRequestMethod(method);
+            http.setRequestProperty("Authorization", authToken);
             http.setDoOutput(true);
 
             writeBody(request, http);
