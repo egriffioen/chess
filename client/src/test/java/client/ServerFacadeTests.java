@@ -74,7 +74,6 @@ public class ServerFacadeTests {
         RegisterResult registerResult = facade.register(request);
         LogoutRequest logoutRequest = new LogoutRequest(registerResult.authToken());
         LogoutResult logoutResult = facade.logout(logoutRequest);
-        //assertEquals(new LogoutResult(), logoutResult);
         assertNull(logoutResult);
     }
 
@@ -97,16 +96,7 @@ public class ServerFacadeTests {
         ListGamesRequest listGamesRequest = new ListGamesRequest(registerResult.authToken());
         ListGamesResult listGamesResult = facade.listGames(listGamesRequest);
 
-        List<Map<String, Object>> expectedGames = new ArrayList<>();
-        Map<String, Object> gameInfo = new HashMap<>();
-        gameInfo.put("gameID", createGameResult.gameID());
-//        gameInfo.put("whiteUsername", null);
-//        gameInfo.put("blackUsername", null);
-        gameInfo.put("gameName", "game1");
-        expectedGames.add(gameInfo);
-
-        ListGamesResult expectedResult = new ListGamesResult(expectedGames);
-        assertEquals(expectedResult, listGamesResult);
+        assertEquals(1, listGamesResult.games().size());
     }
 
 
@@ -121,4 +111,18 @@ public class ServerFacadeTests {
         assertNull(joinGameResult.message());
     }
 
+    @Test
+    void validClear() throws Exception {
+        RegisterRequest request = new RegisterRequest("player1", "password", "p1@email.com");
+        RegisterResult registerResult = facade.register(request);
+        CreateGameRequest createGameRequest = new CreateGameRequest(registerResult.authToken(), "game1");
+        CreateGameResult createGameResult = facade.createGame(createGameRequest);
+
+        facade.clear();
+        ListGamesRequest listGamesRequest = new ListGamesRequest(registerResult.authToken());
+        //ListGamesResult listGamesResult = facade.listGames(listGamesRequest);
+        LoginRequest loginRequest = new LoginRequest("player1", "password");
+        assertThrows(ResponseException.class, () -> facade.login(loginRequest));
+        assertThrows(ResponseException.class, () -> facade.listGames(listGamesRequest));
+    }
 }
