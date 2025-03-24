@@ -55,21 +55,13 @@ class AuthDAOTest {
     }
 
     @Test
-    void addAuthToken() throws DataAccessException {
+    void addAuthToken() throws DataAccessException, ResponseException {
         String username = "User1";
         String authToken = UUID.randomUUID().toString();
         AuthData authData = new AuthData(authToken, username);
-        try {
-            authTokens.addAuthToken(authData);
-        } catch (exception.ResponseException e) {
-            throw new RuntimeException(e);
-        }
+        authTokens.addAuthToken(authData);
         AuthData actualResult = null;
-        try {
-            actualResult = authTokens.getAuthToken(authToken);
-        } catch (exception.ResponseException e) {
-            throw new RuntimeException(e);
-        }
+        actualResult = authTokens.getAuthToken(authToken);
         assertEquals(authData, actualResult);
     }
 
@@ -78,29 +70,18 @@ class AuthDAOTest {
         String username = "User1";
         String authToken = null;
         AuthData authData = new AuthData(authToken, username);
-        assertThrows(ResponseException.class, () ->  authTokens.addAuthToken(authData));
+        assertThrows(ResponseException.class, () -> authTokens.addAuthToken(authData));
     }
 
     @Test
-    void removeAuthToken() throws DataAccessException {
+    void removeAuthToken() throws DataAccessException, ResponseException {
         String username = "User1";
         String authToken = UUID.randomUUID().toString();
         AuthData authData = new AuthData(authToken, username);
-        try {
-            authTokens.addAuthToken(authData);
-        } catch (exception.ResponseException e) {
-            throw new RuntimeException(e);
-        }
-        try {
-            authTokens.removeAuthToken(authData);
-        } catch (exception.ResponseException e) {
-            throw new RuntimeException(e);
-        }
-        try {
-            assertNull(authTokens.getAuthToken(authToken));
-        } catch (exception.ResponseException e) {
-            throw new RuntimeException(e);
-        }
+        authTokens.addAuthToken(authData);
+        authTokens.removeAuthToken(authData);
+        assertNull(authTokens.getAuthToken(authToken));
+
     }
 
     @Test
@@ -112,81 +93,47 @@ class AuthDAOTest {
     }
 
     @Test
-    void getAuthToken() throws DataAccessException {
+    void getAuthToken() throws DataAccessException, ResponseException {
         String authToken = UUID.randomUUID().toString();
         AuthData authData = new AuthData(authToken, "User2");
-        try {
-            authTokens.addAuthToken(authData);
-        } catch (exception.ResponseException e) {
-            throw new RuntimeException(e);
-        }
+        authTokens.addAuthToken(authData);
         AuthData actualResult = null;
-        try {
-            actualResult = authTokens.getAuthToken(authToken);
-        } catch (exception.ResponseException e) {
-            throw new RuntimeException(e);
-        }
+        actualResult = authTokens.getAuthToken(authToken);
         assertEquals(authData, actualResult);
     }
 
     @Test
-    void invalidGetAuthToken() throws DataAccessException {
+    void invalidGetAuthToken() throws DataAccessException, ResponseException {
         String username = "User1";
         String authToken = UUID.randomUUID().toString();
         AuthData authData = new AuthData(authToken, username);
-        try {
-            assertNull(authTokens.getAuthToken(authToken));
-        } catch (exception.ResponseException e) {
-            throw new RuntimeException(e);
-        }
+        assertNull(authTokens.getAuthToken(authToken));
     }
 
     @Test
-    void clearAllAuthData() throws DataAccessException {
+    void clearAllAuthData() throws DataAccessException, ResponseException {
         String username = "User1";
         String authToken = UUID.randomUUID().toString();
         AuthData authData = new AuthData(authToken, username);
-        try {
-            authTokens.addAuthToken(authData);
-        } catch (exception.ResponseException e) {
-            throw new RuntimeException(e);
-        }
-        try {
-            authTokens.clearAllAuthData();
-        } catch (exception.ResponseException e) {
-            throw new RuntimeException(e);
-        }
-        try {
-            assertTrue(authTokens.getAuthTokens().isEmpty());
-        } catch (exception.ResponseException e) {
-            throw new RuntimeException(e);
-        }
+        authTokens.addAuthToken(authData);
+        authTokens.clearAllAuthData();
+        assertTrue(authTokens.getAuthTokens().isEmpty());
+
     }
 
     @Test
-    void getAuthTokens() throws DataAccessException {
+    void getAuthTokens() throws DataAccessException, ResponseException {
         String username = "User1";
         String authToken = UUID.randomUUID().toString();
         AuthData authData = new AuthData(authToken, username);
-        try {
-            authTokens.addAuthToken(authData);
-        } catch (exception.ResponseException e) {
-            throw new RuntimeException(e);
-        }
+        authTokens.addAuthToken(authData);
         String username2 = "User2";
         String authToken2 = UUID.randomUUID().toString();
         AuthData authData2 = new AuthData(authToken2, username2);
-        try {
-            authTokens.addAuthToken(authData2);
-        } catch (exception.ResponseException e) {
-            throw new RuntimeException(e);
-        }
+        authTokens.addAuthToken(authData2);
         HashMap<String, AuthData> actualResult = null;
-        try {
-            actualResult = authTokens.getAuthTokens();
-        } catch (exception.ResponseException e) {
-            throw new RuntimeException(e);
-        }
+        actualResult = authTokens.getAuthTokens();
+
         HashMap<String, AuthData> expectedResult = new HashMap<>();
         expectedResult.put(authToken, authData);
         expectedResult.put(authToken2, authData2);
@@ -195,31 +142,19 @@ class AuthDAOTest {
     }
 
     @Test
-    void invalidGetAuthTokens() throws DataAccessException {
+    void invalidGetAuthTokens() throws DataAccessException, ResponseException {
         HashMap<String, AuthData> expectedResult = new HashMap<>();
         HashMap<String, AuthData> actualResult = null;
-        try {
-            actualResult = authTokens.getAuthTokens();
-        } catch (exception.ResponseException e) {
-            throw new RuntimeException(e);
-        }
+        actualResult = authTokens.getAuthTokens();
         assertEquals(expectedResult, actualResult);
     }
 
     @Test
-    void addUser() throws DataAccessException {
+    void addUser() throws DataAccessException, ResponseException {
         UserData user = new UserData("User1", "1234", "User1@gmail.com");
-        try {
-            users.addUser(user);
-        } catch (ResponseException e) {
-            throw new RuntimeException(e);
-        }
+        users.addUser(user);
         UserData actualResult = null;
-        try {
-            actualResult = users.getUser("User1");
-        } catch (ResponseException e) {
-            throw new RuntimeException(e);
-        }
+        actualResult = users.getUser("User1");
         assertEquals(user, actualResult);
     }
 
@@ -230,103 +165,55 @@ class AuthDAOTest {
     }
 
     @Test
-    void getUser() throws DataAccessException {
+    void getUser() throws DataAccessException, ResponseException {
         UserData user = new UserData("User2", "5678", "User2@gmail.com");
-        try {
-            users.addUser(user);
-        } catch (ResponseException e) {
-            throw new RuntimeException(e);
-        }
+        users.addUser(user);
         UserData actualResult = null;
-        try {
-            actualResult = users.getUser("User2");
-        } catch (ResponseException e) {
-            throw new RuntimeException(e);
-        }
+        actualResult = users.getUser("User2");
         assertEquals(user, actualResult);
     }
 
     @Test
-    void invalidGetUser() throws DataAccessException {
+    void invalidGetUser() throws DataAccessException, ResponseException {
         UserData user = new UserData("User2", "5678", "User2@gmail.com");
         UserData actualResult = null;
-        try {
-            actualResult = users.getUser("User2");
-        } catch (ResponseException e) {
-            throw new RuntimeException(e);
-        }
+        actualResult = users.getUser("User2");
         assertNull(actualResult);
     }
 
     @Test
-    void getPassword() throws DataAccessException {
+    void getPassword() throws DataAccessException, ResponseException {
         UserData user = new UserData("User2", "5678", "User2@gmail.com");
-        try {
-            users.addUser(user);
-        } catch (ResponseException e) {
-            throw new RuntimeException(e);
-        }
+        users.addUser(user);
         String actualResult = null;
-        try {
-            actualResult = users.getPassword("User2");
-        } catch (ResponseException e) {
-            throw new RuntimeException(e);
-        }
+        actualResult = users.getPassword("User2");
         assertEquals("5678", actualResult);
     }
 
     @Test
-    void invalidGetPassword() throws DataAccessException {
+    void invalidGetPassword() throws DataAccessException, ResponseException {
         UserData user = new UserData("User2", "5678", "User2@gmail.com");
         String actualResult = null;
-        try {
-            actualResult = users.getPassword("User2");
-        } catch (ResponseException e) {
-            throw new RuntimeException(e);
-        }
+        actualResult = users.getPassword("User2");
         assertNull(actualResult);
     }
 
     @Test
-    void clearAllUserData() throws DataAccessException {
+    void clearAllUserData() throws DataAccessException, ResponseException {
         UserData user = new UserData("User2", "5678", "User2@gmail.com");
-        try {
-            users.addUser(user);
-        } catch (ResponseException e) {
-            throw new RuntimeException(e);
-        }
-        try {
-            users.clearAllUserData();
-        } catch (ResponseException e) {
-            throw new RuntimeException(e);
-        }
-        try {
-            assertTrue(users.getUsers().isEmpty());
-        } catch (ResponseException e) {
-            throw new RuntimeException(e);
-        }
+        users.addUser(user);
+        users.clearAllUserData();
+        assertTrue(users.getUsers().isEmpty());
     }
 
     @Test
-    void getUsers() throws DataAccessException {
+    void getUsers() throws DataAccessException, ResponseException {
         UserData user2 = new UserData("User2", "5678", "User2@gmail.com");
         UserData user1 = new UserData("User1", "1234", "User1@gmail.com");
-        try {
-            users.addUser(user2);
-        } catch (ResponseException e) {
-            throw new RuntimeException(e);
-        }
-        try {
-            users.addUser(user1);
-        } catch (ResponseException e) {
-            throw new RuntimeException(e);
-        }
+        users.addUser(user2);
+        users.addUser(user1);
         HashMap<String, UserData> actualResult = null;
-        try {
-            actualResult = users.getUsers();
-        } catch (ResponseException e) {
-            throw new RuntimeException(e);
-        }
+        actualResult = users.getUsers();
         HashMap<String, UserData> expectedResult = new HashMap<>();
         expectedResult.put("User2", user2);
         expectedResult.put("User1", user1);
@@ -334,26 +221,18 @@ class AuthDAOTest {
     }
 
     @Test
-    void invalidGetUsers() throws DataAccessException {
+    void invalidGetUsers() throws DataAccessException, ResponseException {
         HashMap<String, UserData> actualResult = null;
-        try {
-            actualResult = users.getUsers();
-        } catch (ResponseException e) {
-            throw new RuntimeException(e);
-        }
+        actualResult = users.getUsers();
         HashMap<String, UserData> expectedResult = new HashMap<>();
         assertEquals(expectedResult, actualResult);
     }
 
     @Test
-    void createGame() throws DataAccessException {
+    void createGame() throws DataAccessException, ResponseException {
         Integer gameID = null;
-        try {
-            gameID = games.createGame("mygame");
-        } catch (ResponseException e) {
-            throw new RuntimeException(e);
-        }
-        assertEquals(1,gameID);
+        gameID = games.createGame("mygame");
+        assertEquals(1, gameID);
     }
 
     @Test
@@ -362,129 +241,52 @@ class AuthDAOTest {
     }
 
     @Test
-    void listGames() throws DataAccessException {
+    void listGames() throws DataAccessException, ResponseException {
         Integer gameID = null;
-        try {
-            gameID = games.createGame("newGame");
-        } catch (ResponseException e) {
-            throw new RuntimeException(e);
-        }
+        gameID = games.createGame("newGame");
         Integer gameID2 = null;
-        try {
-            gameID2 = games.createGame("secondGame");
-        } catch (ResponseException e) {
-            throw new RuntimeException(e);
-        }
+        gameID2 = games.createGame("secondGame");
         List<Map<String, Object>> actualResult = null;
-        try {
-            actualResult = games.listGames();
-        } catch (ResponseException e) {
-            throw new RuntimeException(e);
-        }
+        actualResult = games.listGames();
         List<Map<String, Object>> gamesList = new ArrayList<Map<String, Object>>();
-
-        HashMap<String, Object>  gameInfo1 = new HashMap<String, Object>();
-        try {
-            gameInfo1.put("gameID", games.getGame(gameID).gameID());
-        } catch (ResponseException e) {
-            throw new RuntimeException(e);
-        }
-        try {
-            gameInfo1.put("whiteUsername", games.getGame(gameID).whiteUsername());
-        } catch (ResponseException e) {
-            throw new RuntimeException(e);
-        }
-        try {
-            gameInfo1.put("blackUsername", games.getGame(gameID).blackUsername());
-        } catch (ResponseException e) {
-            throw new RuntimeException(e);
-        }
-        try {
-            gameInfo1.put("gameName", games.getGame(gameID).gameName());
-        } catch (ResponseException e) {
-            throw new RuntimeException(e);
-        }
+        HashMap<String, Object> gameInfo1 = new HashMap<String, Object>();
+        gameInfo1.put("gameID", games.getGame(gameID).gameID());
+        gameInfo1.put("whiteUsername", games.getGame(gameID).whiteUsername());
+        gameInfo1.put("blackUsername", games.getGame(gameID).blackUsername());
+        gameInfo1.put("gameName", games.getGame(gameID).gameName());
         gamesList.add(gameInfo1);
 
         HashMap<String, Object> gameInfo2 = new HashMap<String, Object>();
-        try {
-            gameInfo2.put("gameID", games.getGame(gameID2).gameID());
-        } catch (ResponseException e) {
-            throw new RuntimeException(e);
-        }
-        try {
-            gameInfo2.put("whiteUsername", games.getGame(gameID2).whiteUsername());
-        } catch (ResponseException e) {
-            throw new RuntimeException(e);
-        }
-        try {
-            gameInfo2.put("blackUsername", games.getGame(gameID2).blackUsername());
-        } catch (ResponseException e) {
-            throw new RuntimeException(e);
-        }
-        try {
-            gameInfo2.put("gameName", games.getGame(gameID2).gameName());
-        } catch (ResponseException e) {
-            throw new RuntimeException(e);
-        }
+        gameInfo2.put("gameID", games.getGame(gameID2).gameID());
+        gameInfo2.put("whiteUsername", games.getGame(gameID2).whiteUsername());
+        gameInfo2.put("blackUsername", games.getGame(gameID2).blackUsername());
+        gameInfo2.put("gameName", games.getGame(gameID2).gameName());
         gamesList.add(gameInfo2);
 
         assertEquals(gamesList, actualResult);
     }
 
     @Test
-    void invalidListGames() throws DataAccessException {
-        try {
-            assertTrue(games.listGames().isEmpty());
-        } catch (ResponseException e) {
-            throw new RuntimeException(e);
-        }
+    void invalidListGames() throws DataAccessException, ResponseException {
+        assertTrue(games.listGames().isEmpty());
     }
 
 
     @Test
-    void clearAllGames() throws DataAccessException {
-        try {
-            Integer gameID = games.createGame("newGame");
-        } catch (ResponseException e) {
-            throw new RuntimeException(e);
-        }
-        try {
-            Integer gameID2 = games.createGame("secondGame");
-        } catch (ResponseException e) {
-            throw new RuntimeException(e);
-        }
-        try {
-            games.clearAllGames();
-        } catch (ResponseException e) {
-            throw new RuntimeException(e);
-        }
-        try {
-            assertTrue(games.getGames().isEmpty());
-        } catch (ResponseException e) {
-            throw new RuntimeException(e);
-        }
+    void clearAllGames() throws DataAccessException, ResponseException {
+        Integer gameID = games.createGame("newGame");
+        Integer gameID2 = games.createGame("secondGame");
+        games.clearAllGames();
+        assertTrue(games.getGames().isEmpty());
     }
 
     @Test
-    void joinGame() throws DataAccessException {
+    void joinGame() throws DataAccessException, ResponseException {
         Integer gameID = null;
-        try {
-            gameID = games.createGame("newGame");
-        } catch (ResponseException e) {
-            throw new RuntimeException(e);
-        }
-        try {
-            games.joinGame("WHITE", gameID, "User1");
-        } catch (ResponseException e) {
-            throw new RuntimeException(e);
-        }
+        gameID = games.createGame("newGame");
+        games.joinGame("WHITE", gameID, "User1");
         GameData actualResult = null;
-        try {
-            actualResult = games.getGame(gameID);
-        } catch (ResponseException e) {
-            throw new RuntimeException(e);
-        }
+        actualResult = games.getGame(gameID);
         assertEquals(gameID, actualResult.gameID());
         assertEquals("User1", actualResult.whiteUsername());
         assertNull(actualResult.blackUsername());
@@ -492,98 +294,46 @@ class AuthDAOTest {
     }
 
     @Test
-    void invalidJoinGame() throws DataAccessException {
-        try {
-            Integer gameID = games.createGame("newGame");
-        } catch (ResponseException e) {
-            throw new RuntimeException(e);
-        }
+    void invalidJoinGame() throws DataAccessException, ResponseException {
+        Integer gameID = games.createGame("newGame");
         assertThrows(ResponseException.class, () -> games.joinGame("WHITE", null, "User1"));
     }
 
     @Test
-    void getGames() throws DataAccessException {
+    void getGames() throws DataAccessException, ResponseException {
         Integer gameID1 = null;
-        try {
-            gameID1 = games.createGame("game1");
-        } catch (ResponseException e) {
-            throw new RuntimeException(e);
-        }
+        gameID1 = games.createGame("game1");
         Integer gameID2 = null;
-        try {
-            gameID2 = games.createGame("game2");
-        } catch (ResponseException e) {
-            throw new RuntimeException(e);
-        }
+        gameID2 = games.createGame("game2");
         HashMap<Integer, GameData> actualResult = null;
-        try {
-            actualResult = games.getGames();
-        } catch (ResponseException e) {
-            throw new RuntimeException(e);
-        }
+        actualResult = games.getGames();
         HashMap<Integer, GameData> expectedResult = new HashMap<>();
-        try {
-            expectedResult.put(games.getGame(gameID1).gameID(), games.getGame(gameID1));
-        } catch (ResponseException e) {
-            throw new RuntimeException(e);
-        }
-        try {
-            expectedResult.put(games.getGame(gameID2).gameID(), games.getGame(gameID2));
-        } catch (ResponseException e) {
-            throw new RuntimeException(e);
-        }
+        expectedResult.put(games.getGame(gameID1).gameID(), games.getGame(gameID1));
+        expectedResult.put(games.getGame(gameID2).gameID(), games.getGame(gameID2));
         assertEquals(expectedResult, actualResult);
     }
 
     @Test
-    void invalidGetGames() throws DataAccessException {
-        try {
-            Integer gameID1 = games.createGame("game1");
-        } catch (ResponseException e) {
-            throw new RuntimeException(e);
-        }
-        try {
-            Integer gameID2 = games.createGame("game2");
-        } catch (ResponseException e) {
-            throw new RuntimeException(e);
-        }
-        try {
-            games.clearAllGames();
-        } catch (ResponseException e) {
-            throw new RuntimeException(e);
-        }
-        try {
-            assertTrue(games.getGames().isEmpty());
-        } catch (ResponseException e) {
-            throw new RuntimeException(e);
-        }
+    void invalidGetGames() throws DataAccessException, ResponseException {
+        Integer gameID1 = games.createGame("game1");
+        Integer gameID2 = games.createGame("game2");
+        games.clearAllGames();
+        assertTrue(games.getGames().isEmpty());
     }
 
     @Test
-    void getGame() throws DataAccessException {
+    void getGame() throws DataAccessException, ResponseException {
         Integer gameID1 = null;
-        try {
-            gameID1 = games.createGame("game1");
-        } catch (ResponseException e) {
-            throw new RuntimeException(e);
-        }
+        gameID1 = games.createGame("game1");
         GameData actualResult = null;
-        try {
-            actualResult = games.getGame(gameID1);
-        } catch (ResponseException e) {
-            throw new RuntimeException(e);
-        }
+        actualResult = games.getGame(gameID1);
         GameData expectedResult = new GameData(1, null, null, "game1", new ChessGame());
         assertEquals(expectedResult, actualResult);
     }
 
     @Test
     void invalidGetGame() throws ResponseException {
-        try {
-            Integer gameID1 = games.createGame("game1");
-        } catch (ResponseException e) {
-            throw new RuntimeException(e);
-        }
+        Integer gameID1 = games.createGame("game1");
         assertThrows(ResponseException.class, () -> games.getGame(null));
     }
 }
