@@ -11,6 +11,7 @@ public class InGameClient {
     private final String serverUrl;
     //private State state = State.INGAME;
     public static final String HALF_SPACE = "\u2009";
+    private final String[][] board = new String[8][8];
 
     public InGameClient(String serverUrl) {
         server = new ServerFacade(serverUrl);
@@ -44,8 +45,7 @@ public class InGameClient {
     }
 
     private void printChessBoardBlack() {
-        String[][] board = new String[8][8];
-
+        String colorPerspective = "BLACK";
         // Set up the initial chess pieces on the board
         // White pieces
         board[0][0] = EscapeSequences.WHITE_ROOK;
@@ -75,33 +75,7 @@ public class InGameClient {
             board[6][i] = EscapeSequences.BLACK_PAWN;  // Black pawns
         }
 
-        // Empty squares
-        for (int row = 2; row < 6; row++) {
-            for (int col = 0; col < 8; col++) {
-                if (col % 2 == 0) {
-                    if (row % 2 == 0) {
-                        String invisiblePawn = EscapeSequences.SET_TEXT_COLOR_LIGHT_GREY + EscapeSequences.WHITE_PAWN +
-                                EscapeSequences.RESET_TEXT_COLOR + EscapeSequences.RESET_BG_COLOR;
-                        board[row][col] = invisiblePawn; // Assign to board
-                    } else {
-                        String invisiblePawn = EscapeSequences.SET_TEXT_COLOR_DARK_GREY + EscapeSequences.WHITE_PAWN +
-                                EscapeSequences.RESET_TEXT_COLOR + EscapeSequences.RESET_BG_COLOR;
-                        board[row][col] = invisiblePawn; // Assign to board
-                    }
-                } else {
-                    if (row % 2 == 0) {
-                        String invisiblePawn = EscapeSequences.SET_TEXT_COLOR_DARK_GREY + EscapeSequences.WHITE_PAWN +
-                                EscapeSequences.RESET_TEXT_COLOR + EscapeSequences.RESET_BG_COLOR;
-                        board[row][col] = invisiblePawn; // Assign to board
-                    } else {
-                        String invisiblePawn = EscapeSequences.SET_TEXT_COLOR_LIGHT_GREY + EscapeSequences.WHITE_PAWN +
-                                EscapeSequences.RESET_TEXT_COLOR + EscapeSequences.RESET_BG_COLOR;
-                        board[row][col] = invisiblePawn; // Assign to board
-                    }
-                }
-            }
-        }
-
+        setEmptySquares();
         // Print the board with alternating colors
         String[] letters = {" a ", " b ", " c ", " d ", " e ", " f ", " g ", " h "};
         List<String> letterList = Arrays.asList(letters);
@@ -112,28 +86,8 @@ public class InGameClient {
         }
         System.out.println();
         for (int row = 0; row < 8; row++) {
-
             System.out.print(" " + (row + 1) + " ");
-
-            for (int col = 0; col < 8; col++) {
-                String square = board[row][col];
-
-                // Set the background color based on the row and column
-                String squareColor = (row + col) % 2 == 0
-                        ? EscapeSequences.SET_BG_COLOR_LIGHT_GREY
-                        : EscapeSequences.SET_BG_COLOR_DARK_GREY;
-                String pieceColor;
-                if (row <= 1) { // White pieces
-                    pieceColor = EscapeSequences.SET_TEXT_COLOR_WHITE;
-                } else if (row >= 6) { // Black pieces
-                    pieceColor = EscapeSequences.SET_TEXT_COLOR_BLACK;
-                } else {
-                    pieceColor = ""; // Empty squares don't need special text color
-                }
-                // Print the square with the background color and the piece
-                System.out.print(squareColor + pieceColor + square + EscapeSequences.RESET_TEXT_COLOR +
-                        EscapeSequences.RESET_BG_COLOR);
-            }
+            printBoardRow(row, colorPerspective);
             System.out.print(" " + (row + 1) + " ");
             System.out.println();
         }
@@ -146,8 +100,7 @@ public class InGameClient {
 
 
     private void printChessBoardWhite() {
-        String[][] board = new String[8][8];
-
+        String colorPerspective = "WHITE";
         // Set up the initial chess pieces on the board
         // White pieces
         board[7][0] = EscapeSequences.WHITE_ROOK;
@@ -176,8 +129,29 @@ public class InGameClient {
         for (int i = 0; i < 8; i++) {
             board[1][i] = EscapeSequences.BLACK_PAWN;  // Black pawns
         }
+        setEmptySquares();
+        // Print the board with alternating colors
+        String[] letters = {" a ", " b ", " c ", " d ", " e ", " f ", " g ", " h "};
+        List<String> letterList = Arrays.asList(letters);
+        System.out.print("   " + EscapeSequences.RESET_TEXT_COLOR); // Offset for row numbers
+        for (String letter : letterList) {
+            System.out.print(HALF_SPACE+letter+HALF_SPACE);
+        }
+        System.out.println();
+        for (int row = 0; row < 8; row++) {
+            System.out.print(" " + (8-row) + " ");
+            printBoardRow(row, colorPerspective);
+            System.out.print(" " + (8-row) + " ");
+            System.out.println();
+        }
+        System.out.print("   "); // Offset for row numbers
+        for (String letter : letterList) {
+            System.out.print(HALF_SPACE+letter+HALF_SPACE);
+        }
+        System.out.println();
+    }
 
-        // Empty squares
+    private void setEmptySquares() {
         for (int row = 2; row < 6; row++) {
             for (int col = 0; col < 8; col++) {
                 if (col % 2 == 0) {
@@ -203,27 +177,28 @@ public class InGameClient {
                 }
             }
         }
+    }
 
-        // Print the board with alternating colors
-        String[] letters = {" a ", " b ", " c ", " d ", " e ", " f ", " g ", " h "};
-        List<String> letterList = Arrays.asList(letters);
-        System.out.print("   " + EscapeSequences.RESET_TEXT_COLOR); // Offset for row numbers
-        for (String letter : letterList) {
-            System.out.print(HALF_SPACE+letter+HALF_SPACE);
-        }
-        System.out.println();
-        for (int row = 0; row < 8; row++) {
+    private void printBoardRow(int row, String colorPerspective) {
+        for (int col = 0; col < 8; col++) {
+            String square = board[row][col];
 
-            System.out.print(" " + (8-row) + " ");
-
-            for (int col = 0; col < 8; col++) {
-                String square = board[row][col];
-
-                // Set the background color based on the row and column
-                String squareColor = (row + col) % 2 == 0
-                        ? EscapeSequences.SET_BG_COLOR_LIGHT_GREY
-                        : EscapeSequences.SET_BG_COLOR_DARK_GREY;
-                String pieceColor;
+            // Set the background color based on the row and column
+            String squareColor = (row + col) % 2 == 0
+                    ? EscapeSequences.SET_BG_COLOR_LIGHT_GREY
+                    : EscapeSequences.SET_BG_COLOR_DARK_GREY;
+            String pieceColor = "";
+            if (colorPerspective.equals("BLACK")) {
+                if (row <= 1) { // White pieces
+                    pieceColor = EscapeSequences.SET_TEXT_COLOR_WHITE;
+                } else if (row >= 6) { // Black pieces
+                    pieceColor = EscapeSequences.SET_TEXT_COLOR_BLACK;
+                } else {
+                    pieceColor = ""; // Empty squares don't need special text color
+                }
+            }
+            
+            else if(colorPerspective.equals("WHITE")) {
                 if (row <= 1) { // White pieces
                     pieceColor = EscapeSequences.SET_TEXT_COLOR_BLACK;
                 } else if (row >= 6) { // Black pieces
@@ -231,17 +206,10 @@ public class InGameClient {
                 } else {
                     pieceColor = ""; // Empty squares don't need special text color
                 }
-                // Print the square with the background color and the piece
-                System.out.print(squareColor + pieceColor + square + EscapeSequences.RESET_TEXT_COLOR +
-                        EscapeSequences.RESET_BG_COLOR);
             }
-            System.out.print(" " + (8-row) + " ");
-            System.out.println();
+            // Print the square with the background color and the piece
+            System.out.print(squareColor + pieceColor + square + EscapeSequences.RESET_TEXT_COLOR +
+                    EscapeSequences.RESET_BG_COLOR);
         }
-        System.out.print("   "); // Offset for row numbers
-        for (String letter : letterList) {
-            System.out.print(HALF_SPACE+letter+HALF_SPACE);
-        }
-        System.out.println();
     }
 }
