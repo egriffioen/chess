@@ -81,8 +81,8 @@ public class PostLoginClient {
 
                 boolean gameExists = false;
                 for (Map<String, Object> game : games) {
-                    Integer gameIDFromList = (Integer) game.get("gameID");
-                    if (gameIDFromList != null && gameIDFromList == gameID) {
+                    var gameIDFromList = ((Number) game.get("gameID")).intValue();
+                    if (gameIDFromList == gameID) {
                         gameExists = true;
                         break;
                     }
