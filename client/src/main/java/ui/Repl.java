@@ -8,7 +8,7 @@ public class Repl {
     private final PreLoginClient preLoginClient;
 
     public Repl(String serverUrl) {
-        preLoginClient = new PreLoginClient(serverUrl, this);
+        preLoginClient = new PreLoginClient(serverUrl);
     }
 
     public void run() {
