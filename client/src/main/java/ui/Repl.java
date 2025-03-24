@@ -63,7 +63,7 @@ public class Repl {
 //    }
 
     private void printPrompt() {
-        System.out.print("\n" + ERASE_LINE + ">>> " + SET_TEXT_COLOR_GREEN);
+        System.out.print("\n[" + state + "]" + ">>> " + SET_TEXT_COLOR_GREEN);
     }
 
 }

@@ -27,7 +27,7 @@ public class PostLoginClient {
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
                 case "logout" -> logout(params);
-//                case "create" -> create(params);
+                case "create" -> create(params);
 //                case "list" -> list(params);
 //                case "join" -> join(params);
 //                case "observe" -> observe(params);
@@ -49,18 +49,18 @@ public class PostLoginClient {
         throw new ResponseException(401, "Unauthorized");
     }
 
-//    public String register(String... params) throws ResponseException {
-//        if (params.length == 3) {
-//            username = params[0];
-//            password = params[1];
-//            email = params[2];
-//            RegisterRequest registerRequest = new RegisterRequest(username, password, email);
-//            RegisterResult registerResult = server.register(registerRequest);
-//            state = State.SIGNEDIN;
-//            return String.format("You signed in as %s.", registerResult.username());
-//        }
-//        throw new ResponseException(400, "Expected: <USERNAME> <PASSWORD> <EMAIL>");
-//    }
+
+
+    public String create(String... params) throws ResponseException {
+        if (params.length == 1) {
+            var gameName = params[0];
+            CreateGameRequest createGameRequest = new CreateGameRequest(authToken, gameName);
+            CreateGameResult createGameResult = server.createGame(createGameRequest);
+            state = State.INGAME;
+            return String.format("You created a new game: %s.", gameName);
+        }
+        throw new ResponseException(400, "Expected: <NAME>");
+    }
 
 
     public String help() {
