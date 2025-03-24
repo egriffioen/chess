@@ -42,7 +42,7 @@ public class Repl {
                 else if (state == State.SIGNEDIN) {
                     result = postLoginClient.eval(line);
                     System.out.print(SET_TEXT_COLOR_BLUE + result);
-                    if (result.contains("You joined")) {
+                    if (result.contains("You joined") || result.contains("You are observing")) {
                         //state = State.INGAME;
                     }
                     if (result.contains("You logged out")) {

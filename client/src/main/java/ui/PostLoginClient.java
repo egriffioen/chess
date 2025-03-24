@@ -33,7 +33,7 @@ public class PostLoginClient {
                 case "create" -> create(params);
                 case "list" -> list(params);
                 case "join" -> join(params);
-//                case "observe" -> observe(params);
+                case "observe" -> observe(params);
                 case "quit" -> "quit";
                 default -> help();
             };
@@ -66,7 +66,6 @@ public class PostLoginClient {
 
     public String join(String... params) throws ResponseException {
         try {
-
             if (params.length == 2) {
                 int gameID = Integer.parseInt(params[0]);
                 var playerColor = params[1];
@@ -106,7 +105,7 @@ public class PostLoginClient {
 
                 }
                 else {
-                    throw new ResponseException(400, "Expected: <ID> [WHITE|BLACK");
+                    throw new ResponseException(400, "Expected: <ID> [WHITE|BLACK]");
                 }
 
             }
@@ -141,6 +140,41 @@ public class PostLoginClient {
         throw new ResponseException(401, "Unauthorized");
     }
 
+    public String observe(String... params) throws ResponseException {
+        try {
+            if (params.length == 1) {
+                int gameID = Integer.parseInt(params[0]);
+
+                ListGamesRequest listGamesRequest = new ListGamesRequest(authToken);
+                ListGamesResult listGamesResult = server.listGames(listGamesRequest);
+                List<Map<String, Object>> games = listGamesResult.games();
+
+                if (games == null || games.isEmpty()) {
+                    throw new ResponseException(400, "No available games to observe.");
+                }
+
+                boolean gameExists = false;
+                for (Map<String, Object> game : games) {
+                    var gameIDFromList = ((Number) game.get("gameID")).intValue();
+                    if (gameIDFromList == gameID) {
+                        gameExists = true;
+                        break;
+                    }
+                }
+                if (!gameExists) {
+                    throw new ResponseException(400, "Invalid game ID. Please choose a valid game.");
+                }
+                else {
+                    return String.format("You are observing game #%d.", gameID);
+                }
+
+            }
+        } catch (NumberFormatException e) {
+            throw new ResponseException(400, "Game ID must be a number.");
+        }
+        throw new ResponseException(400, "Expected: <ID>");
+    }
+
 
     public String help() {
         return """
@@ -160,4 +194,5 @@ public class PostLoginClient {
             throw new ResponseException(400, "You must sign in");
         }
     }
+
 }
