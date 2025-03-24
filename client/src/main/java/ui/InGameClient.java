@@ -8,13 +8,14 @@ import exception.ResponseException;
 import request.*;
 import result.*;
 
-import java.util.Arrays;
+import java.util.*;
 import java.util.List;
 
 public class InGameClient {
     private final ServerFacade server;
     private final String serverUrl;
     //private State state = State.INGAME;
+    public static final String HALF_SPACE = "\u2009";
 
     public InGameClient(String serverUrl) {
         server = new ServerFacade(serverUrl);
@@ -33,8 +34,6 @@ public class InGameClient {
 
     public String help() {
         return """
-                - register <USERNAME> <PASSWORD> <EMAIL> -> to create an account
-                - login <USERNAME> <PASSWORD> -> to play chess
                 - quit -> quit playing chess
                 - help -> help with possible commands
                 """;
@@ -48,8 +47,8 @@ public class InGameClient {
         board[0][0] = EscapeSequences.WHITE_ROOK;
         board[0][1] = EscapeSequences.WHITE_KNIGHT;
         board[0][2] = EscapeSequences.WHITE_BISHOP;
-        board[0][3] = EscapeSequences.WHITE_QUEEN;
-        board[0][4] = EscapeSequences.WHITE_KING;
+        board[0][3] = EscapeSequences.WHITE_KING;
+        board[0][4] = EscapeSequences.WHITE_QUEEN;
         board[0][5] = EscapeSequences.WHITE_BISHOP;
         board[0][6] = EscapeSequences.WHITE_KNIGHT;
         board[0][7] = EscapeSequences.WHITE_ROOK;
@@ -62,8 +61,8 @@ public class InGameClient {
         board[7][0] = EscapeSequences.BLACK_ROOK;
         board[7][1] = EscapeSequences.BLACK_KNIGHT;
         board[7][2] = EscapeSequences.BLACK_BISHOP;
-        board[7][3] = EscapeSequences.BLACK_QUEEN;
-        board[7][4] = EscapeSequences.BLACK_KING;
+        board[7][3] = EscapeSequences.BLACK_KING;
+        board[7][4] = EscapeSequences.BLACK_QUEEN;
         board[7][5] = EscapeSequences.BLACK_BISHOP;
         board[7][6] = EscapeSequences.BLACK_KNIGHT;
         board[7][7] = EscapeSequences.BLACK_ROOK;
@@ -75,15 +74,43 @@ public class InGameClient {
         // Empty squares
         for (int row = 2; row < 6; row++) {
             for (int col = 0; col < 8; col++) {
-                board[row][col] = EscapeSequences.EMPTY; // Empty squares
+                if(col % 2 == 0) {
+                    if(row % 2 ==0) {
+                        String invisiblePawn = EscapeSequences.SET_TEXT_COLOR_LIGHT_GREY + EscapeSequences.WHITE_PAWN + EscapeSequences.RESET_TEXT_COLOR + EscapeSequences.RESET_BG_COLOR;
+                        board[row][col] = invisiblePawn; // Assign to board
+                    }
+                    else {
+                        String invisiblePawn = EscapeSequences.SET_TEXT_COLOR_DARK_GREY + EscapeSequences.WHITE_PAWN + EscapeSequences.RESET_TEXT_COLOR + EscapeSequences.RESET_BG_COLOR;
+                        board[row][col] = invisiblePawn; // Assign to board
+                    }
+                }
+                else {
+                    if(row % 2 ==0) {
+                        String invisiblePawn = EscapeSequences.SET_TEXT_COLOR_DARK_GREY + EscapeSequences.WHITE_PAWN + EscapeSequences.RESET_TEXT_COLOR + EscapeSequences.RESET_BG_COLOR;
+                        board[row][col] = invisiblePawn; // Assign to board
+                    }
+                    else {
+                        String invisiblePawn = EscapeSequences.SET_TEXT_COLOR_LIGHT_GREY + EscapeSequences.WHITE_PAWN + EscapeSequences.RESET_TEXT_COLOR + EscapeSequences.RESET_BG_COLOR;
+                        board[row][col] = invisiblePawn; // Assign to board
+                    }
+                }
+
             }
         }
 
         // Print the board with alternating colors
-        Character[] letters = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
-        List<Character> letterList = Arrays.asList(letters);
-        System.out.println(Arrays.toString(letters));
+        String[] letters = {" a ", " b ", " c ", " d ", " e ", " f ", " g ", " h "};
+        List<String> letterList = Arrays.asList(letters);
+        Collections.reverse(letterList);
+        System.out.print("   " + EscapeSequences.RESET_TEXT_COLOR); // Offset for row numbers
+        for (String letter : letterList) {
+            System.out.print(HALF_SPACE+letter+HALF_SPACE);
+        }
+        System.out.println();
         for (int row = 0; row < 8; row++) {
+
+            System.out.print(" " + (row + 1) + " ");
+
             for (int col = 0; col < 8; col++) {
                 String square = board[row][col];
 
@@ -100,7 +127,13 @@ public class InGameClient {
                 // Print the square with the background color and the piece
                 System.out.print(squareColor + pieceColor + square + EscapeSequences.RESET_TEXT_COLOR + EscapeSequences.RESET_BG_COLOR);
             }
+            System.out.print(" " + (row + 1) + " ");
             System.out.println();
         }
+        System.out.print("   "); // Offset for row numbers
+        for (String letter : letterList) {
+            System.out.print(HALF_SPACE+letter+HALF_SPACE);
+        }
+        System.out.println();
     }
 }
