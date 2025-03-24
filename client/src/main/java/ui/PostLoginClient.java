@@ -1,6 +1,8 @@
 package ui;
 
 import java.util.Arrays;
+import java.util.Map;
+import java.util.List;
 
 import exception.ResponseException;
 
@@ -28,7 +30,7 @@ public class PostLoginClient {
             return switch (cmd) {
                 case "logout" -> logout(params);
                 case "create" -> create(params);
-//                case "list" -> list(params);
+                case "list" -> list(params);
 //                case "join" -> join(params);
 //                case "observe" -> observe(params);
                 case "quit" -> "quit";
@@ -60,6 +62,31 @@ public class PostLoginClient {
             return String.format("You created a new game: %s.", gameName);
         }
         throw new ResponseException(400, "Expected: <NAME>");
+    }
+
+    public String list(String... params) throws ResponseException {
+        if (authToken != null) {
+            ListGamesRequest listGamesRequest = new ListGamesRequest(authToken);
+            ListGamesResult listGamesResult = server.listGames(listGamesRequest);
+            List<Map<String, Object>> games = listGamesResult.games();
+            if (games == null || games.isEmpty()) {
+                return "No games available.";
+            }
+
+            StringBuilder result = new StringBuilder("Current Games:\n");
+            int index = 1; // Start numbering from 1
+
+            for (Map<String, Object> game : games) {
+                String gameName = (String) game.get("gameName");
+                String whitePlayer = (String) game.getOrDefault("whiteUsername", "");
+                String blackPlayer = (String) game.getOrDefault("blackUsername", "");
+
+                result.append(String.format("%d. GameName: %s --> WhitePlayer: %s, BlackPlayer: %s%n", index++, gameName, whitePlayer, blackPlayer));
+            }
+
+            return result.toString();
+        }
+        throw new ResponseException(401, "Unauthorized");
     }
 
 
