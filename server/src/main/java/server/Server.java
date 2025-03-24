@@ -1,6 +1,7 @@
 package server;
 
 import dataaccess.*;
+import exception.ResponseException;
 import handler.*;
 import service.GameService;
 import service.UserService;
@@ -21,10 +22,12 @@ public class Server {
             dbUsers = new SQLUserDAO();
         } catch (DataAccessException | SQLException e) {
             e.printStackTrace();  // Prints the error stack trace
+        } catch (ResponseException e) {
+            throw new RuntimeException(e);
         }
         try {
             authTokens = new SQLAuthDAO();
-        } catch (DataAccessException | SQLException e) {
+        } catch (DataAccessException | SQLException | ResponseException e) {
             e.printStackTrace();  // Prints the error stack trace
         }
 
@@ -32,6 +35,8 @@ public class Server {
             games = new SQLGameDAO();
         } catch (DataAccessException | SQLException e) {
             e.printStackTrace();  // Prints the error stack trace
+        } catch (ResponseException e) {
+            throw new RuntimeException(e);
         }
 
         UserService userService = new UserService(authTokens, dbUsers);
@@ -53,6 +58,7 @@ public class Server {
         Spark.post("/game", createGameHandler);
         Spark.get("/game", listGamesHandler);
         Spark.put("/game", joinGameHandler);
+        Spark.exception(ResponseException.class, this::exceptionHandler);
         //This line initializes the server and can be removed once you have a functioning endpoint 
         Spark.init();
 
@@ -63,6 +69,11 @@ public class Server {
     public void stop() {
         Spark.stop();
         Spark.awaitStop();
+    }
+
+    private void exceptionHandler(ResponseException ex, Request req, Response res) {
+        res.status(ex.StatusCode());
+        res.body(ex.toJson());
     }
 
 }

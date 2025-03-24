@@ -1,6 +1,7 @@
 package service;
 
 import dataaccess.*;
+import exception.ResponseException;
 import model.GameData;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,25 +24,45 @@ class UserServiceTest {
     private GameDAO dbgames;
 
     @BeforeEach
-    void setUp() throws SQLException, DataAccessException {
+    void setUp() throws SQLException, DataAccessException, ResponseException {
         dbusers = new SQLUserDAO();
         dbauthTokens = new SQLAuthDAO();
         dbgames = new SQLGameDAO();
 
         dbusers.clearAllUserData();
-        dbauthTokens.clearAllAuthData();
-        dbgames.clearAllGames();
+        try {
+            dbauthTokens.clearAllAuthData();
+        } catch (exception.ResponseException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            dbgames.clearAllGames();
+        } catch (exception.ResponseException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @AfterEach
     void tearDown() throws DataAccessException {
-        dbusers.clearAllUserData();
-        dbauthTokens.clearAllAuthData();
-        dbgames.clearAllGames();
+        try {
+            dbusers.clearAllUserData();
+        } catch (ResponseException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            dbauthTokens.clearAllAuthData();
+        } catch (exception.ResponseException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            dbgames.clearAllGames();
+        } catch (exception.ResponseException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Test
-    void validRegister() throws DataAccessException {
+    void validRegister() throws ResponseException, DataAccessException {
         UserService userService = new UserService(dbauthTokens, dbusers);
         RegisterRequest registerRequest = new RegisterRequest("user1", "1234", "user1@gmail.com");
         RegisterResult actualResult = userService.register(registerRequest);
@@ -52,7 +73,7 @@ class UserServiceTest {
 
 
     @Test
-    void invalidRegister() throws DataAccessException {
+    void invalidRegister() throws ResponseException, DataAccessException {
         UserService userService = new UserService(dbauthTokens, dbusers);
         RegisterRequest registerRequest = new RegisterRequest("user1", "1234", "user1@gmail.com");
         RegisterResult firstResult = userService.register(registerRequest);
@@ -62,7 +83,7 @@ class UserServiceTest {
     }
 
     @Test
-    void validLogin() throws DataAccessException {
+    void validLogin() throws ResponseException, DataAccessException {
         UserService userService = new UserService(dbauthTokens, dbusers);
         RegisterRequest registerRequest = new RegisterRequest("user1", "1234", "user1@gmail.com");
         RegisterResult registerResult = userService.register(registerRequest);
@@ -74,7 +95,7 @@ class UserServiceTest {
     }
 
     @Test
-    void invalidLogin() throws DataAccessException {
+    void invalidLogin() throws ResponseException, DataAccessException {
         UserService userService = new UserService(dbauthTokens, dbusers);
         RegisterRequest registerRequest = new RegisterRequest("user1", "1234", "user1@gmail.com");
         RegisterResult registerResult = userService.register(registerRequest);
@@ -85,7 +106,7 @@ class UserServiceTest {
     }
 
     @Test
-    void validLogout() throws DataAccessException {
+    void validLogout() throws ResponseException, DataAccessException {
         UserService userService = new UserService(dbauthTokens, dbusers);
         RegisterRequest registerRequest = new RegisterRequest("user1", "1234", "user1@gmail.com");
         RegisterResult registerResult = userService.register(registerRequest);
@@ -96,7 +117,7 @@ class UserServiceTest {
     }
 
     @Test
-    void invalidLogout() throws DataAccessException {
+    void invalidLogout() throws ResponseException, DataAccessException {
         UserService userService = new UserService(dbauthTokens, dbusers);
         RegisterRequest registerRequest = new RegisterRequest("user1", "1234", "user1@gmail.com");
         RegisterResult registerResult = userService.register(registerRequest);
@@ -107,30 +128,43 @@ class UserServiceTest {
     }
 
     @Test
-    void clearAllUsersAndTokens() throws DataAccessException {
+    void clearAllUsersAndTokens() throws ResponseException, DataAccessException {
         UserService userService = new UserService(dbauthTokens, dbusers);
         RegisterRequest registerRequest = new RegisterRequest("user1", "1234", "user1@gmail.com");
         RegisterResult registerResult = userService.register(registerRequest);
         userService.clearAllUsersAndTokens();
-        assertNull(dbauthTokens.getAuthToken(registerResult.authToken()));
-        assertNull(dbusers.getUser("user1"));
+        try {
+            assertNull(dbauthTokens.getAuthToken(registerResult.authToken()));
+        } catch (exception.ResponseException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            assertNull(dbusers.getUser("user1"));
+        } catch (ResponseException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Test
-    void validCreateGame() throws DataAccessException {
+    void validCreateGame() throws ResponseException, DataAccessException {
         UserService userService = new UserService(dbauthTokens, dbusers);
         GameService gameService = new GameService(dbauthTokens, dbgames);
         RegisterRequest registerRequest = new RegisterRequest("user1", "1234", "user1@gmail.com");
         RegisterResult registerResult = userService.register(registerRequest);
         CreateGameRequest createGameRequest = new CreateGameRequest(registerResult.authToken(), "chess");
         CreateGameResult createGameResult = gameService.createGame(createGameRequest);
-        GameData gameData = dbgames.getGame(createGameResult.gameID());
+        GameData gameData = null;
+        try {
+            gameData = dbgames.getGame(createGameResult.gameID());
+        } catch (exception.ResponseException e) {
+            throw new RuntimeException(e);
+        }
         CreateGameResult expectedResult = new CreateGameResult(gameData.gameID());
         assertEquals(expectedResult, createGameResult);
     }
 
     @Test
-    void invalidCreateGame() throws DataAccessException {
+    void invalidCreateGame() throws ResponseException, DataAccessException {
         UserService userService = new UserService(dbauthTokens, dbusers);
         GameService gameService = new GameService(dbauthTokens, dbgames);
         RegisterRequest registerRequest = new RegisterRequest("user1", "1234", "user1@gmail.com");
@@ -142,7 +176,7 @@ class UserServiceTest {
     }
 
     @Test
-    void validListGames() throws DataAccessException {
+    void validListGames() throws ResponseException, DataAccessException {
         UserService userService = new UserService(dbauthTokens, dbusers);
         GameService gameService = new GameService(dbauthTokens, dbgames);
         RegisterRequest registerRequest = new RegisterRequest("user2", "4567", "user2@gmail.com");
@@ -166,7 +200,7 @@ class UserServiceTest {
     }
 
     @Test
-    void invalidListGames() throws DataAccessException {
+    void invalidListGames() throws ResponseException, DataAccessException {
         UserService userService = new UserService(dbauthTokens, dbusers);
         GameService gameService = new GameService(dbauthTokens, dbgames);
         RegisterRequest registerRequest = new RegisterRequest("user1", "1234", "user1@gmail.com");
@@ -180,7 +214,7 @@ class UserServiceTest {
     }
 
     @Test
-    void clearAllGames() throws DataAccessException {
+    void clearAllGames() throws ResponseException, DataAccessException {
         UserService userService = new UserService(dbauthTokens, dbusers);
         GameService gameService = new GameService(dbauthTokens, dbgames);
         RegisterRequest registerRequest = new RegisterRequest("user1", "1234", "user1@gmail.com");
@@ -189,11 +223,15 @@ class UserServiceTest {
         CreateGameResult createGameResult = gameService.createGame(createGameRequest);
         gameService.clearAllGames();
         HashMap<Integer, GameData> expectedGames = new HashMap<>();
-        assertEquals(expectedGames, dbgames.getGames());
+        try {
+            assertEquals(expectedGames, dbgames.getGames());
+        } catch (exception.ResponseException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Test
-    void validJoinGame() throws DataAccessException {
+    void validJoinGame() throws ResponseException, DataAccessException {
         UserService userService = new UserService(dbauthTokens, dbusers);
         GameService gameService = new GameService(dbauthTokens, dbgames);
         RegisterRequest registerRequest = new RegisterRequest("user1", "1234", "user1@gmail.com");
@@ -209,7 +247,7 @@ class UserServiceTest {
     }
 
     @Test
-    void invalidJoinGame() throws DataAccessException {
+    void invalidJoinGame() throws ResponseException, DataAccessException {
         UserService userService = new UserService(dbauthTokens, dbusers);
         GameService gameService = new GameService(dbauthTokens, dbgames);
         RegisterRequest registerRequest = new RegisterRequest("user1", "1234", "user1@gmail.com");

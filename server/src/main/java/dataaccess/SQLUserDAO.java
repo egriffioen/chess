@@ -1,26 +1,26 @@
 package dataaccess;
 
+import exception.ResponseException;
 import model.UserData;
 
 import java.sql.SQLException;
-import java.sql.*;
 import java.util.HashMap;
 
 public class SQLUserDAO extends DatabaseConfigurations implements UserDAO  {
 
-    public SQLUserDAO() throws DataAccessException, SQLException {
+    public SQLUserDAO() throws DataAccessException, SQLException, ResponseException {
         configureDatabase(createStatements);
     }
 
 
     @Override
-    public void addUser(UserData user) throws DataAccessException {
+    public void addUser(UserData user) throws ResponseException, DataAccessException {
         var statement = "INSERT INTO user (username, password, email) VALUES (?,?,?)";
         executeUpdate(statement, user.username(), user.password(), user.email());
     }
 
     @Override
-    public UserData getUser(String username) throws DataAccessException {
+    public UserData getUser(String username) throws ResponseException {
         try (var conn = DatabaseManager.getConnection()) {
             var statement = "SELECT username, password, email FROM user WHERE username=?";
             try (var ps = conn.prepareStatement(statement)) {
@@ -36,13 +36,13 @@ public class SQLUserDAO extends DatabaseConfigurations implements UserDAO  {
                 }
             }
         } catch (Exception e) {
-            throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
+            throw new ResponseException(500, String.format("Unable to read data: %s", e.getMessage()));
         }
         return null;
     }
 
     @Override
-    public String getPassword(String username) throws DataAccessException {
+    public String getPassword(String username) throws ResponseException {
         try (var conn = DatabaseManager.getConnection()) {
             var statement = "SELECT password FROM user WHERE username=?";
             try (var ps = conn.prepareStatement(statement)) {
@@ -53,20 +53,20 @@ public class SQLUserDAO extends DatabaseConfigurations implements UserDAO  {
                     }
                 }
             }
-        } catch (SQLException e) {
-            throw new DataAccessException(String.format("Unable to retrieve password: %s", e.getMessage()));
+        } catch (SQLException | DataAccessException e) {
+            throw new ResponseException(500, String.format("Unable to retrieve password: %s", e.getMessage()));
         }
         return null;
     }
 
     @Override
-    public void clearAllUserData() throws DataAccessException {
+    public void clearAllUserData() throws ResponseException, DataAccessException {
         var statement = "TRUNCATE user";
         executeUpdate(statement);
     }
 
     @Override
-    public HashMap<String, UserData> getUsers() throws DataAccessException {
+    public HashMap<String, UserData> getUsers() throws ResponseException {
         HashMap<String, UserData> allUsers = new HashMap<>();
         try (var conn = DatabaseManager.getConnection()) {
             var statement = "SELECT username, password, email FROM user";
@@ -83,12 +83,12 @@ public class SQLUserDAO extends DatabaseConfigurations implements UserDAO  {
                 }
             }
         } catch (Exception e) {
-            throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
+            throw new ResponseException(500, String.format("Unable to read data: %s", e.getMessage()));
         }
         return allUsers;
     }
 
-    private void executeUpdate(String statement, Object... params) throws DataAccessException {
+    private void executeUpdate(String statement, Object... params) throws DataAccessException, ResponseException {
         try (var conn = DatabaseManager.getConnection()) {
             try (var ps = conn.prepareStatement(statement)) {
                 for (var i = 0; i < params.length; i++) {
@@ -106,7 +106,7 @@ public class SQLUserDAO extends DatabaseConfigurations implements UserDAO  {
                 ps.executeUpdate();
             }
         } catch (SQLException e) {
-            throw new DataAccessException(String.format("unable to update database: %s, %s", statement, e.getMessage()));
+            throw new ResponseException(500, String.format("unable to update database: %s, %s", statement, e.getMessage()));
         }
     }
 

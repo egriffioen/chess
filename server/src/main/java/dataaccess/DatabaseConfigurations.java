@@ -1,9 +1,11 @@
 package dataaccess;
 
+import exception.ResponseException;
+
 import java.sql.SQLException;
 
 abstract public class DatabaseConfigurations {
-    void configureDatabase(String[] createStatements) throws DataAccessException, SQLException {
+    void configureDatabase(String[] createStatements) throws ResponseException, SQLException, DataAccessException {
         DatabaseManager.createDatabase();
         try (var conn = DatabaseManager.getConnection()) {
             for (var statement : createStatements) {
@@ -12,7 +14,7 @@ abstract public class DatabaseConfigurations {
                 }
             }
         } catch (SQLException ex) {
-            throw new DataAccessException(String.format("Unable to configure database: %s", ex.getMessage()));
+            throw new ResponseException(500, "Unable to configure database");
         }
 
     }

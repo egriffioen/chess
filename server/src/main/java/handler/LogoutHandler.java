@@ -1,6 +1,7 @@
 package handler;
 
 import com.google.gson.Gson;
+import exception.ResponseException;
 import request.LogoutRequest;
 import result.LogoutResult;
 import service.UserService;
@@ -20,9 +21,10 @@ public class LogoutHandler implements Route {
         String authToken = req.headers("authorization");
         LogoutRequest logoutRequest = new LogoutRequest(authToken);
         if (logoutRequest.authToken()==null) {
-            LogoutResult logoutResult = new LogoutResult("Error: bad request");
-            res.status(500);
-            return new Gson().toJson(logoutResult);
+            throw new ResponseException(500, "Error: bad request");
+//            LogoutResult logoutResult = new LogoutResult("Error: bad request");
+//            res.status(500);
+//            return new Gson().toJson(logoutResult);
         }
         LogoutResult logoutResult = userService.logout(logoutRequest);
         if (logoutResult.message()!=null) {

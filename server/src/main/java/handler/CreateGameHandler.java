@@ -1,6 +1,7 @@
 package handler;
 
 import com.google.gson.Gson;
+import exception.ResponseException;
 import request.CreateGameRequest;
 import result.CreateGameResult;
 import service.GameService;
@@ -21,16 +22,18 @@ public class CreateGameHandler implements Route {
         CreateGameRequest createGameRequest = new Gson().fromJson(req.body(), CreateGameRequest.class);
         createGameRequest = new CreateGameRequest(authToken, createGameRequest.gameName());
         if (createGameRequest.authToken()==null || createGameRequest.gameName()==null) {
-            CreateGameResult createGameResult = new CreateGameResult("Error: bad request");
-            res.status(400);
-            return new Gson().toJson(createGameResult);
+//            CreateGameResult createGameResult = new CreateGameResult("Error: bad request");
+//            res.status(400);
+//            return new Gson().toJson(createGameResult);
+            throw new ResponseException(400, "Error: bad request");
         }
         CreateGameResult createGameResult = gameService.createGame(createGameRequest);
         if (createGameResult.message()!=null) {
-            res.status(401);
+            throw new ResponseException(401, "Error: unauthorized");
+            //res.status(401);
 //            String message = createGameResult.message();
 //            createGameResult = new CreateGameResult(message);
-            return new Gson().toJson(createGameResult);
+            //return new Gson().toJson(createGameResult);
         }
         else {
             res.status(200);

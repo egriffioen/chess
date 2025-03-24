@@ -1,6 +1,7 @@
 package handler;
 
 import com.google.gson.Gson;
+import exception.ResponseException;
 import request.JoinGameRequest;
 import result.JoinGameResult;
 import service.GameService;
@@ -22,14 +23,16 @@ public class JoinGameHandler implements Route {
         JoinGameRequest joinGameRequest = new Gson().fromJson(req.body(), JoinGameRequest.class);
         joinGameRequest = new JoinGameRequest(authToken, joinGameRequest.playerColor(), joinGameRequest.gameID());
         if (joinGameRequest.authToken()==null || joinGameRequest.gameID()==null) {
-            JoinGameResult joinGameResult = new JoinGameResult("Error: bad request");
-            res.status(400);
-            return new Gson().toJson(joinGameResult);
+            throw new ResponseException(400, "Error: bad request");
+//            JoinGameResult joinGameResult = new JoinGameResult("Error: bad request");
+//            res.status(400);
+//            return new Gson().toJson(joinGameResult);
         }
         if (!Objects.equals(joinGameRequest.playerColor(), "BLACK") && !Objects.equals(joinGameRequest.playerColor(), "WHITE")) {
-            JoinGameResult joinGameResult = new JoinGameResult("Error: bad request");
-            res.status(400);
-            return new Gson().toJson(joinGameResult);
+//            JoinGameResult joinGameResult = new JoinGameResult("Error: bad request");
+//            res.status(400);
+//            return new Gson().toJson(joinGameResult);
+            throw new ResponseException(400, "Error: bad request --> choose WHITE or BLACK");
         }
         JoinGameResult joinGameResult = gameService.joinGame(joinGameRequest);
         if (Objects.equals(joinGameResult.message(), "Error: unauthorized")) {

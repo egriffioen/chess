@@ -1,6 +1,7 @@
 package dataaccess;
 
 import chess.ChessGame;
+import exception.ResponseException;
 import model.GameData;
 
 import java.util.*;
@@ -10,7 +11,7 @@ public class MemoryGameDAO implements GameDAO{
     private static int idCounter = 0;
 
     @Override
-    public int createGame(String gameName) {
+    public int createGame(String gameName) throws ResponseException {
         int gameID = ++idCounter;
         ChessGame chessGame = new ChessGame();
         GameData gameData = new GameData(gameID, null, null, gameName, chessGame);
@@ -18,7 +19,7 @@ public class MemoryGameDAO implements GameDAO{
         return gameID;
     }
 
-    public List<Map<String, Object>> listGames() {
+    public List<Map<String, Object>> listGames() throws ResponseException {
         List<Map<String, Object>> gamesList = new ArrayList<>();
 
         for (GameData gameData : games.values()) {
@@ -34,12 +35,12 @@ public class MemoryGameDAO implements GameDAO{
         return gamesList;
     }
 
-    public void clearAllGames() {
+    public void clearAllGames() throws ResponseException {
         games.clear();
     }
 
     @Override
-    public boolean joinGame(String playerColor, Integer gameID, String username) {
+    public boolean joinGame(String playerColor, Integer gameID, String username) throws ResponseException {
         GameData gameData = games.get(gameID);
         if (Objects.equals(playerColor, "WHITE")) {
             String whiteUsername = gameData.whiteUsername();
@@ -67,11 +68,11 @@ public class MemoryGameDAO implements GameDAO{
         }
     }
 
-    public HashMap<Integer, GameData> getGames() {
+    public HashMap<Integer, GameData> getGames() throws ResponseException {
         return games;
     }
 
-    public GameData getGame(Integer gameID) {
+    public GameData getGame(Integer gameID) throws ResponseException {
         return games.get(gameID);
     }
 }

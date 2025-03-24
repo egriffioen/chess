@@ -1,31 +1,31 @@
 package dataaccess;
 
+import exception.ResponseException;
 import model.AuthData;
-import model.UserData;
 
 import java.sql.SQLException;
 import java.util.HashMap;
 
 public class SQLAuthDAO extends DatabaseConfigurations implements AuthDAO{
 
-    public SQLAuthDAO() throws DataAccessException, SQLException {
+    public SQLAuthDAO() throws ResponseException, SQLException, DataAccessException {
         configureDatabase(createStatements);
     }
 
     @Override
-    public void addAuthToken(AuthData authData) throws DataAccessException {
+    public void addAuthToken(AuthData authData) throws ResponseException {
         var statement = "INSERT INTO auth (authToken, username) VALUES (?,?)";
         executeUpdate(statement, authData.authToken(), authData.username());
     }
 
     @Override
-    public void removeAuthToken(AuthData authData) throws DataAccessException {
+    public void removeAuthToken(AuthData authData) throws ResponseException {
         var statement = "DELETE FROM auth WHERE authToken=?";
         executeUpdate(statement, authData.authToken());
     }
 
     @Override
-    public AuthData getAuthToken(String authToken) throws DataAccessException {
+    public AuthData getAuthToken(String authToken) throws ResponseException {
         try (var conn = DatabaseManager.getConnection()) {
             var statement = "SELECT authToken, username FROM auth WHERE authToken=?";
             try (var ps = conn.prepareStatement(statement)) {
@@ -40,19 +40,19 @@ public class SQLAuthDAO extends DatabaseConfigurations implements AuthDAO{
                 }
             }
         } catch (Exception e) {
-            throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
+            throw new ResponseException(500, String.format("Unable to read data: %s", e.getMessage()));
         }
         return null;
     }
 
     @Override
-    public void clearAllAuthData() throws DataAccessException {
+    public void clearAllAuthData() throws ResponseException {
         var statement = "TRUNCATE auth";
         executeUpdate(statement);
     }
 
     @Override
-    public HashMap<String, AuthData> getAuthTokens() throws DataAccessException {
+    public HashMap<String, AuthData> getAuthTokens() throws ResponseException {
         HashMap<String, AuthData> allAuthTokens = new HashMap<>();
         try (var conn = DatabaseManager.getConnection()) {
             var statement = "SELECT authToken, username FROM auth";
@@ -68,12 +68,12 @@ public class SQLAuthDAO extends DatabaseConfigurations implements AuthDAO{
                 }
             }
         } catch (Exception e) {
-            throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
+            throw new ResponseException(500, String.format("Unable to read data: %s", e.getMessage()));
         }
         return allAuthTokens;
     }
 
-    private void executeUpdate(String statement, Object... params) throws DataAccessException {
+    private void executeUpdate(String statement, Object... params) throws ResponseException {
         try (var conn = DatabaseManager.getConnection()) {
             try (var ps = conn.prepareStatement(statement)) {
                 for (var i = 0; i < params.length; i++) {
@@ -90,8 +90,8 @@ public class SQLAuthDAO extends DatabaseConfigurations implements AuthDAO{
                 }
                 ps.executeUpdate();
             }
-        } catch (SQLException e) {
-            throw new DataAccessException(String.format("unable to update database: %s, %s", statement, e.getMessage()));
+        } catch (SQLException | DataAccessException e) {
+            throw new ResponseException(500, String.format("Unable to read data: %s", e.getMessage()));
         }
     }
 

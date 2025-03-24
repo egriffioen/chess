@@ -1,6 +1,7 @@
 package handler;
 
 import com.google.gson.Gson;
+import exception.ResponseException;
 import request.LoginRequest;
 import result.LoginResult;
 import service.UserService;
@@ -19,9 +20,10 @@ public class LoginHandler implements Route {
     public Object handle(Request req, Response res) throws Exception {
         LoginRequest loginRequest = new Gson().fromJson(req.body(), LoginRequest.class);
         if (loginRequest.username()==null || loginRequest.password()==null) {
-            LoginResult loginResult = new LoginResult("Error: bad request");
-            res.status(500);
-            return new Gson().toJson(loginResult);
+//            LoginResult loginResult = new LoginResult("Error: bad request");
+//            res.status(500);
+//            return new Gson().toJson(loginResult);
+            throw new ResponseException(500, "Error: bad request");
         }
         LoginResult loginResult = userService.login(loginRequest);
         if (loginResult.message()!=null) {

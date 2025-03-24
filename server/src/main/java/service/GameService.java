@@ -3,6 +3,7 @@ package service;
 import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
+import exception.ResponseException;
 import request.CreateGameRequest;
 import request.JoinGameRequest;
 import request.ListGamesRequest;
@@ -23,37 +24,46 @@ public class GameService {
     }
 
 
-    public CreateGameResult createGame(CreateGameRequest createGameRequest) throws DataAccessException {
+    public CreateGameResult createGame(CreateGameRequest createGameRequest) throws ResponseException, DataAccessException {
         String authToken = createGameRequest.authToken();
-        if (authTokens.getAuthToken(authToken)==null) {
-            return new CreateGameResult("Error: unauthorized");
+        if (authTokens.getAuthToken(authToken) == null) {
+            throw new ResponseException(401, "Error: unauthorized");
+            //return new CreateGameResult("Error: unauthorized");
         }
-        int gameID = games.createGame(createGameRequest.gameName());
+        int gameID = 0;
+        gameID = games.createGame(createGameRequest.gameName());
         return new CreateGameResult(gameID);
     }
 
-    public ListGamesResult listGames(ListGamesRequest listGamesRequest) throws DataAccessException {
+    public ListGamesResult listGames(ListGamesRequest listGamesRequest) throws ResponseException, DataAccessException {
         String authToken = listGamesRequest.authToken();
-        if (authTokens.getAuthToken(authToken)==null) {
-            return new ListGamesResult("Error: unauthorized");
+        if (authTokens.getAuthToken(authToken) == null) {
+            throw new ResponseException(401, "Error: unauthorized");
+            //return new ListGamesResult("Error: unauthorized");
         }
-        List<Map<String, Object>> allGames = games.listGames();
+        List<Map<String, Object>> allGames = null;
+        allGames = games.listGames();
         return new ListGamesResult(allGames);
     }
 
-    public void clearAllGames() throws DataAccessException {
+    public void clearAllGames() throws ResponseException, DataAccessException {
         games.clearAllGames();
     }
 
-    public JoinGameResult joinGame(JoinGameRequest joinGameRequest) throws DataAccessException {
+    public JoinGameResult joinGame(JoinGameRequest joinGameRequest) throws ResponseException, DataAccessException {
         String authToken = joinGameRequest.authToken();
-        if (authTokens.getAuthToken(authToken)==null) {
-            return new JoinGameResult("Error: unauthorized");
+        if (authTokens.getAuthToken(authToken) == null) {
+            throw new ResponseException(401, "Error: unauthorized");
+            //return new JoinGameResult("Error: unauthorized");
         }
-        String username = authTokens.getAuthToken(authToken).username();
-        boolean joinedGame = games.joinGame(joinGameRequest.playerColor(), joinGameRequest.gameID(), username);
+        String username = null;
+        username = authTokens.getAuthToken(authToken).username();
+
+        boolean joinedGame = false;
+        joinedGame = games.joinGame(joinGameRequest.playerColor(), joinGameRequest.gameID(), username);
         if (!joinedGame) {
-            return new JoinGameResult("Error: already taken");
+            throw new ResponseException(401, "Error: already taken");
+            //return new JoinGameResult("Error: already taken");
         }
         else {
             return new JoinGameResult();

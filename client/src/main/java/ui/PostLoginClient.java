@@ -3,6 +3,7 @@ package ui;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.List;
+import java.util.Objects;
 
 import exception.ResponseException;
 
@@ -31,7 +32,7 @@ public class PostLoginClient {
                 case "logout" -> logout(params);
                 case "create" -> create(params);
                 case "list" -> list(params);
-//                case "join" -> join(params);
+                case "join" -> join(params);
 //                case "observe" -> observe(params);
                 case "quit" -> "quit";
                 default -> help();
@@ -52,16 +53,67 @@ public class PostLoginClient {
     }
 
 
-
     public String create(String... params) throws ResponseException {
         if (params.length == 1) {
             var gameName = params[0];
             CreateGameRequest createGameRequest = new CreateGameRequest(authToken, gameName);
             CreateGameResult createGameResult = server.createGame(createGameRequest);
-            state = State.INGAME;
+            state = State.SIGNEDIN;
             return String.format("You created a new game: %s.", gameName);
         }
         throw new ResponseException(400, "Expected: <NAME>");
+    }
+
+    public String join(String... params) throws ResponseException {
+        try {
+
+            if (params.length == 2) {
+                int gameID = Integer.parseInt(params[0]);
+                var playerColor = params[1];
+
+                ListGamesRequest listGamesRequest = new ListGamesRequest(authToken);
+                ListGamesResult listGamesResult = server.listGames(listGamesRequest);
+                List<Map<String, Object>> games = listGamesResult.games();
+
+                if (games == null || games.isEmpty()) {
+                    throw new ResponseException(400, "No available games to join.");
+                }
+
+                boolean gameExists = false;
+                for (Map<String, Object> game : games) {
+                    Integer gameIDFromList = (Integer) game.get("gameID");
+                    if (gameIDFromList != null && gameIDFromList == gameID) {
+                        gameExists = true;
+                        break;
+                    }
+                }
+                if (!gameExists) {
+                    throw new ResponseException(400, "Invalid game ID. Please choose a valid game.");
+                }
+
+                if (Objects.equals(playerColor.toUpperCase(), "WHITE")) {
+                    JoinGameRequest joinGameRequest = new JoinGameRequest(authToken, "WHITE", gameID);
+                    JoinGameResult joinGameResult = server.joinGame(joinGameRequest);
+                    state = State.INGAME;
+                    return String.format("You joined game #%d.", gameID);
+
+                }
+                else if (Objects.equals(playerColor.toUpperCase(), "BLACK")) {
+                    JoinGameRequest joinGameRequest = new JoinGameRequest(authToken, "BLACK", gameID);
+                    JoinGameResult joinGameResult = server.joinGame(joinGameRequest);
+                    state = State.INGAME;
+                    return String.format("You joined game #%d.", gameID);
+
+                }
+                else {
+                    throw new ResponseException(400, "Expected: <ID> [WHITE|BLACK");
+                }
+
+            }
+        } catch (NumberFormatException e) {
+            throw new ResponseException(400, "Game ID must be a number.");
+        }
+        throw new ResponseException(400, "Expected: <ID> [WHITE|BLACK");
     }
 
     public String list(String... params) throws ResponseException {

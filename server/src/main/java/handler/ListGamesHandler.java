@@ -1,6 +1,7 @@
 package handler;
 
 import com.google.gson.Gson;
+import exception.ResponseException;
 import request.ListGamesRequest;
 import result.ListGamesResult;
 import service.GameService;
@@ -21,9 +22,10 @@ public class ListGamesHandler implements Route {
         String authToken = req.headers("authorization");
         ListGamesRequest listGamesRequest = new ListGamesRequest(authToken);
         if (listGamesRequest.authToken()==null) {
-            ListGamesResult listGamesResult = new ListGamesResult("Error: bad request");
-            res.status(400);
-            return new Gson().toJson(listGamesResult);
+//            ListGamesResult listGamesResult = new ListGamesResult("Error: bad request");
+//            res.status(400);
+//            return new Gson().toJson(listGamesResult);
+            throw new ResponseException(400, "Error: bad request");
         }
         ListGamesResult listGamesResult = gameService.listGames(listGamesRequest);
         if (listGamesResult.message()!=null) {

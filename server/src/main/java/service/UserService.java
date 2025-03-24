@@ -1,6 +1,7 @@
 package service;
 
 import dataaccess.*;
+import exception.ResponseException;
 import model.AuthData;
 import model.UserData;
 import request.LoginRequest;
@@ -11,7 +12,6 @@ import result.LogoutResult;
 import result.RegisterResult;
 import org.mindrot.jbcrypt.BCrypt;
 
-import java.util.Objects;
 import java.util.UUID;
 
 public class UserService {
@@ -23,10 +23,11 @@ public class UserService {
         this.authTokens = authTokens;
     }
 
-    public RegisterResult register(RegisterRequest registerRequest) throws DataAccessException {
+    public RegisterResult register(RegisterRequest registerRequest) throws DataAccessException, ResponseException {
         String username = registerRequest.username();
         String hashedPassword = BCrypt.hashpw(registerRequest.password(), BCrypt.gensalt());
-        UserData user = users.getUser(username);
+        UserData user = null;
+        user = users.getUser(username);
         if (user == null) {
             UserData newUser = new UserData(registerRequest.username(), hashedPassword, registerRequest.email());
             users.addUser(newUser);
@@ -36,14 +37,17 @@ public class UserService {
             return new RegisterResult(username, authToken);
         }
         else {
-            return new RegisterResult("Error: already taken");
+            throw new ResponseException(403, "Error: already taken");
+            //return new RegisterResult("Error: already taken");
         }
     }
 
-    public LoginResult login(LoginRequest loginRequest) throws DataAccessException {
-        UserData user = users.getUser(loginRequest.username());
+    public LoginResult login(LoginRequest loginRequest) throws ResponseException, DataAccessException {
+        UserData user = null;
+            user = users.getUser(loginRequest.username());
         if (user == null) {
-            return new LoginResult("Error: unauthorized");
+            throw new ResponseException(401, "Error: unauthorized");
+            //return new LoginResult("Error: unauthorized");
         }
 
         else if (BCrypt.checkpw(loginRequest.password(), user.password())) {
@@ -53,14 +57,17 @@ public class UserService {
             return new LoginResult(loginRequest.username(), authToken);
         }
         else {
-            return new LoginResult("Error: unauthorized");
+            throw new ResponseException(401, "Error: unauthorized");
+            //return new LoginResult("Error: unauthorized");
         }
     }
 
-    public LogoutResult logout(LogoutRequest logoutRequest) throws DataAccessException {
-        AuthData authData = authTokens.getAuthToken(logoutRequest.authToken());
+    public LogoutResult logout(LogoutRequest logoutRequest) throws ResponseException, DataAccessException {
+        AuthData authData = null;
+        authData = authTokens.getAuthToken(logoutRequest.authToken());
         if (authData == null) {
-            return new LogoutResult("Error: unauthorized");
+            throw new ResponseException(401, "Error: unauthorized");
+            //return new LogoutResult("Error: unauthorized");
         }
         else {
             authTokens.removeAuthToken(authData);
@@ -68,8 +75,8 @@ public class UserService {
         }
     }
 
-    public void clearAllUsersAndTokens() throws DataAccessException {
-        users.clearAllUserData();
-        authTokens.clearAllAuthData();
+    public void clearAllUsersAndTokens() throws ResponseException, DataAccessException {
+            users.clearAllUserData();
+            authTokens.clearAllAuthData();
     }
 }
