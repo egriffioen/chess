@@ -34,7 +34,7 @@ public class PostLoginClient {
                 case "list" -> list(params);
                 case "join" -> join(params);
                 case "observe" -> observe(params);
-                case "quit" -> "quit";
+                case "quit" -> "quit --> returning to Login Screen";
                 default -> help();
             };
         } catch (ResponseException ex) {

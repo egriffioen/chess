@@ -15,8 +15,6 @@ public class Repl {
 
     public Repl(String serverUrl) {
         preLoginClient = new PreLoginClient(serverUrl);
-        //postLoginClient = new PostLoginClient(serverUrl);
-        //inGameClient = new InGameClient(serverUrl);
         state = State.SIGNEDOUT;
         this.serverUrl = serverUrl;
     }
@@ -60,11 +58,17 @@ public class Repl {
                     if (result.contains("You logged out")) {
                         state = State.SIGNEDOUT;
                     }
+                    if (result.contains("quit")) {
+                        state = State.SIGNEDOUT;
+                    }
                 }
                 else if (state==State.INGAME) {
                     result = inGameClient.eval(line);
                     System.out.print(SET_TEXT_COLOR_BLUE + result);
-                    inGameClient.printChessBoard(colorPerspective);
+                    if (result.contains("quit")) {
+                        state = State.SIGNEDIN;
+                        postLoginClient = new PostLoginClient(serverUrl, preLoginClient.getAuthToken());
+                    }
                 }
             } catch (Throwable e) {
                 var msg = e.toString();
