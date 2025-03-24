@@ -23,9 +23,6 @@ public class RegisterHandler implements Route {
     public Object handle(Request req, Response res) throws ResponseException, DataAccessException {
         RegisterRequest registerRequest = new Gson().fromJson(req.body(), RegisterRequest.class);
         if (registerRequest.username()==null || registerRequest.password()==null || registerRequest.email() == null) {
-//            RegisterResult registerResult = new RegisterResult("Error: bad request");
-//            res.status(400);
-//            return new Gson().toJson(registerResult);
             throw new ResponseException(400, "Error: bad request");
         }
         RegisterResult registerResult = userService.register(registerRequest);

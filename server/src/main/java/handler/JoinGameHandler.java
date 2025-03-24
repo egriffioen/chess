@@ -24,14 +24,8 @@ public class JoinGameHandler implements Route {
         joinGameRequest = new JoinGameRequest(authToken, joinGameRequest.playerColor(), joinGameRequest.gameID());
         if (joinGameRequest.authToken()==null || joinGameRequest.gameID()==null) {
             throw new ResponseException(400, "Error: bad request");
-//            JoinGameResult joinGameResult = new JoinGameResult("Error: bad request");
-//            res.status(400);
-//            return new Gson().toJson(joinGameResult);
         }
         if (!Objects.equals(joinGameRequest.playerColor(), "BLACK") && !Objects.equals(joinGameRequest.playerColor(), "WHITE")) {
-//            JoinGameResult joinGameResult = new JoinGameResult("Error: bad request");
-//            res.status(400);
-//            return new Gson().toJson(joinGameResult);
             throw new ResponseException(400, "Error: bad request --> choose WHITE or BLACK");
         }
         JoinGameResult joinGameResult = gameService.joinGame(joinGameRequest);

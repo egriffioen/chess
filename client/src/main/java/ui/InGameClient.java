@@ -78,27 +78,27 @@ public class InGameClient {
         // Empty squares
         for (int row = 2; row < 6; row++) {
             for (int col = 0; col < 8; col++) {
-                if(col % 2 == 0) {
-                    if(row % 2 ==0) {
-                        String invisiblePawn = EscapeSequences.SET_TEXT_COLOR_LIGHT_GREY + EscapeSequences.WHITE_PAWN + EscapeSequences.RESET_TEXT_COLOR + EscapeSequences.RESET_BG_COLOR;
+                if (col % 2 == 0) {
+                    if (row % 2 == 0) {
+                        String invisiblePawn = EscapeSequences.SET_TEXT_COLOR_LIGHT_GREY + EscapeSequences.WHITE_PAWN +
+                                EscapeSequences.RESET_TEXT_COLOR + EscapeSequences.RESET_BG_COLOR;
+                        board[row][col] = invisiblePawn; // Assign to board
+                    } else {
+                        String invisiblePawn = EscapeSequences.SET_TEXT_COLOR_DARK_GREY + EscapeSequences.WHITE_PAWN +
+                                EscapeSequences.RESET_TEXT_COLOR + EscapeSequences.RESET_BG_COLOR;
                         board[row][col] = invisiblePawn; // Assign to board
                     }
-                    else {
-                        String invisiblePawn = EscapeSequences.SET_TEXT_COLOR_DARK_GREY + EscapeSequences.WHITE_PAWN + EscapeSequences.RESET_TEXT_COLOR + EscapeSequences.RESET_BG_COLOR;
+                } else {
+                    if (row % 2 == 0) {
+                        String invisiblePawn = EscapeSequences.SET_TEXT_COLOR_DARK_GREY + EscapeSequences.WHITE_PAWN +
+                                EscapeSequences.RESET_TEXT_COLOR + EscapeSequences.RESET_BG_COLOR;
+                        board[row][col] = invisiblePawn; // Assign to board
+                    } else {
+                        String invisiblePawn = EscapeSequences.SET_TEXT_COLOR_LIGHT_GREY + EscapeSequences.WHITE_PAWN +
+                                EscapeSequences.RESET_TEXT_COLOR + EscapeSequences.RESET_BG_COLOR;
                         board[row][col] = invisiblePawn; // Assign to board
                     }
                 }
-                else {
-                    if(row % 2 ==0) {
-                        String invisiblePawn = EscapeSequences.SET_TEXT_COLOR_DARK_GREY + EscapeSequences.WHITE_PAWN + EscapeSequences.RESET_TEXT_COLOR + EscapeSequences.RESET_BG_COLOR;
-                        board[row][col] = invisiblePawn; // Assign to board
-                    }
-                    else {
-                        String invisiblePawn = EscapeSequences.SET_TEXT_COLOR_LIGHT_GREY + EscapeSequences.WHITE_PAWN + EscapeSequences.RESET_TEXT_COLOR + EscapeSequences.RESET_BG_COLOR;
-                        board[row][col] = invisiblePawn; // Assign to board
-                    }
-                }
-
             }
         }
 
@@ -119,7 +119,9 @@ public class InGameClient {
                 String square = board[row][col];
 
                 // Set the background color based on the row and column
-                String squareColor = (row + col) % 2 == 0 ? EscapeSequences.SET_BG_COLOR_LIGHT_GREY : EscapeSequences.SET_BG_COLOR_DARK_GREY;
+                String squareColor = (row + col) % 2 == 0
+                        ? EscapeSequences.SET_BG_COLOR_LIGHT_GREY
+                        : EscapeSequences.SET_BG_COLOR_DARK_GREY;
                 String pieceColor;
                 if (row <= 1) { // White pieces
                     pieceColor = EscapeSequences.SET_TEXT_COLOR_WHITE;
@@ -129,7 +131,8 @@ public class InGameClient {
                     pieceColor = ""; // Empty squares don't need special text color
                 }
                 // Print the square with the background color and the piece
-                System.out.print(squareColor + pieceColor + square + EscapeSequences.RESET_TEXT_COLOR + EscapeSequences.RESET_BG_COLOR);
+                System.out.print(squareColor + pieceColor + square + EscapeSequences.RESET_TEXT_COLOR +
+                        EscapeSequences.RESET_BG_COLOR);
             }
             System.out.print(" " + (row + 1) + " ");
             System.out.println();
@@ -177,27 +180,27 @@ public class InGameClient {
         // Empty squares
         for (int row = 2; row < 6; row++) {
             for (int col = 0; col < 8; col++) {
-                if(col % 2 == 0) {
-                    if(row % 2 ==0) {
-                        String invisiblePawn = EscapeSequences.SET_TEXT_COLOR_LIGHT_GREY + EscapeSequences.WHITE_PAWN + EscapeSequences.RESET_TEXT_COLOR + EscapeSequences.RESET_BG_COLOR;
+                if (col % 2 == 0) {
+                    if (row % 2 == 0) {
+                        String invisiblePawn = EscapeSequences.SET_TEXT_COLOR_LIGHT_GREY + EscapeSequences.WHITE_PAWN +
+                                EscapeSequences.RESET_TEXT_COLOR + EscapeSequences.RESET_BG_COLOR;
+                        board[row][col] = invisiblePawn; // Assign to board
+                    } else {
+                        String invisiblePawn = EscapeSequences.SET_TEXT_COLOR_DARK_GREY + EscapeSequences.WHITE_PAWN +
+                                EscapeSequences.RESET_TEXT_COLOR + EscapeSequences.RESET_BG_COLOR;
                         board[row][col] = invisiblePawn; // Assign to board
                     }
-                    else {
-                        String invisiblePawn = EscapeSequences.SET_TEXT_COLOR_DARK_GREY + EscapeSequences.WHITE_PAWN + EscapeSequences.RESET_TEXT_COLOR + EscapeSequences.RESET_BG_COLOR;
+                } else {
+                    if (row % 2 == 0) {
+                        String invisiblePawn = EscapeSequences.SET_TEXT_COLOR_DARK_GREY + EscapeSequences.WHITE_PAWN +
+                                EscapeSequences.RESET_TEXT_COLOR + EscapeSequences.RESET_BG_COLOR;
+                        board[row][col] = invisiblePawn; // Assign to board
+                    } else {
+                        String invisiblePawn = EscapeSequences.SET_TEXT_COLOR_LIGHT_GREY + EscapeSequences.WHITE_PAWN +
+                                EscapeSequences.RESET_TEXT_COLOR + EscapeSequences.RESET_BG_COLOR;
                         board[row][col] = invisiblePawn; // Assign to board
                     }
                 }
-                else {
-                    if(row % 2 ==0) {
-                        String invisiblePawn = EscapeSequences.SET_TEXT_COLOR_DARK_GREY + EscapeSequences.WHITE_PAWN + EscapeSequences.RESET_TEXT_COLOR + EscapeSequences.RESET_BG_COLOR;
-                        board[row][col] = invisiblePawn; // Assign to board
-                    }
-                    else {
-                        String invisiblePawn = EscapeSequences.SET_TEXT_COLOR_LIGHT_GREY + EscapeSequences.WHITE_PAWN + EscapeSequences.RESET_TEXT_COLOR + EscapeSequences.RESET_BG_COLOR;
-                        board[row][col] = invisiblePawn; // Assign to board
-                    }
-                }
-
             }
         }
 
@@ -217,7 +220,9 @@ public class InGameClient {
                 String square = board[row][col];
 
                 // Set the background color based on the row and column
-                String squareColor = (row + col) % 2 == 0 ? EscapeSequences.SET_BG_COLOR_LIGHT_GREY : EscapeSequences.SET_BG_COLOR_DARK_GREY;
+                String squareColor = (row + col) % 2 == 0
+                        ? EscapeSequences.SET_BG_COLOR_LIGHT_GREY
+                        : EscapeSequences.SET_BG_COLOR_DARK_GREY;
                 String pieceColor;
                 if (row <= 1) { // White pieces
                     pieceColor = EscapeSequences.SET_TEXT_COLOR_BLACK;
@@ -227,7 +232,8 @@ public class InGameClient {
                     pieceColor = ""; // Empty squares don't need special text color
                 }
                 // Print the square with the background color and the piece
-                System.out.print(squareColor + pieceColor + square + EscapeSequences.RESET_TEXT_COLOR + EscapeSequences.RESET_BG_COLOR);
+                System.out.print(squareColor + pieceColor + square + EscapeSequences.RESET_TEXT_COLOR +
+                        EscapeSequences.RESET_BG_COLOR);
             }
             System.out.print(" " + (8-row) + " ");
             System.out.println();
