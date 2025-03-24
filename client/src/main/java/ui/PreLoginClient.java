@@ -51,15 +51,15 @@ public class PreLoginClient {
 
     public String register(String... params) throws ResponseException {
         if (params.length == 3) {
-            state = State.SIGNEDIN;
             username = params[0];
             password = params[1];
             email = params[2];
             RegisterRequest registerRequest = new RegisterRequest(username, password, email);
             RegisterResult registerResult = server.register(registerRequest);
+            state = State.SIGNEDIN;
             return String.format("You signed in as %s.", registerResult.username());
         }
-        throw new ResponseException(400, "Expected: <USERNAME> <PASSWORD>");
+        throw new ResponseException(400, "Expected: <USERNAME> <PASSWORD> <EMAIL>");
     }
 
 
