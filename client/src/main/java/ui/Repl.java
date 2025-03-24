@@ -6,15 +6,18 @@ import static ui.EscapeSequences.*;
 
 public class Repl {
     private final PreLoginClient preLoginClient;
-    private final PostLoginClient postLoginClient;
-    private final InGameClient inGameClient;
+    private PostLoginClient postLoginClient;
+    //private final InGameClient inGameClient;
     private State state;
+    private String authToken = null;
+    private String serverUrl;
 
     public Repl(String serverUrl) {
         preLoginClient = new PreLoginClient(serverUrl);
-        postLoginClient = new PostLoginClient(serverUrl);
-        inGameClient = new InGameClient(serverUrl);
+        //postLoginClient = new PostLoginClient(serverUrl);
+        //inGameClient = new InGameClient(serverUrl);
         state = State.SIGNEDOUT;
+        this.serverUrl = serverUrl;
     }
 
     public void run() {
@@ -33,13 +36,14 @@ public class Repl {
                     System.out.print(SET_TEXT_COLOR_BLUE + result);
                     if (result.contains("You signed in as")) {
                         state = State.SIGNEDIN;
+                        postLoginClient = new PostLoginClient(serverUrl, preLoginClient.getAuthToken());
                     }
                 }
                 else if (state == State.SIGNEDIN) {
                     result = postLoginClient.eval(line);
                     System.out.print(SET_TEXT_COLOR_BLUE + result);
                     if (result.contains("You joined")) {
-                        state = State.INGAME;
+                        //state = State.INGAME;
                     }
                     if (result.contains("You logged out")) {
                         state = State.SIGNEDOUT;

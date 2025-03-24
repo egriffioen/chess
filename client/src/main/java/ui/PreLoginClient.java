@@ -15,6 +15,7 @@ public class PreLoginClient {
     private final ServerFacade server;
     private final String serverUrl;
     private State state = State.SIGNEDOUT;
+    private String authToken = null;
 
     public PreLoginClient(String serverUrl) {
         server = new ServerFacade(serverUrl);
@@ -44,6 +45,7 @@ public class PreLoginClient {
             LoginRequest loginRequest = new LoginRequest(username, password);
             LoginResult loginResult = server.login(loginRequest);
             state = State.SIGNEDIN;
+            authToken = loginResult.authToken();
             return String.format("You signed in as %s.", loginResult.username());
         }
         throw new ResponseException(400, "Expected: <USERNAME> <PASSWORD>");
@@ -57,6 +59,7 @@ public class PreLoginClient {
             RegisterRequest registerRequest = new RegisterRequest(username, password, email);
             RegisterResult registerResult = server.register(registerRequest);
             state = State.SIGNEDIN;
+            authToken = registerResult.authToken();
             return String.format("You signed in as %s.", registerResult.username());
         }
         throw new ResponseException(400, "Expected: <USERNAME> <PASSWORD> <EMAIL>");
@@ -73,9 +76,15 @@ public class PreLoginClient {
     }
 
 
+    public String getAuthToken() {
+        return authToken;
+    }
+
     private void assertSignedIn() throws ResponseException {
         if (state == State.SIGNEDOUT) {
             throw new ResponseException(400, "You must sign in");
         }
     }
+
+
 }
