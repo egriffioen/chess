@@ -7,7 +7,7 @@ import static ui.EscapeSequences.*;
 public class Repl {
     private final PreLoginClient preLoginClient;
     private PostLoginClient postLoginClient;
-    //private final InGameClient inGameClient;
+    private InGameClient inGameClient;
     private State state;
     private String authToken = null;
     private String serverUrl;
@@ -43,11 +43,17 @@ public class Repl {
                     result = postLoginClient.eval(line);
                     System.out.print(SET_TEXT_COLOR_BLUE + result);
                     if (result.contains("You joined") || result.contains("You are observing")) {
-                        //state = State.INGAME;
+                        state = State.INGAME;
+                        inGameClient = new InGameClient(serverUrl);
+                        System.out.println();
+                        inGameClient.printChessBoard();
                     }
                     if (result.contains("You logged out")) {
                         state = State.SIGNEDOUT;
                     }
+                }
+                else if (state==State.INGAME) {
+                    inGameClient.printChessBoard();
                 }
             } catch (Throwable e) {
                 var msg = e.toString();
@@ -57,10 +63,6 @@ public class Repl {
         System.out.println();
     }
 
-//    public void notify(Notification notification) {
-//        System.out.println(SET_TEXT_COLOR_RED + notification.message());
-//        printPrompt();
-//    }
 
     private void printPrompt() {
         System.out.print("\n[" + state + "]" + ">>> " + SET_TEXT_COLOR_GREEN);

@@ -62,7 +62,7 @@ public class GameService {
         boolean joinedGame = false;
         joinedGame = games.joinGame(joinGameRequest.playerColor(), joinGameRequest.gameID(), username);
         if (!joinedGame) {
-            throw new ResponseException(401, "Error: already taken");
+            throw new ResponseException(403, "Error: already taken");
             //return new JoinGameResult("Error: already taken");
         }
         else {

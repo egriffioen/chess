@@ -78,7 +78,7 @@ class AuthDAOTest {
         String username = "User1";
         String authToken = null;
         AuthData authData = new AuthData(authToken, username);
-        assertThrows(DataAccessException.class, () ->  authTokens.addAuthToken(authData));
+        assertThrows(ResponseException.class, () ->  authTokens.addAuthToken(authData));
     }
 
     @Test
@@ -108,7 +108,7 @@ class AuthDAOTest {
         String username = "User1";
         String authToken = null;
         AuthData authData = new AuthData(authToken, username);
-        assertThrows(DataAccessException.class, () -> authTokens.removeAuthToken(authData));
+        assertThrows(ResponseException.class, () -> authTokens.removeAuthToken(authData));
     }
 
     @Test
@@ -226,7 +226,7 @@ class AuthDAOTest {
     @Test
     void invalidAddUser() throws DataAccessException {
         UserData user = new UserData("User1", null, "User1@gmail.com");
-        assertThrows(DataAccessException.class, () -> users.addUser(user));
+        assertThrows(ResponseException.class, () -> users.addUser(user));
     }
 
     @Test
@@ -358,7 +358,7 @@ class AuthDAOTest {
 
     @Test
     void invalidCreateGame() throws DataAccessException {
-        assertThrows(DataAccessException.class, () -> games.createGame(null));
+        assertThrows(ResponseException.class, () -> games.createGame(null));
     }
 
     @Test
@@ -498,7 +498,7 @@ class AuthDAOTest {
         } catch (ResponseException e) {
             throw new RuntimeException(e);
         }
-        assertThrows(DataAccessException.class, () -> games.joinGame("WHITE", null, "User1"));
+        assertThrows(ResponseException.class, () -> games.joinGame("WHITE", null, "User1"));
     }
 
     @Test
@@ -578,12 +578,12 @@ class AuthDAOTest {
     }
 
     @Test
-    void invalidGetGame() throws DataAccessException {
+    void invalidGetGame() throws ResponseException {
         try {
             Integer gameID1 = games.createGame("game1");
         } catch (ResponseException e) {
             throw new RuntimeException(e);
         }
-        assertThrows(DataAccessException.class, () -> games.getGame(null));
+        assertThrows(ResponseException.class, () -> games.getGame(null));
     }
 }

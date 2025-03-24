@@ -77,9 +77,7 @@ class UserServiceTest {
         UserService userService = new UserService(dbauthTokens, dbusers);
         RegisterRequest registerRequest = new RegisterRequest("user1", "1234", "user1@gmail.com");
         RegisterResult firstResult = userService.register(registerRequest);
-        RegisterResult actualResult = userService.register(registerRequest);
-        RegisterResult expectedResult = new RegisterResult("Error: already taken");
-        assertEquals(expectedResult, actualResult);
+        assertThrows(ResponseException.class, () -> userService.register(registerRequest));
     }
 
     @Test
@@ -100,9 +98,7 @@ class UserServiceTest {
         RegisterRequest registerRequest = new RegisterRequest("user1", "1234", "user1@gmail.com");
         RegisterResult registerResult = userService.register(registerRequest);
         LoginRequest loginRequest = new LoginRequest("user1", "abcd");
-        LoginResult actualResult = userService.login(loginRequest);
-        LoginResult expectedResult = new LoginResult("Error: unauthorized");
-        assertEquals(expectedResult, actualResult);
+        assertThrows(ResponseException.class, () -> userService.login(loginRequest));
     }
 
     @Test
@@ -122,9 +118,7 @@ class UserServiceTest {
         RegisterRequest registerRequest = new RegisterRequest("user1", "1234", "user1@gmail.com");
         RegisterResult registerResult = userService.register(registerRequest);
         LogoutRequest logoutRequest = new LogoutRequest("");
-        LogoutResult actualResult = userService.logout(logoutRequest);
-        LogoutResult expectedResult = new LogoutResult("Error: unauthorized");
-        assertEquals(expectedResult, actualResult);
+        assertThrows(ResponseException.class, () -> userService.logout(logoutRequest));
     }
 
     @Test
@@ -170,9 +164,7 @@ class UserServiceTest {
         RegisterRequest registerRequest = new RegisterRequest("user1", "1234", "user1@gmail.com");
         RegisterResult registerResult = userService.register(registerRequest);
         CreateGameRequest createGameRequest = new CreateGameRequest("", "chess");
-        CreateGameResult createGameResult = gameService.createGame(createGameRequest);
-        CreateGameResult expectedResult = new CreateGameResult("Error: unauthorized");
-        assertEquals(expectedResult, createGameResult);
+        assertThrows(ResponseException.class, () -> gameService.createGame(createGameRequest));
     }
 
     @Test
@@ -208,9 +200,7 @@ class UserServiceTest {
         CreateGameRequest createGameRequest = new CreateGameRequest(registerResult.authToken(), "chess");
         CreateGameResult createGameResult = gameService.createGame(createGameRequest);
         ListGamesRequest listGamesRequest = new ListGamesRequest("");
-        ListGamesResult listGamesResult = gameService.listGames(listGamesRequest);
-        ListGamesResult expectedResult = new ListGamesResult("Error: unauthorized");
-        assertEquals(expectedResult, listGamesResult);
+        assertThrows(ResponseException.class, () -> gameService.listGames(listGamesRequest));
     }
 
     @Test
@@ -257,9 +247,6 @@ class UserServiceTest {
 
         JoinGameRequest joinGameRequest = new JoinGameRequest(registerResult.authToken(),"WHITE",createGameResult.gameID());
         JoinGameResult joinGameResult = gameService.joinGame(joinGameRequest);
-        JoinGameResult actualResult = gameService.joinGame(joinGameRequest);
-
-        JoinGameResult expectedResult = new JoinGameResult("Error: already taken");
-        assertEquals(expectedResult, actualResult);
+        assertThrows(ResponseException.class, () -> gameService.joinGame(joinGameRequest));
     }
 }

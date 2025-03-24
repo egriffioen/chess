@@ -134,7 +134,6 @@ public class PostLoginClient {
 
                 result.append(String.format("%d. GameName: %s --> WhitePlayer: %s, BlackPlayer: %s%n", index++, gameName, whitePlayer, blackPlayer));
             }
-
             return result.toString();
         }
         throw new ResponseException(401, "Unauthorized");
