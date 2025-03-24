@@ -23,7 +23,7 @@ public class InGameClient {
         var cmd = (tokens.length > 0) ? tokens[0] : "help";
         var params = Arrays.copyOfRange(tokens, 1, tokens.length);
         return switch (cmd) {
-            case "quit" -> "quit --> returning to Lobby";
+            case "quit" -> "quit --> Returning to Lobby";
             default -> help();
         };
     }

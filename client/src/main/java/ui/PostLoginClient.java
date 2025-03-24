@@ -15,7 +15,6 @@ public class PostLoginClient {
     private final String authToken;
     private final ServerFacade server;
     private final String serverUrl;
-    private State state = State.SIGNEDOUT;
 
     public PostLoginClient(String serverUrl, String authToken) {
         server = new ServerFacade(serverUrl);
@@ -34,7 +33,7 @@ public class PostLoginClient {
                 case "list" -> list(params);
                 case "join" -> join(params);
                 case "observe" -> observe(params);
-                case "quit" -> "quit --> returning to Login Screen";
+                case "quit" -> "quit --> Returning to Login Screen";
                 default -> help();
             };
         } catch (ResponseException ex) {
@@ -46,7 +45,6 @@ public class PostLoginClient {
         if (authToken != null) {
             LogoutRequest logoutRequest = new LogoutRequest(authToken);
             LogoutResult logoutResult = server.logout(logoutRequest);
-            state = State.SIGNEDOUT;
             return String.format("You logged out");
         }
         throw new ResponseException(401, "Unauthorized");
@@ -58,7 +56,6 @@ public class PostLoginClient {
             var gameName = params[0];
             CreateGameRequest createGameRequest = new CreateGameRequest(authToken, gameName);
             CreateGameResult createGameResult = server.createGame(createGameRequest);
-            state = State.SIGNEDIN;
             return String.format("You created a new game: %s.", gameName);
         }
         throw new ResponseException(400, "Expected: <NAME>");
@@ -93,14 +90,12 @@ public class PostLoginClient {
                 if (Objects.equals(playerColor.toUpperCase(), "WHITE")) {
                     JoinGameRequest joinGameRequest = new JoinGameRequest(authToken, "WHITE", gameID);
                     JoinGameResult joinGameResult = server.joinGame(joinGameRequest);
-                    state = State.INGAME;
                     return String.format("You joined game #%d as white.", gameID);
 
                 }
                 else if (Objects.equals(playerColor.toUpperCase(), "BLACK")) {
                     JoinGameRequest joinGameRequest = new JoinGameRequest(authToken, "BLACK", gameID);
                     JoinGameResult joinGameResult = server.joinGame(joinGameRequest);
-                    state = State.INGAME;
                     return String.format("You joined game #%d as black.", gameID);
 
                 }

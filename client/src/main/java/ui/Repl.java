@@ -58,14 +58,14 @@ public class Repl {
                     if (result.contains("You logged out")) {
                         state = State.SIGNEDOUT;
                     }
-                    if (result.contains("quit")) {
+                    if (result.contains("quit --> Returning to Login Screen")) {
                         state = State.SIGNEDOUT;
                     }
                 }
                 else if (state==State.INGAME) {
                     result = inGameClient.eval(line);
                     System.out.print(SET_TEXT_COLOR_BLUE + result);
-                    if (result.contains("quit")) {
+                    if (result.contains("quit --> Returning to Lobby")) {
                         state = State.SIGNEDIN;
                         postLoginClient = new PostLoginClient(serverUrl, preLoginClient.getAuthToken());
                     }
@@ -80,7 +80,7 @@ public class Repl {
 
 
     private void printPrompt() {
-        System.out.print("\n[" + state + "]" + ">>> " + SET_TEXT_COLOR_GREEN);
+        System.out.print(RESET_TEXT_COLOR + "\n[" + state + "]" + ">>> " + SET_TEXT_COLOR_GREEN);
     }
 
 }
