@@ -46,8 +46,7 @@ public class InGameClient {
 
     private void printChessBoardBlack() {
         String colorPerspective = "BLACK";
-        // Set up the initial chess pieces on the board
-        // White pieces
+
         board[0][0] = EscapeSequences.WHITE_ROOK;
         board[0][1] = EscapeSequences.WHITE_KNIGHT;
         board[0][2] = EscapeSequences.WHITE_BISHOP;
@@ -58,10 +57,9 @@ public class InGameClient {
         board[0][7] = EscapeSequences.WHITE_ROOK;
 
         for (int i = 0; i < 8; i++) {
-            board[1][i] = EscapeSequences.WHITE_PAWN;  // White pawns
+            board[1][i] = EscapeSequences.WHITE_PAWN;
         }
 
-        // Black pieces
         board[7][0] = EscapeSequences.BLACK_ROOK;
         board[7][1] = EscapeSequences.BLACK_KNIGHT;
         board[7][2] = EscapeSequences.BLACK_BISHOP;
@@ -72,15 +70,15 @@ public class InGameClient {
         board[7][7] = EscapeSequences.BLACK_ROOK;
 
         for (int i = 0; i < 8; i++) {
-            board[6][i] = EscapeSequences.BLACK_PAWN;  // Black pawns
+            board[6][i] = EscapeSequences.BLACK_PAWN;
         }
 
         setEmptySquares();
-        // Print the board with alternating colors
+
         String[] letters = {" a ", " b ", " c ", " d ", " e ", " f ", " g ", " h "};
         List<String> letterList = Arrays.asList(letters);
         Collections.reverse(letterList);
-        System.out.print("   " + EscapeSequences.RESET_TEXT_COLOR); // Offset for row numbers
+        System.out.print("   " + EscapeSequences.RESET_TEXT_COLOR);
         for (String letter : letterList) {
             System.out.print(HALF_SPACE+letter+HALF_SPACE);
         }
@@ -91,7 +89,7 @@ public class InGameClient {
             System.out.print(" " + (row + 1) + " ");
             System.out.println();
         }
-        System.out.print("   "); // Offset for row numbers
+        System.out.print("   ");
         for (String letter : letterList) {
             System.out.print(HALF_SPACE+letter+HALF_SPACE);
         }
@@ -101,8 +99,7 @@ public class InGameClient {
 
     private void printChessBoardWhite() {
         String colorPerspective = "WHITE";
-        // Set up the initial chess pieces on the board
-        // White pieces
+
         board[7][0] = EscapeSequences.WHITE_ROOK;
         board[7][1] = EscapeSequences.WHITE_KNIGHT;
         board[7][2] = EscapeSequences.WHITE_BISHOP;
@@ -113,10 +110,9 @@ public class InGameClient {
         board[7][7] = EscapeSequences.WHITE_ROOK;
 
         for (int i = 0; i < 8; i++) {
-            board[6][i] = EscapeSequences.WHITE_PAWN;  // White pawns
+            board[6][i] = EscapeSequences.WHITE_PAWN;
         }
 
-        // Black pieces
         board[0][0] = EscapeSequences.BLACK_ROOK;
         board[0][1] = EscapeSequences.BLACK_KNIGHT;
         board[0][2] = EscapeSequences.BLACK_BISHOP;
@@ -127,13 +123,13 @@ public class InGameClient {
         board[0][7] = EscapeSequences.BLACK_ROOK;
 
         for (int i = 0; i < 8; i++) {
-            board[1][i] = EscapeSequences.BLACK_PAWN;  // Black pawns
+            board[1][i] = EscapeSequences.BLACK_PAWN;
         }
         setEmptySquares();
         // Print the board with alternating colors
         String[] letters = {" a ", " b ", " c ", " d ", " e ", " f ", " g ", " h "};
         List<String> letterList = Arrays.asList(letters);
-        System.out.print("   " + EscapeSequences.RESET_TEXT_COLOR); // Offset for row numbers
+        System.out.print("   " + EscapeSequences.RESET_TEXT_COLOR);
         for (String letter : letterList) {
             System.out.print(HALF_SPACE+letter+HALF_SPACE);
         }
@@ -144,7 +140,7 @@ public class InGameClient {
             System.out.print(" " + (8-row) + " ");
             System.out.println();
         }
-        System.out.print("   "); // Offset for row numbers
+        System.out.print("   ");
         for (String letter : letterList) {
             System.out.print(HALF_SPACE+letter+HALF_SPACE);
         }
@@ -158,21 +154,21 @@ public class InGameClient {
                     if (row % 2 == 0) {
                         String invisiblePawn = EscapeSequences.SET_TEXT_COLOR_LIGHT_GREY + EscapeSequences.WHITE_PAWN +
                                 EscapeSequences.RESET_TEXT_COLOR + EscapeSequences.RESET_BG_COLOR;
-                        board[row][col] = invisiblePawn; // Assign to board
+                        board[row][col] = invisiblePawn;
                     } else {
                         String invisiblePawn = EscapeSequences.SET_TEXT_COLOR_DARK_GREY + EscapeSequences.WHITE_PAWN +
                                 EscapeSequences.RESET_TEXT_COLOR + EscapeSequences.RESET_BG_COLOR;
-                        board[row][col] = invisiblePawn; // Assign to board
+                        board[row][col] = invisiblePawn;
                     }
                 } else {
                     if (row % 2 == 0) {
                         String invisiblePawn = EscapeSequences.SET_TEXT_COLOR_DARK_GREY + EscapeSequences.WHITE_PAWN +
                                 EscapeSequences.RESET_TEXT_COLOR + EscapeSequences.RESET_BG_COLOR;
-                        board[row][col] = invisiblePawn; // Assign to board
+                        board[row][col] = invisiblePawn;
                     } else {
                         String invisiblePawn = EscapeSequences.SET_TEXT_COLOR_LIGHT_GREY + EscapeSequences.WHITE_PAWN +
                                 EscapeSequences.RESET_TEXT_COLOR + EscapeSequences.RESET_BG_COLOR;
-                        board[row][col] = invisiblePawn; // Assign to board
+                        board[row][col] = invisiblePawn;
                     }
                 }
             }
@@ -183,31 +179,29 @@ public class InGameClient {
         for (int col = 0; col < 8; col++) {
             String square = board[row][col];
 
-            // Set the background color based on the row and column
             String squareColor = (row + col) % 2 == 0
                     ? EscapeSequences.SET_BG_COLOR_LIGHT_GREY
                     : EscapeSequences.SET_BG_COLOR_DARK_GREY;
             String pieceColor = "";
             if (colorPerspective.equals("BLACK")) {
-                if (row <= 1) { // White pieces
+                if (row <= 1) {
                     pieceColor = EscapeSequences.SET_TEXT_COLOR_WHITE;
-                } else if (row >= 6) { // Black pieces
+                } else if (row >= 6) {
                     pieceColor = EscapeSequences.SET_TEXT_COLOR_BLACK;
                 } else {
-                    pieceColor = ""; // Empty squares don't need special text color
+                    pieceColor = "";
                 }
             }
             
             else if(colorPerspective.equals("WHITE")) {
-                if (row <= 1) { // White pieces
+                if (row <= 1) {
                     pieceColor = EscapeSequences.SET_TEXT_COLOR_BLACK;
-                } else if (row >= 6) { // Black pieces
+                } else if (row >= 6) {
                     pieceColor = EscapeSequences.SET_TEXT_COLOR_WHITE;
                 } else {
-                    pieceColor = ""; // Empty squares don't need special text color
+                    pieceColor = "";
                 }
             }
-            // Print the square with the background color and the piece
             System.out.print(squareColor + pieceColor + square + EscapeSequences.RESET_TEXT_COLOR +
                     EscapeSequences.RESET_BG_COLOR);
         }
