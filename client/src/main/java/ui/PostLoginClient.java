@@ -94,14 +94,14 @@ public class PostLoginClient {
                     JoinGameRequest joinGameRequest = new JoinGameRequest(authToken, "WHITE", gameID);
                     JoinGameResult joinGameResult = server.joinGame(joinGameRequest);
                     state = State.INGAME;
-                    return String.format("You joined game #%d.", gameID);
+                    return String.format("You joined game #%d as white.", gameID);
 
                 }
                 else if (Objects.equals(playerColor.toUpperCase(), "BLACK")) {
                     JoinGameRequest joinGameRequest = new JoinGameRequest(authToken, "BLACK", gameID);
                     JoinGameResult joinGameResult = server.joinGame(joinGameRequest);
                     state = State.INGAME;
-                    return String.format("You joined game #%d.", gameID);
+                    return String.format("You joined game #%d as black.", gameID);
 
                 }
                 else {

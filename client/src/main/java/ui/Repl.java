@@ -11,6 +11,7 @@ public class Repl {
     private State state;
     private String authToken = null;
     private String serverUrl;
+    private String colorPerspective = null;
 
     public Repl(String serverUrl) {
         preLoginClient = new PreLoginClient(serverUrl);
@@ -42,18 +43,28 @@ public class Repl {
                 else if (state == State.SIGNEDIN) {
                     result = postLoginClient.eval(line);
                     System.out.print(SET_TEXT_COLOR_BLUE + result);
-                    if (result.contains("You joined") || result.contains("You are observing")) {
+                    if ((result.contains("You joined") && result.contains("white")) || result.contains("You are observing")) {
                         state = State.INGAME;
                         inGameClient = new InGameClient(serverUrl);
                         System.out.println();
-                        inGameClient.printChessBoard();
+                        colorPerspective = "WHITE";
+                        inGameClient.printChessBoard(colorPerspective);
+                    }
+                    else if ((result.contains("You joined") && result.contains("black"))) {
+                        state = State.INGAME;
+                        inGameClient = new InGameClient(serverUrl);
+                        System.out.println();
+                        colorPerspective = "BLACK";
+                        inGameClient.printChessBoard(colorPerspective);
                     }
                     if (result.contains("You logged out")) {
                         state = State.SIGNEDOUT;
                     }
                 }
                 else if (state==State.INGAME) {
-                    inGameClient.printChessBoard();
+                    result = inGameClient.eval(line);
+                    System.out.print(SET_TEXT_COLOR_BLUE + result);
+                    inGameClient.printChessBoard(colorPerspective);
                 }
             } catch (Throwable e) {
                 var msg = e.toString();
