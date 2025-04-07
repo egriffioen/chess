@@ -10,10 +10,21 @@ import java.sql.SQLException;
 
 public class Server {
 
+//    private final GameService gameService;
+//    private final UserService userService;
+    //private final WebSocketHandler webSocketHandler;
+
+    public Server() {
+//        this.gameService = gameService;
+//        this.userService = userService;
+        //webSocketHandler = new WebSocketHandler();
+    }
+
     public int run(int desiredPort) {
         Spark.port(desiredPort);
 
         Spark.staticFiles.location("web");
+
 
         UserDAO dbUsers = null;
         AuthDAO authTokens = null;
@@ -41,7 +52,6 @@ public class Server {
 
         UserService userService = new UserService(authTokens, dbUsers);
         GameService gameService = new GameService(authTokens, games);
-
 
         RegisterHandler registerHandler = new RegisterHandler(userService);
         LoginHandler loginHandler = new LoginHandler(userService);

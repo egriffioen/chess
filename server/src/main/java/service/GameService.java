@@ -4,6 +4,7 @@ import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
 import exception.ResponseException;
+import model.GameData;
 import request.CreateGameRequest;
 import request.JoinGameRequest;
 import request.ListGamesRequest;
@@ -11,6 +12,7 @@ import result.CreateGameResult;
 import result.JoinGameResult;
 import result.ListGamesResult;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -41,7 +43,8 @@ public class GameService {
             throw new ResponseException(401, "Error: unauthorized");
             //return new ListGamesResult("Error: unauthorized");
         }
-        List<Map<String, Object>> allGames = null;
+        //List<Map<String, Object>> allGames = null;
+        ArrayList<GameData> allGames = null;
         allGames = games.listGames();
         return new ListGamesResult(allGames);
     }

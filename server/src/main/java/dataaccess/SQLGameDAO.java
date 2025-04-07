@@ -28,26 +28,30 @@ public class SQLGameDAO extends DatabaseConfigurations implements GameDAO{
     }
 
     @Override
-    public List<Map<String, Object>> listGames() throws ResponseException {
-        var gamesList = new ArrayList<Map<String, Object>>();
+    //public List<Map<String, Object>> listGames() throws ResponseException {
+    public ArrayList<GameData> listGames() throws ResponseException {
+        //var gamesList = new ArrayList<Map<String, Object>>();
+        var result = new ArrayList<GameData>();
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT gameID, whiteUsername, blackUsername, gameName FROM games";
+            var statement = "SELECT gameID, whiteUsername, blackUsername, gameName, json FROM games";
             try (var ps = conn.prepareStatement(statement)) {
                 try (var rs = ps.executeQuery()) {
                     while (rs.next()) {
-                        var gameInfo = new HashMap<String, Object>();
-                        gameInfo.put("gameID", rs.getInt("gameID"));
-                        gameInfo.put("whiteUsername", rs.getString("whiteUsername"));
-                        gameInfo.put("blackUsername", rs.getString("blackUsername"));
-                        gameInfo.put("gameName", rs.getString("gameName"));
-                        gamesList.add(gameInfo);
+                        result.add(readGame(rs));
+//                        var gameInfo = new HashMap<String, Object>();
+//                        gameInfo.put("gameID", rs.getInt("gameID"));
+//                        gameInfo.put("whiteUsername", rs.getString("whiteUsername"));
+//                        gameInfo.put("blackUsername", rs.getString("blackUsername"));
+//                        gameInfo.put("gameName", rs.getString("gameName"));
+//                        gamesList.add(gameInfo);
                     }
                 }
             }
         } catch (Exception e) {
             throw new ResponseException(500, String.format("Unable to list data: %s", e.getMessage()));
         }
-        return gamesList;
+        //return gamesList;
+        return result;
 
     }
 

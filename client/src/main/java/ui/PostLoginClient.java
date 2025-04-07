@@ -1,13 +1,11 @@
 package ui;
 
-import java.util.Arrays;
-import java.util.Map;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 import exception.ResponseException;
 
 import facade.ServerFacade;
+import model.GameData;
 import request.*;
 import result.*;
 
@@ -15,6 +13,7 @@ public class PostLoginClient {
     private final String authToken;
     private final ServerFacade server;
     private final String serverUrl;
+    private Integer joinedGameID = null;
 
     public PostLoginClient(String serverUrl, String authToken) {
         server = new ServerFacade(serverUrl);
@@ -69,32 +68,40 @@ public class PostLoginClient {
 
                 ListGamesRequest listGamesRequest = new ListGamesRequest(authToken);
                 ListGamesResult listGamesResult = server.listGames(listGamesRequest);
-                List<Map<String, Object>> games = listGamesResult.games();
+                ArrayList<GameData> games = listGamesResult.games();
 
                 if (games == null || games.isEmpty()) {
                     throw new ResponseException(400, "No available games to join.");
                 }
 
+                int realGameID = 0;
                 boolean gameExists = false;
-                for (Map<String, Object> game : games) {
-                    var gameIDFromList = ((Number) game.get("gameID")).intValue();
-                    if (gameIDFromList == gameID) {
-                        gameExists = true;
-                        break;
-                    }
+                if (gameID > 0 && gameID <= games.size()) {
+                    gameExists = true;
+                    realGameID = games.get(gameID - 1).gameID();
+                    joinedGameID = realGameID;
                 }
+//                int gameIDFromList = 1;
+//                for (GameData game : games) {
+////                    var gameIDFromList = ((Number) game.gameID());
+//                    if (gameIDFromList == gameID) {
+//                        gameExists = true;
+//                        break;
+//                    }
+//                    gameIDFromList++;
+//                }
                 if (!gameExists) {
                     throw new ResponseException(400, "Invalid game ID. Please choose a valid game.");
                 }
 
                 if (Objects.equals(playerColor.toUpperCase(), "WHITE")) {
-                    JoinGameRequest joinGameRequest = new JoinGameRequest(authToken, "WHITE", gameID);
+                    JoinGameRequest joinGameRequest = new JoinGameRequest(authToken, "WHITE", realGameID);
                     JoinGameResult joinGameResult = server.joinGame(joinGameRequest);
                     return String.format("You joined game #%d as white.", gameID);
 
                 }
                 else if (Objects.equals(playerColor.toUpperCase(), "BLACK")) {
-                    JoinGameRequest joinGameRequest = new JoinGameRequest(authToken, "BLACK", gameID);
+                    JoinGameRequest joinGameRequest = new JoinGameRequest(authToken, "BLACK", realGameID);
                     JoinGameResult joinGameResult = server.joinGame(joinGameRequest);
                     return String.format("You joined game #%d as black.", gameID);
 
@@ -107,14 +114,14 @@ public class PostLoginClient {
         } catch (NumberFormatException e) {
             throw new ResponseException(400, "Game ID must be a number.");
         }
-        throw new ResponseException(400, "Expected: <ID> [WHITE|BLACK");
+        throw new ResponseException(400, "Expected: <ID> [WHITE|BLACK]");
     }
 
     public String list(String... params) throws ResponseException {
         if (authToken != null) {
             ListGamesRequest listGamesRequest = new ListGamesRequest(authToken);
             ListGamesResult listGamesResult = server.listGames(listGamesRequest);
-            List<Map<String, Object>> games = listGamesResult.games();
+            ArrayList<GameData> games = listGamesResult.games();
             if (games == null || games.isEmpty()) {
                 return "No games available.";
             }
@@ -122,10 +129,10 @@ public class PostLoginClient {
             StringBuilder result = new StringBuilder("Current Games:\n");
             int index = 1; // Start numbering from 1
 
-            for (Map<String, Object> game : games) {
-                String gameName = (String) game.get("gameName");
-                String whitePlayer = (String) game.getOrDefault("whiteUsername", "");
-                String blackPlayer = (String) game.getOrDefault("blackUsername", "");
+            for (GameData game : games) {
+                String gameName = (String) game.gameName();
+                String whitePlayer = (String) game.whiteUsername();
+                String blackPlayer = (String) game.blackUsername();
 
                 result.append(String.format("%d. GameName: %s --> WhitePlayer: %s, BlackPlayer: %s%n", index++, gameName, whitePlayer, blackPlayer));
             }
@@ -141,19 +148,26 @@ public class PostLoginClient {
 
                 ListGamesRequest listGamesRequest = new ListGamesRequest(authToken);
                 ListGamesResult listGamesResult = server.listGames(listGamesRequest);
-                List<Map<String, Object>> games = listGamesResult.games();
+                ArrayList<GameData> games = listGamesResult.games();
 
                 if (games == null || games.isEmpty()) {
                     throw new ResponseException(400, "No available games to observe.");
                 }
 
+//                boolean gameExists = false;
+//                for (GameData game : games) {
+//                    var gameIDFromList = game.gameID();
+//                    if (gameIDFromList == gameID) {
+//                        gameExists = true;
+//                        break;
+//                    }
+//                }
+                int realGameID = 0;
                 boolean gameExists = false;
-                for (Map<String, Object> game : games) {
-                    var gameIDFromList = ((Number) game.get("gameID")).intValue();
-                    if (gameIDFromList == gameID) {
-                        gameExists = true;
-                        break;
-                    }
+                if (gameID > 0 && gameID <= games.size()) {
+                    gameExists = true;
+                    realGameID = games.get(gameID - 1).gameID();
+                    joinedGameID = realGameID;
                 }
                 if (!gameExists) {
                     throw new ResponseException(400, "Invalid game ID. Please choose a valid game.");
@@ -180,5 +194,9 @@ public class PostLoginClient {
                     - quit -> quit playing chess
                     - help -> help with possible commands
                     """;
+    }
+
+    public int getGameID() {
+        return joinedGameID;
     }
 }

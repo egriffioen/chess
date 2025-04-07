@@ -246,22 +246,30 @@ class AuthDAOTest {
         gameID = games.createGame("newGame");
         Integer gameID2 = null;
         gameID2 = games.createGame("secondGame");
-        List<Map<String, Object>> actualResult = null;
+        ArrayList<GameData> actualResult = new ArrayList<>();
         actualResult = games.listGames();
-        List<Map<String, Object>> gamesList = new ArrayList<Map<String, Object>>();
-        HashMap<String, Object> gameInfo1 = new HashMap<String, Object>();
-        gameInfo1.put("gameID", games.getGame(gameID).gameID());
-        gameInfo1.put("whiteUsername", games.getGame(gameID).whiteUsername());
-        gameInfo1.put("blackUsername", games.getGame(gameID).blackUsername());
-        gameInfo1.put("gameName", games.getGame(gameID).gameName());
-        gamesList.add(gameInfo1);
 
-        HashMap<String, Object> gameInfo2 = new HashMap<String, Object>();
-        gameInfo2.put("gameID", games.getGame(gameID2).gameID());
-        gameInfo2.put("whiteUsername", games.getGame(gameID2).whiteUsername());
-        gameInfo2.put("blackUsername", games.getGame(gameID2).blackUsername());
-        gameInfo2.put("gameName", games.getGame(gameID2).gameName());
-        gamesList.add(gameInfo2);
+        ArrayList<GameData> gamesList = new ArrayList<>();
+        GameData game1 = new GameData(games.getGame(gameID).gameID(), null, null, "newGame", new ChessGame());
+        GameData game2 = new GameData(games.getGame(gameID2).gameID(), null, null, "secondGame", new ChessGame());
+        gamesList.add(game1);
+        gamesList.add(game2);
+//        List<Map<String, Object>> actualResult = null;
+//        actualResult = games.listGames();
+//        List<Map<String, Object>> gamesList = new ArrayList<Map<String, Object>>();
+//        HashMap<String, Object> gameInfo1 = new HashMap<String, Object>();
+//        gameInfo1.put("gameID", games.getGame(gameID).gameID());
+//        gameInfo1.put("whiteUsername", games.getGame(gameID).whiteUsername());
+//        gameInfo1.put("blackUsername", games.getGame(gameID).blackUsername());
+//        gameInfo1.put("gameName", games.getGame(gameID).gameName());
+//        gamesList.add(gameInfo1);
+//
+//        HashMap<String, Object> gameInfo2 = new HashMap<String, Object>();
+//        gameInfo2.put("gameID", games.getGame(gameID2).gameID());
+//        gameInfo2.put("whiteUsername", games.getGame(gameID2).whiteUsername());
+//        gameInfo2.put("blackUsername", games.getGame(gameID2).blackUsername());
+//        gameInfo2.put("gameName", games.getGame(gameID2).gameName());
+//        gamesList.add(gameInfo2);
 
         assertEquals(gamesList, actualResult);
     }

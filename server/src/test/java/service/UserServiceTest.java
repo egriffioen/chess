@@ -1,5 +1,6 @@
 package service;
 
+import chess.ChessGame;
 import dataaccess.*;
 import exception.ResponseException;
 import model.GameData;
@@ -178,14 +179,16 @@ class UserServiceTest {
         ListGamesRequest listGamesRequest = new ListGamesRequest(registerResult.authToken());
         ListGamesResult listGamesResult = gameService.listGames(listGamesRequest);
 
-        List<Map<String, Object>> expectedGames = new ArrayList<>();
-        Map<String, Object> gameInfo = new HashMap<>();
-        gameInfo.put("gameID", createGameResult.gameID());
-        gameInfo.put("whiteUsername", null);
-        gameInfo.put("blackUsername", null);
-        gameInfo.put("gameName", "chess");
-
-        expectedGames.add(gameInfo);
+//        List<Map<String, Object>> expectedGames = new ArrayList<>();
+//        Map<String, Object> gameInfo = new HashMap<>();
+//        gameInfo.put("gameID", createGameResult.gameID());
+//        gameInfo.put("whiteUsername", null);
+//        gameInfo.put("blackUsername", null);
+//        gameInfo.put("gameName", "chess");
+        GameData gameData = new GameData(createGameResult.gameID(), null, null, "chess", new ChessGame());
+        ArrayList<GameData> expectedGames = null;
+        expectedGames.add(gameData);
+        //expectedGames.add(gameInfo);
 
         ListGamesResult expectedResult = new ListGamesResult(expectedGames);
         assertEquals(expectedResult, listGamesResult);
