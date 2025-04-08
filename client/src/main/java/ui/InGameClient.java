@@ -38,16 +38,20 @@ public class InGameClient {
     }
 
     public String eval(String input) throws ResponseException, InvalidMoveException {
-        var tokens = input.toLowerCase().split(" ");
-        var cmd = (tokens.length > 0) ? tokens[0] : "help";
-        var params = Arrays.copyOfRange(tokens, 1, tokens.length);
-        return switch (cmd) {
-            case "move" -> makeMove();
-            case "leave" -> leave();
-            case "redraw" -> redraw();
-            case "quit" -> "quit --> Returning to Lobby";
-            default -> help();
-        };
+        try {
+            var tokens = input.toLowerCase().split(" ");
+            var cmd = (tokens.length > 0) ? tokens[0] : "help";
+            var params = Arrays.copyOfRange(tokens, 1, tokens.length);
+            return switch (cmd) {
+                case "move" -> makeMove(params);
+                case "leave" -> leave();
+                case "redraw" -> redraw();
+                case "quit" -> "quit --> Returning to Lobby";
+                default -> help();
+            };
+        } catch (ResponseException ex) {
+            return ex.getMessage();
+        }
     }
 
     public String help() {
