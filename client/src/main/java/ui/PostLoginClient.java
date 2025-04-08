@@ -14,6 +14,7 @@ public class PostLoginClient {
     private final ServerFacade server;
     private final String serverUrl;
     private Integer joinedGameID = null;
+    private boolean observer = false;
 
     public PostLoginClient(String serverUrl, String authToken) {
         server = new ServerFacade(serverUrl);
@@ -173,6 +174,7 @@ public class PostLoginClient {
                     throw new ResponseException(400, "Invalid game ID. Please choose a valid game.");
                 }
                 else {
+                    observer = true;
                     return String.format("You are observing game #%d.", gameID);
                 }
 
@@ -198,5 +200,8 @@ public class PostLoginClient {
 
     public int getGameID() {
         return joinedGameID;
+    }
+    public boolean getObserver() {
+        return observer;
     }
 }

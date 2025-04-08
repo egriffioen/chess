@@ -55,6 +55,11 @@ public class ServerFacade {
         return this.makeRequest("PUT", path, request, JoinGameResult.class, request.authToken());
     }
 
+    public LeaveGameResult leaveGame(LeaveGameRequest request) throws ResponseException {
+        var path = "/game/leave";
+        return this.makeRequest("PUT", path, request, LeaveGameResult.class, request.authToken());
+    }
+
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass, String authToken) throws ResponseException {
         try {

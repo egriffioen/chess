@@ -7,11 +7,6 @@ import request.*;
 import result.*;
 import server.Server;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 
@@ -160,5 +155,19 @@ public class ServerFacadeTests {
         LoginRequest loginRequest = new LoginRequest("player1", "password");
         assertThrows(ResponseException.class, () -> facade.login(loginRequest));
         assertThrows(ResponseException.class, () -> facade.listGames(listGamesRequest));
+    }
+
+    @Test
+    void validLeaveGame() throws Exception {
+        RegisterRequest request = new RegisterRequest("player1", "password", "p1@email.com");
+        RegisterResult registerResult = facade.register(request);
+        CreateGameRequest createGameRequest = new CreateGameRequest(registerResult.authToken(), "game1");
+        CreateGameResult createGameResult = facade.createGame(createGameRequest);
+        JoinGameRequest joinGameRequest = new JoinGameRequest(registerResult.authToken(), "WHITE", createGameResult.gameID());
+        JoinGameResult joinGameResult = facade.joinGame(joinGameRequest);
+        assertNull(joinGameResult.message());
+        LeaveGameRequest leaveGameRequest = new LeaveGameRequest(registerResult.authToken(), "WHITE", createGameResult.gameID());
+        LeaveGameResult leaveGameResult = facade.leaveGame(leaveGameRequest);
+        assertNull(leaveGameResult.message());
     }
 }

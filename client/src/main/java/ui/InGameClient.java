@@ -5,9 +5,11 @@ import facade.ServerFacade;
 import model.GameData;
 import request.CreateGameRequest;
 import request.JoinGameRequest;
+import request.LeaveGameRequest;
 import request.ListGamesRequest;
 import result.CreateGameResult;
 import result.JoinGameResult;
+import result.LeaveGameResult;
 import result.ListGamesResult;
 
 import java.util.Arrays;
@@ -21,13 +23,15 @@ public class InGameClient {
     private final String colorPerspective;
     private int gameID;
     private String authToken;
+    private boolean observer;
 
-    public InGameClient(String serverUrl, int gameID, String authToken, String colorPerspective) {
+    public InGameClient(String serverUrl, int gameID, String authToken, String colorPerspective, boolean observer) {
         server = new ServerFacade(serverUrl);
         this.serverUrl = serverUrl;
         this.gameID = gameID;
         this.authToken = authToken;
         this.colorPerspective = colorPerspective;
+        this.observer = observer;
     }
 
     public String eval(String input) throws ResponseException {
@@ -74,6 +78,22 @@ public class InGameClient {
     }
 
     public String leave(String... params) throws ResponseException {
-        return "left the game";
+        if (observer) {
+            return String.format("You left game #%d", gameID);
+        }
+        else if (Objects.equals(colorPerspective, "WHITE")) {
+            LeaveGameRequest leaveGameRequest = new LeaveGameRequest(authToken, "WHITE", gameID);
+            LeaveGameResult leaveGameResult = server.leaveGame(leaveGameRequest);
+            return String.format("You left game #%d", gameID);
+
+        }
+        else if (Objects.equals(colorPerspective, "BLACK")) {
+            LeaveGameRequest leaveGameRequest = new LeaveGameRequest(authToken, "BLACK", gameID);
+            LeaveGameResult leaveGameResult = server.leaveGame(leaveGameRequest);
+            return String.format("You left game #%d", gameID);
+        }
+        else {
+            return "Can't leave the game";
+        }
     }
 }
