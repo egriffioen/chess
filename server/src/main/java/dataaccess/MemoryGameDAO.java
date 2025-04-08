@@ -86,4 +86,33 @@ public class MemoryGameDAO implements GameDAO{
     public GameData getGame(Integer gameID) throws ResponseException {
         return games.get(gameID);
     }
+
+    @Override
+    public boolean leaveGame(String playerColor, Integer gameID, String username) throws ResponseException {
+        GameData gameData = games.get(gameID);
+        if (Objects.equals(playerColor, "WHITE")) {
+            String whiteUsername = gameData.whiteUsername();
+            if (whiteUsername == username) {
+                games.remove(gameID);
+                GameData newGameData = new GameData(gameID, null, gameData.blackUsername(), gameData.gameName(), gameData.game());
+                games.put(gameID, newGameData);
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        else {
+            String blackUsername = gameData.blackUsername();
+            if (blackUsername == username) {
+                games.remove(gameID);
+                GameData newGameData = new GameData(gameID, gameData.whiteUsername(), null, gameData.gameName(), gameData.game());
+                games.put(gameID, newGameData);
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+    }
 }

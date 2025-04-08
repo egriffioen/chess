@@ -7,9 +7,11 @@ import exception.ResponseException;
 import model.GameData;
 import request.CreateGameRequest;
 import request.JoinGameRequest;
+import request.LeaveGameRequest;
 import request.ListGamesRequest;
 import result.CreateGameResult;
 import result.JoinGameResult;
+import result.LeaveGameResult;
 import result.ListGamesResult;
 
 import java.util.ArrayList;
@@ -70,6 +72,26 @@ public class GameService {
         }
         else {
             return new JoinGameResult();
+        }
+    }
+
+    public LeaveGameResult leaveGame(LeaveGameRequest leaveGameRequest) throws ResponseException, DataAccessException {
+        String authToken = leaveGameRequest.authToken();
+        if (authTokens.getAuthToken(authToken) == null) {
+            throw new ResponseException(401, "Error: unauthorized");
+            //return new JoinGameResult("Error: unauthorized");
+        }
+        String username = null;
+        username = authTokens.getAuthToken(authToken).username();
+
+        boolean leftGame = false;
+        leftGame = games.leaveGame(leaveGameRequest.playerColor(), leaveGameRequest.gameID(), username);
+        if (!leftGame) {
+            throw new ResponseException(403, "Error: already left");
+            //return new JoinGameResult("Error: already taken");
+        }
+        else {
+            return new LeaveGameResult();
         }
     }
 }

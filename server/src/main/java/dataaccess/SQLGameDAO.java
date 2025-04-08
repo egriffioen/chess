@@ -38,12 +38,6 @@ public class SQLGameDAO extends DatabaseConfigurations implements GameDAO{
                 try (var rs = ps.executeQuery()) {
                     while (rs.next()) {
                         result.add(readGame(rs));
-//                        var gameInfo = new HashMap<String, Object>();
-//                        gameInfo.put("gameID", rs.getInt("gameID"));
-//                        gameInfo.put("whiteUsername", rs.getString("whiteUsername"));
-//                        gameInfo.put("blackUsername", rs.getString("blackUsername"));
-//                        gameInfo.put("gameName", rs.getString("gameName"));
-//                        gamesList.add(gameInfo);
                     }
                 }
             }
@@ -124,6 +118,25 @@ public class SQLGameDAO extends DatabaseConfigurations implements GameDAO{
             throw new ResponseException(500, String.format("Unable to read data: %s", e.getMessage()));
         }
         return null;
+    }
+
+    @Override
+    public boolean leaveGame(String playerColor, Integer gameID, String username) throws ResponseException {
+        GameData game = getGame(gameID);
+        if (Objects.equals(playerColor, "WHITE")) {
+            if (username.equals(game.whiteUsername())) {
+                var statement = "UPDATE games SET whiteUsername = NULL WHERE gameID = ? AND whiteUsername = ?";
+                int rowsUpdated = executeUpdate(statement, gameID, username);
+                return true;
+            }
+        } else if (Objects.equals(playerColor, "BLACK")) {
+            if (username.equals(game.blackUsername())) {
+                var statement = "UPDATE games SET blackUsername = NULL WHERE gameID = ? AND blackUsername = ?";
+                int rowsUpdated = executeUpdate(statement, gameID, username);
+                return true;
+            }
+        }
+        return false;
     }
 
     private GameData readGame(ResultSet rs) throws SQLException {

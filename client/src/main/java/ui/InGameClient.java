@@ -4,8 +4,10 @@ import exception.ResponseException;
 import facade.ServerFacade;
 import model.GameData;
 import request.CreateGameRequest;
+import request.JoinGameRequest;
 import request.ListGamesRequest;
 import result.CreateGameResult;
+import result.JoinGameResult;
 import result.ListGamesResult;
 
 import java.util.Arrays;
@@ -33,6 +35,7 @@ public class InGameClient {
         var cmd = (tokens.length > 0) ? tokens[0] : "help";
         var params = Arrays.copyOfRange(tokens, 1, tokens.length);
         return switch (cmd) {
+            case "leave" -> leave();
             case "redraw" -> redraw();
             case "quit" -> "quit --> Returning to Lobby";
             default -> help();
@@ -68,5 +71,9 @@ public class InGameClient {
     public String redraw(String... params) throws ResponseException {
         printChessBoard(colorPerspective);
         return "Redrawn board";
+    }
+
+    public String leave(String... params) throws ResponseException {
+        return "left the game";
     }
 }
