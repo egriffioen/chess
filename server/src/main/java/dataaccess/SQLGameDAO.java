@@ -1,6 +1,7 @@
 package dataaccess;
 
 import chess.ChessGame;
+import chess.ChessPosition;
 import com.google.gson.Gson;
 import exception.ResponseException;
 import model.GameData;
@@ -137,6 +138,14 @@ public class SQLGameDAO extends DatabaseConfigurations implements GameDAO{
             }
         }
         return false;
+    }
+
+    @Override
+    public void updateGame(Integer gameID, GameData gameData) throws ResponseException {
+        ChessGame chessGame = gameData.game();
+        var json = new Gson().toJson(chessGame);
+        var statement = "UPDATE games SET json = ? WHERE gameID = ?";
+        executeUpdate(statement, json, gameID);
     }
 
     private GameData readGame(ResultSet rs) throws SQLException {

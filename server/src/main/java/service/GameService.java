@@ -5,14 +5,8 @@ import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
 import exception.ResponseException;
 import model.GameData;
-import request.CreateGameRequest;
-import request.JoinGameRequest;
-import request.LeaveGameRequest;
-import request.ListGamesRequest;
-import result.CreateGameResult;
-import result.JoinGameResult;
-import result.LeaveGameResult;
-import result.ListGamesResult;
+import request.*;
+import result.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -93,5 +87,14 @@ public class GameService {
         else {
             return new LeaveGameResult();
         }
+    }
+
+    public UpdateGameResult updateGame(UpdateGameRequest updateGameRequest) throws ResponseException, DataAccessException {
+        String authToken = updateGameRequest.authToken();
+        if (authTokens.getAuthToken(authToken) == null) {
+            throw new ResponseException(401, "Error: unauthorized");
+        }
+        games.updateGame(updateGameRequest.gameID(), updateGameRequest.gameData());
+        return new UpdateGameResult();
     }
 }

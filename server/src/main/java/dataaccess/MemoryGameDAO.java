@@ -115,4 +115,11 @@ public class MemoryGameDAO implements GameDAO{
             }
         }
     }
+
+    @Override
+    public void updateGame(Integer gameID, GameData gameData) throws ResponseException {
+        games.remove(gameID);
+        GameData newGameData = new GameData(gameID, gameData.whiteUsername(), gameData.blackUsername(), gameData.gameName(), gameData.game());
+        games.put(gameID, newGameData);
+    }
 }

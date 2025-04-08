@@ -17,4 +17,5 @@ public interface GameDAO {
     public HashMap<Integer, GameData> getGames() throws ResponseException;
     public GameData getGame(Integer gameID) throws ResponseException;
     boolean leaveGame(String playerColor, Integer gameID, String username) throws ResponseException;
+    void updateGame(Integer gameID, GameData gameData) throws ResponseException;
 }
