@@ -98,9 +98,13 @@ public class InGameClient {
     }
 
     public String makeMove(String... params) throws ResponseException, InvalidMoveException {
+        if (observer) {
+            return "You are observing, you can't make moves";
+        }
         if (resigned) {
             return "Game is over, can't make move";
         }
+
         if (params.length!=2) {
             throw new ResponseException(400, "Expected: move <current pos> <new position>");
         }
@@ -122,12 +126,15 @@ public class InGameClient {
 
         GameData currentGameData = getCurrentGame();
         ChessGame chessGame = currentGameData.game();
+        if (!chessGame.getTeamTurn().toString().equalsIgnoreCase(colorPerspective)) {
+            return "Not your turn";
+        }
         ChessMove move = new ChessMove(startPosition, endPosition, null);
         try {
             chessGame.makeMove(move);
         }
         catch (InvalidMoveException e) {
-            throw new ResponseException(400, "Invalid Move");
+            throw new ResponseException(400, "Invalid Move: " + e.getMessage());
         }
         GameData updatedGameData = new GameData(currentGameData.gameID(), currentGameData.whiteUsername(), currentGameData.blackUsername(), currentGameData.gameName(), chessGame);
         UpdateGameRequest updateGameRequest = new UpdateGameRequest(authToken, gameID, updatedGameData);
@@ -148,6 +155,7 @@ public class InGameClient {
         }
         return currentGame;
     }
+
 
 
 }
