@@ -43,16 +43,16 @@ public class Repl {
                     System.out.print(SET_TEXT_COLOR_BLUE + result);
                     if ((result.contains("You joined") && result.contains("white")) || result.contains("You are observing")) {
                         state = State.INGAME;
-                        inGameClient = new InGameClient(serverUrl, postLoginClient.getGameID(), preLoginClient.getAuthToken());
-                        System.out.println();
                         colorPerspective = "WHITE";
+                        inGameClient = new InGameClient(serverUrl, postLoginClient.getGameID(), preLoginClient.getAuthToken(), colorPerspective);
+                        System.out.println();
                         inGameClient.printChessBoard(colorPerspective);
                     }
                     else if ((result.contains("You joined") && result.contains("black"))) {
                         state = State.INGAME;
-                        inGameClient = new InGameClient(serverUrl, postLoginClient.getGameID(), preLoginClient.getAuthToken());
-                        System.out.println();
                         colorPerspective = "BLACK";
+                        inGameClient = new InGameClient(serverUrl, postLoginClient.getGameID(), preLoginClient.getAuthToken(), colorPerspective);
+                        System.out.println();
                         inGameClient.printChessBoard(colorPerspective);
                     }
                     if (result.contains("You logged out")) {
