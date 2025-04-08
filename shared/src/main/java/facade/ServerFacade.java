@@ -59,6 +59,11 @@ public class ServerFacade {
         var path = "/game/leave";
         return this.makeRequest("PUT", path, request, LeaveGameResult.class, request.authToken());
     }
+    public UpdateGameResult updateGame(UpdateGameRequest request) throws ResponseException {
+        var path = "/game/update";
+        return this.makeRequest("PUT", path, request, UpdateGameResult.class, request.authToken());
+    }
+
 
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass, String authToken) throws ResponseException {

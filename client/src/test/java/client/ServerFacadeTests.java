@@ -1,7 +1,11 @@
 package client;
 
+import chess.ChessGame;
+import chess.ChessMove;
+import chess.ChessPosition;
 import exception.ResponseException;
 import facade.ServerFacade;
+import model.GameData;
 import org.junit.jupiter.api.*;
 import request.*;
 import result.*;
@@ -169,5 +173,26 @@ public class ServerFacadeTests {
         LeaveGameRequest leaveGameRequest = new LeaveGameRequest(registerResult.authToken(), "WHITE", createGameResult.gameID());
         LeaveGameResult leaveGameResult = facade.leaveGame(leaveGameRequest);
         assertNull(leaveGameResult.message());
+    }
+
+    @Test
+    void validUpdateGame() throws Exception {
+        RegisterRequest request = new RegisterRequest("player1", "password", "p1@email.com");
+        RegisterResult registerResult = facade.register(request);
+        CreateGameRequest createGameRequest = new CreateGameRequest(registerResult.authToken(), "game1");
+        CreateGameResult createGameResult = facade.createGame(createGameRequest);
+        assertNull(createGameResult.message());
+        assertEquals(1, createGameResult.gameID());
+
+        ChessGame newGame = new ChessGame();
+        ChessPosition position = new ChessPosition(2, 4);
+        ChessPosition newPosition = new ChessPosition(4,4);
+        ChessMove move = new ChessMove(position, newPosition, null);
+        newGame.makeMove(move);
+
+        GameData updatedGameData = new GameData(createGameResult.gameID(), null, null, "game1", newGame);
+        UpdateGameRequest updateGameRequest = new UpdateGameRequest(registerResult.authToken(), createGameResult.gameID(), updatedGameData);
+        UpdateGameResult updateGameResult = facade.updateGame(updateGameRequest);
+        assertNull(updateGameResult.message());
     }
 }
