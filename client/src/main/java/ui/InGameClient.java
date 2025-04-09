@@ -44,6 +44,7 @@ public class InGameClient {
             var cmd = (tokens.length > 0) ? tokens[0] : "help";
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
+                case "highlight" -> highlightMoves(params);
                 case "resign" -> resign();
                 case "move" -> makeMove(params);
                 case "leave" -> leave();
@@ -72,6 +73,12 @@ public class InGameClient {
         GameData currentGame = getCurrentGame();
         PrintChess printedBoard = new PrintChess(colorPerspective, currentGame.game());
         printedBoard.print();
+    }
+
+    public void printHighlightedChessBoard(String colorPerspective, Collection<ChessMove> validMoves, ChessPosition position) throws ResponseException {
+        GameData currentGame = getCurrentGame();
+        PrintHighlightedChess highlightedBoard = new PrintHighlightedChess(colorPerspective, currentGame.game(), validMoves, position);
+        highlightedBoard.print();
     }
 
     public String redraw(String... params) throws ResponseException {
@@ -210,6 +217,27 @@ public class InGameClient {
         }
     }
 
+    public String highlightMoves(String... params) throws ResponseException {
+        GameData gameData = getCurrentGame();
+        ChessGame chessGame = gameData.game();
+
+        if (params.length!=1) {
+            throw new ResponseException(400, "Expected: highlight <position>");
+        }
+        String startpos = params[0];
+        if (startpos.length()!=2) {
+            throw new ResponseException(400, "Invalid position");
+        }
+
+        char startPosColChar = startpos.charAt(0);
+        int startPosCol = startPosColChar - 'a' + 1;
+        int startPosRow = Character.getNumericValue(startpos.charAt(1));
+        ChessPosition position = new ChessPosition(startPosRow, startPosCol);
+
+        Collection<ChessMove> validMoves = chessGame.validMoves(position);
+        printHighlightedChessBoard(colorPerspective, validMoves, position);
+        return String.format("Valid moves for %s", startpos);
+    }
 
 
 }
