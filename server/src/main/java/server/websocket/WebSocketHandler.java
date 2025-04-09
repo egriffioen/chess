@@ -35,7 +35,7 @@ public class WebSocketHandler {
         UserGameCommand userGameCommand = new Gson().fromJson(message, UserGameCommand.class);
         switch (userGameCommand.getCommandType()) {
             case CONNECT -> connect(userGameCommand.getAuthToken(), session, userGameCommand.getGameID());
-//            case LEAVE -> leave(userGameCommand.getAuthToken());
+            case LEAVE -> leave(userGameCommand.getAuthToken(), userGameCommand.getGameID());
 //            case MAKE_MOVE -> makeMove(userGameCommand.getAuthToken(), userGameCommand.getGameID());
 //            case RESIGN -> resign(userGameCommand.getAuthToken(), userGameCommand.getGameID());
         }
@@ -72,22 +72,23 @@ public class WebSocketHandler {
         }
 
         //TODO SEND LOAD_GAME BACK TO CLIENT
-        connections.add(username, session);
-        //System.out.println("🧩 CONNECT received for user: " + username + ", gameID: " + gameID);
+        connections.add(authToken, session);
         var message = String.format("%s joined the game as %s", username, teamColor);
         var notification = new NotificationMessage(message);
-        connections.broadcastAllOthers(username, notification);
+        connections.broadcastAllOthers(authToken, notification);
         var loadGame = new LoadGameMessage(String.format("Loading Game %d", gameID));
-        connections.broadcastRootClient(username, loadGame);
+        connections.broadcastRootClient(authToken, loadGame);
     }
 
-//    private void exit(String visitorName) throws IOException {
-//        connections.remove(visitorName);
-//        var message = String.format("%s left the shop", visitorName);
-//        var notification = new Notification(Notification.Type.DEPARTURE, message);
-//        connections.broadcast(visitorName, notification);
-//    }
-//
+    private void leave(String authToken, Integer gameID) throws IOException, ResponseException {
+        connections.remove(authToken);
+        AuthData authData = authDAO.getAuthToken(authToken);
+        String username = authData.username();
+        var message = String.format("%s left the game", username);
+        var notification = new NotificationMessage(message);
+        connections.broadcastAllOthers(authToken, notification);
+    }
+
 //    public void makeNoise(String petName, String sound) throws ResponseException {
 //        try {
 //            var message = String.format("%s says %s", petName, sound);

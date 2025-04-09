@@ -34,6 +34,7 @@ public class Repl implements NotificationHandler {
         var result = "";
         while (!result.equals("quit")) {
             printPrompt();
+            System.out.println();
             String line = scanner.nextLine();
 
             try {
@@ -51,14 +52,14 @@ public class Repl implements NotificationHandler {
                     if ((result.contains("You joined") && result.contains("white")) || result.contains("You are observing")) {
                         state = State.INGAME;
                         colorPerspective = "WHITE";
-                        inGameClient = new InGameClient(serverUrl, postLoginClient.getGameID(), preLoginClient.getAuthToken(), colorPerspective, postLoginClient.getObserver());
+                        inGameClient = new InGameClient(serverUrl, postLoginClient.getGameID(), preLoginClient.getAuthToken(), colorPerspective, postLoginClient.getObserver(), this);
                         System.out.println();
                         //inGameClient.printChessBoard(colorPerspective);
                     }
                     else if ((result.contains("You joined") && result.contains("black"))) {
                         state = State.INGAME;
                         colorPerspective = "BLACK";
-                        inGameClient = new InGameClient(serverUrl, postLoginClient.getGameID(), preLoginClient.getAuthToken(), colorPerspective, postLoginClient.getObserver());
+                        inGameClient = new InGameClient(serverUrl, postLoginClient.getGameID(), preLoginClient.getAuthToken(), colorPerspective, postLoginClient.getObserver(), this);
                         System.out.println();
                         //inGameClient.printChessBoard(colorPerspective);
                     }

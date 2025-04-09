@@ -19,6 +19,9 @@ import java.util.Arrays;
 import java.util.*;
 import java.util.List;
 
+import ui.websocket.NotificationHandler;
+import ui.websocket.WebSocketFacade;
+
 public class InGameClient {
     private final ServerFacade server;
     private final String serverUrl;
@@ -27,8 +30,10 @@ public class InGameClient {
     private String authToken;
     private boolean observer;
     private boolean gameComplete;
+    private final NotificationHandler notificationHandler;
+    private WebSocketFacade ws;
 
-    public InGameClient(String serverUrl, int gameID, String authToken, String colorPerspective, boolean observer) throws ResponseException {
+    public InGameClient(String serverUrl, int gameID, String authToken, String colorPerspective, boolean observer, NotificationHandler notificationHandler) throws ResponseException {
         server = new ServerFacade(serverUrl);
         this.serverUrl = serverUrl;
         this.gameID = gameID;
@@ -36,6 +41,7 @@ public class InGameClient {
         this.colorPerspective = colorPerspective;
         this.observer = observer;
         this.gameComplete = getCurrentGame().game().isGameResigned();
+        this.notificationHandler = notificationHandler;
     }
 
     public String eval(String input) throws ResponseException, InvalidMoveException {
@@ -88,17 +94,23 @@ public class InGameClient {
 
     public String leave(String... params) throws ResponseException {
         if (observer) {
+            ws = new WebSocketFacade(serverUrl, notificationHandler);
+            ws.leave(authToken, gameID);
             return String.format("You left game #%d", gameID);
         }
         else if (Objects.equals(colorPerspective, "WHITE")) {
             LeaveGameRequest leaveGameRequest = new LeaveGameRequest(authToken, "WHITE", gameID);
             LeaveGameResult leaveGameResult = server.leaveGame(leaveGameRequest);
+            ws = new WebSocketFacade(serverUrl, notificationHandler);
+            ws.leave(authToken, gameID);
             return String.format("You left game #%d", gameID);
 
         }
         else if (Objects.equals(colorPerspective, "BLACK")) {
             LeaveGameRequest leaveGameRequest = new LeaveGameRequest(authToken, "BLACK", gameID);
             LeaveGameResult leaveGameResult = server.leaveGame(leaveGameRequest);
+            ws = new WebSocketFacade(serverUrl, notificationHandler);
+            ws.leave(authToken, gameID);
             return String.format("You left game #%d", gameID);
         }
         else {
