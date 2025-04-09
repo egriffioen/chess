@@ -1,10 +1,17 @@
 package ui;
 
+import exception.ResponseException;
+import ui.websocket.NotificationHandler;
+import websocket.messages.ErrorMessage;
+import websocket.messages.LoadGameMessage;
+import websocket.messages.NotificationMessage;
+import websocket.messages.ServerMessage;
+
 import java.util.Scanner;
 
 import static ui.EscapeSequences.*;
 
-public class Repl {
+public class Repl implements NotificationHandler {
     private final PreLoginClient preLoginClient;
     private PostLoginClient postLoginClient;
     private InGameClient inGameClient;
@@ -35,7 +42,7 @@ public class Repl {
                     System.out.print(SET_TEXT_COLOR_BLUE + result);
                     if (result.contains("You signed in as")) {
                         state = State.SIGNEDIN;
-                        postLoginClient = new PostLoginClient(serverUrl, preLoginClient.getAuthToken());
+                        postLoginClient = new PostLoginClient(serverUrl, preLoginClient.getAuthToken(), this);
                     }
                 }
                 else if (state == State.SIGNEDIN) {
@@ -46,14 +53,14 @@ public class Repl {
                         colorPerspective = "WHITE";
                         inGameClient = new InGameClient(serverUrl, postLoginClient.getGameID(), preLoginClient.getAuthToken(), colorPerspective, postLoginClient.getObserver());
                         System.out.println();
-                        inGameClient.printChessBoard(colorPerspective);
+                        //inGameClient.printChessBoard(colorPerspective);
                     }
                     else if ((result.contains("You joined") && result.contains("black"))) {
                         state = State.INGAME;
                         colorPerspective = "BLACK";
                         inGameClient = new InGameClient(serverUrl, postLoginClient.getGameID(), preLoginClient.getAuthToken(), colorPerspective, postLoginClient.getObserver());
                         System.out.println();
-                        inGameClient.printChessBoard(colorPerspective);
+                        //inGameClient.printChessBoard(colorPerspective);
                     }
                     if (result.contains("You logged out")) {
                         state = State.SIGNEDOUT;
@@ -67,7 +74,7 @@ public class Repl {
                     System.out.print(SET_TEXT_COLOR_BLUE + result);
                     if (result.contains("quit --> Returning to Lobby")||result.contains("left")) {
                         state = State.SIGNEDIN;
-                        postLoginClient = new PostLoginClient(serverUrl, preLoginClient.getAuthToken());
+                        postLoginClient = new PostLoginClient(serverUrl, preLoginClient.getAuthToken(), this);
                     }
                 }
             } catch (Throwable e) {
@@ -78,6 +85,26 @@ public class Repl {
         System.out.println();
     }
 
+    @Override
+    public void notify(NotificationMessage notificationMessage) {
+        System.out.println(SET_TEXT_COLOR_RED + notificationMessage.getMessage());
+        printPrompt();
+    }
+
+    @Override
+    public void notify(ErrorMessage errorMessage) {
+        System.out.println(SET_TEXT_COLOR_RED + errorMessage.getMessage());
+        printPrompt();
+    }
+
+    @Override
+    public void notify(LoadGameMessage loadGameMessage) throws ResponseException {
+        System.out.println();
+        System.out.println(SET_TEXT_COLOR_RED + loadGameMessage.getMessage());
+        System.out.print(RESET_TEXT_COLOR);
+        inGameClient.printChessBoard(colorPerspective);
+        printPrompt();
+    }
 
     private void printPrompt() {
         System.out.print(RESET_TEXT_COLOR + "\n[" + state + "]" + ">>> " + SET_TEXT_COLOR_GREEN);

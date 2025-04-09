@@ -9,17 +9,23 @@ import model.GameData;
 import request.*;
 import result.*;
 
+import ui.websocket.NotificationHandler;
+import ui.websocket.WebSocketFacade;
+
 public class PostLoginClient {
     private final String authToken;
     private final ServerFacade server;
     private final String serverUrl;
     private Integer joinedGameID = null;
     private boolean observer = false;
+    private final NotificationHandler notificationHandler;
+    private WebSocketFacade ws;
 
-    public PostLoginClient(String serverUrl, String authToken) {
+    public PostLoginClient(String serverUrl, String authToken, NotificationHandler notificationHandler) {
         server = new ServerFacade(serverUrl);
         this.serverUrl = serverUrl;
         this.authToken = authToken;
+        this.notificationHandler = notificationHandler;
     }
 
     public String eval(String input) {
@@ -98,12 +104,16 @@ public class PostLoginClient {
                 if (Objects.equals(playerColor.toUpperCase(), "WHITE")) {
                     JoinGameRequest joinGameRequest = new JoinGameRequest(authToken, "WHITE", realGameID);
                     JoinGameResult joinGameResult = server.joinGame(joinGameRequest);
+                    ws = new WebSocketFacade(serverUrl, notificationHandler);
+                    ws.connectToGame(authToken, joinedGameID);
                     return String.format("You joined game #%d as white.", gameID);
 
                 }
                 else if (Objects.equals(playerColor.toUpperCase(), "BLACK")) {
                     JoinGameRequest joinGameRequest = new JoinGameRequest(authToken, "BLACK", realGameID);
                     JoinGameResult joinGameResult = server.joinGame(joinGameRequest);
+                    ws = new WebSocketFacade(serverUrl, notificationHandler);
+                    ws.connectToGame(authToken, joinedGameID);
                     return String.format("You joined game #%d as black.", gameID);
 
                 }
@@ -175,6 +185,8 @@ public class PostLoginClient {
                 }
                 else {
                     observer = true;
+                    ws = new WebSocketFacade(serverUrl, notificationHandler);
+                    ws.connectToGame(authToken, joinedGameID);
                     return String.format("You are observing game #%d.", gameID);
                 }
 
