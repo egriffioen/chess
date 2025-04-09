@@ -119,6 +119,9 @@ public class InGameClient {
         if (startpos.length()!=2 || endpos.length() != 2) {
             throw new ResponseException(400, "Invalid position");
         }
+        if (!isValidPosition(startpos) || !isValidPosition(endpos)) {
+            throw new ResponseException(400, "Invalid position");
+        }
 
         char startPosColChar = startpos.charAt(0);
         int startPosCol = startPosColChar - 'a' + 1;
@@ -228,15 +231,30 @@ public class InGameClient {
         if (startpos.length()!=2) {
             throw new ResponseException(400, "Invalid position");
         }
+        if (!isValidPosition(startpos)) {
+            throw new ResponseException(400, "Invalid position");
+        }
 
         char startPosColChar = startpos.charAt(0);
         int startPosCol = startPosColChar - 'a' + 1;
         int startPosRow = Character.getNumericValue(startpos.charAt(1));
         ChessPosition position = new ChessPosition(startPosRow, startPosCol);
 
+        if(chessGame.getBoard().getPiece(position)==null) {
+            throw new ResponseException(400, String.format("No piece at %s", startpos));
+        }
+
         Collection<ChessMove> validMoves = chessGame.validMoves(position);
         printHighlightedChessBoard(colorPerspective, validMoves, position);
         return String.format("Valid moves for %s", startpos);
+    }
+
+    private boolean isValidPosition(String position) {
+        String validLetters = "abcdefgh";
+        String validNumbers = "12345678";
+        char char1 = position.charAt(0);
+        char char2 = position.charAt(1);
+        return validLetters.indexOf(char1) != -1 && validNumbers.indexOf(char2) != -1;
     }
 
 

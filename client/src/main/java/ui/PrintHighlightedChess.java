@@ -139,20 +139,40 @@ public class PrintHighlightedChess {
                     ? EscapeSequences.SET_BG_COLOR_LIGHT_GREY
                     : EscapeSequences.SET_BG_COLOR_DARK_GREY;
             String pieceColor = "";
-            ChessPosition positionPrinted = new ChessPosition(8-row, col+1);
-            if (position.equals(positionPrinted)) {
-                squareColor = SET_BG_COLOR_YELLOW;
-            }
-            for (ChessMove move: validMoves) {
-                if (move.getEndPosition().equals(positionPrinted) && squareColor.equals(EscapeSequences.SET_BG_COLOR_DARK_GREY)) {
-                    squareColor = SET_BG_COLOR_DARK_GREEN;
-                    break;
+            if (colorPerspective.equals("WHITE")) {
+                ChessPosition positionPrinted = new ChessPosition(8-row, col+1);
+                if (position.equals(positionPrinted)) {
+                    squareColor = SET_BG_COLOR_YELLOW;
                 }
-                if (move.getEndPosition().equals(positionPrinted) && squareColor.equals(SET_BG_COLOR_LIGHT_GREY)) {
-                    squareColor = SET_BG_COLOR_GREEN;
-                    break;
+                for (ChessMove move: validMoves) {
+                    if (move.getEndPosition().equals(positionPrinted) && squareColor.equals(EscapeSequences.SET_BG_COLOR_DARK_GREY)) {
+                        squareColor = SET_BG_COLOR_DARK_GREEN;
+                        break;
+                    }
+                    if (move.getEndPosition().equals(positionPrinted) && squareColor.equals(SET_BG_COLOR_LIGHT_GREY)) {
+                        squareColor = SET_BG_COLOR_GREEN;
+                        break;
+                    }
                 }
             }
+
+            if (colorPerspective.equals("BLACK")) {
+                ChessPosition positionPrinted = new ChessPosition(row+1, 8-col);
+                if (position.equals(positionPrinted)) {
+                    squareColor = SET_BG_COLOR_YELLOW;
+                }
+                for (ChessMove move: validMoves) {
+                    if (move.getEndPosition().equals(positionPrinted) && squareColor.equals(EscapeSequences.SET_BG_COLOR_DARK_GREY)) {
+                        squareColor = SET_BG_COLOR_DARK_GREEN;
+                        break;
+                    }
+                    if (move.getEndPosition().equals(positionPrinted) && squareColor.equals(SET_BG_COLOR_LIGHT_GREY)) {
+                        squareColor = SET_BG_COLOR_GREEN;
+                        break;
+                    }
+                }
+            }
+
             System.out.print(squareColor + pieceColor + square + EscapeSequences.RESET_TEXT_COLOR +
                     EscapeSequences.RESET_BG_COLOR);
         }
@@ -177,4 +197,5 @@ public class PrintHighlightedChess {
             System.out.println();
         }
     }
+
 }
