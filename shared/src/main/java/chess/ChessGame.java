@@ -14,12 +14,14 @@ public class ChessGame {
 
     private ChessBoard board;
     private TeamColor teamColorTurn;
+    private boolean gameResigned;
 
 
     public ChessGame() {
         board = new ChessBoard();
         board.resetBoard();
         teamColorTurn = TeamColor.WHITE;
+        gameResigned = false;
     }
 
     /**
@@ -247,5 +249,13 @@ public class ChessGame {
                 "board=" + board +
                 ", teamColorTurn=" + teamColorTurn +
                 '}';
+    }
+
+    public boolean isGameResigned() {
+        return gameResigned;
+    }
+
+    public void setGameResigned(boolean gameResigned) {
+        this.gameResigned = gameResigned;
     }
 }

@@ -26,15 +26,16 @@ public class InGameClient {
     private int gameID;
     private String authToken;
     private boolean observer;
-    private boolean resigned = false;
+    private boolean gameComplete;
 
-    public InGameClient(String serverUrl, int gameID, String authToken, String colorPerspective, boolean observer) {
+    public InGameClient(String serverUrl, int gameID, String authToken, String colorPerspective, boolean observer) throws ResponseException {
         server = new ServerFacade(serverUrl);
         this.serverUrl = serverUrl;
         this.gameID = gameID;
         this.authToken = authToken;
         this.colorPerspective = colorPerspective;
         this.observer = observer;
+        this.gameComplete = getCurrentGame().game().isGameResigned();
     }
 
     public String eval(String input) throws ResponseException, InvalidMoveException {
@@ -43,6 +44,7 @@ public class InGameClient {
             var cmd = (tokens.length > 0) ? tokens[0] : "help";
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
+                case "resign" -> resign();
                 case "move" -> makeMove(params);
                 case "leave" -> leave();
                 case "redraw" -> redraw();
@@ -101,9 +103,6 @@ public class InGameClient {
         if (observer) {
             return "You are observing, you can't make moves";
         }
-        if (resigned) {
-            return "Game is over, can't make move";
-        }
 
         if (params.length!=2) {
             throw new ResponseException(400, "Expected: move <current pos> <new position>");
@@ -126,15 +125,35 @@ public class InGameClient {
 
         GameData currentGameData = getCurrentGame();
         ChessGame chessGame = currentGameData.game();
+        if (chessGame.isGameResigned()) {
+            return "Game is resigned, can't make move";
+        }
         if (!chessGame.getTeamTurn().toString().equalsIgnoreCase(colorPerspective)) {
             return "Not your turn";
         }
+        if (chessGame.isInCheckmate(ChessGame.TeamColor.BLACK) || chessGame.isInCheckmate(ChessGame.TeamColor.WHITE)) {
+            gameComplete = true;
+            return "Game is in Checkmate";
+        }
+        if (chessGame.isInStalemate(ChessGame.TeamColor.BLACK) || chessGame.isInStalemate(ChessGame.TeamColor.WHITE)) {
+            gameComplete = true;
+            return "Game is in Stalemate";
+        }
+
         ChessMove move = new ChessMove(startPosition, endPosition, null);
         try {
             chessGame.makeMove(move);
         }
         catch (InvalidMoveException e) {
             throw new ResponseException(400, "Invalid Move: " + e.getMessage());
+        }
+        if (chessGame.isInCheckmate(ChessGame.TeamColor.BLACK) || chessGame.isInCheckmate(ChessGame.TeamColor.WHITE)) {
+            gameComplete = true;
+            System.out.println("Checkmate: game over");
+        }
+        if (chessGame.isInStalemate(ChessGame.TeamColor.BLACK) || chessGame.isInStalemate(ChessGame.TeamColor.WHITE)) {
+            gameComplete = true;
+            System.out.println("Stalemate: game over");
         }
         GameData updatedGameData = new GameData(currentGameData.gameID(), currentGameData.whiteUsername(), currentGameData.blackUsername(), currentGameData.gameName(), chessGame);
         UpdateGameRequest updateGameRequest = new UpdateGameRequest(authToken, gameID, updatedGameData);
@@ -154,6 +173,41 @@ public class InGameClient {
             }
         }
         return currentGame;
+    }
+
+    public String resign() throws ResponseException {
+        GameData gameData = getCurrentGame();
+        ChessGame chessGame = gameData.game();
+        if(chessGame.isGameResigned()) {
+            return "Game is already resigned";
+        }
+        if(chessGame.isInCheckmate(ChessGame.TeamColor.BLACK) || chessGame.isInCheckmate(ChessGame.TeamColor.WHITE)) {
+            return "Game is already over by Checkmate";
+        }
+        if(chessGame.isInStalemate(ChessGame.TeamColor.BLACK) || chessGame.isInStalemate(ChessGame.TeamColor.WHITE)) {
+            return "Game is already over by Stalemate";
+        }
+        System.out.println("Are you sure you want to resign? y/n");
+        Scanner scanner = new Scanner(System.in);
+        String line = scanner.nextLine();
+        if (line.equalsIgnoreCase("y")||line.equalsIgnoreCase("yes")){
+            gameComplete = true;
+            chessGame.setGameResigned(true);
+            GameData updatedGameData = new GameData(
+                    gameData.gameID(),
+                    gameData.whiteUsername(),
+                    gameData.blackUsername(),
+                    gameData.gameName(),
+                    chessGame
+            );
+
+            UpdateGameRequest updateGameRequest = new UpdateGameRequest(authToken, gameID, updatedGameData);
+            server.updateGame(updateGameRequest);
+            return "You resigned from the game. Game is over";
+        }
+        else {
+            return "You did not resign. Keep playing";
+        }
     }
 
 
