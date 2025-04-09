@@ -3,6 +3,7 @@ package server;
 import dataaccess.*;
 import exception.ResponseException;
 import handler.*;
+import server.websocket.WebSocketHandler;
 import service.GameService;
 import service.UserService;
 import spark.*;
@@ -12,12 +13,11 @@ public class Server {
 
 //    private final GameService gameService;
 //    private final UserService userService;
-    //private final WebSocketHandler webSocketHandler;
+    private WebSocketHandler webSocketHandler;
 
     public Server() {
 //        this.gameService = gameService;
 //        this.userService = userService;
-        //webSocketHandler = new WebSocketHandler();
     }
 
     public int run(int desiredPort) {
@@ -50,6 +50,7 @@ public class Server {
             throw new RuntimeException(e);
         }
 
+        webSocketHandler = new WebSocketHandler(authTokens, games);
         UserService userService = new UserService(authTokens, dbUsers);
         GameService gameService = new GameService(authTokens, games);
 
@@ -62,6 +63,8 @@ public class Server {
         JoinGameHandler joinGameHandler = new JoinGameHandler(gameService);
         LeaveGameHandler leaveGameHandler = new LeaveGameHandler(gameService);
         UpdateGameHandler updateGameHandler = new UpdateGameHandler(gameService);
+
+        Spark.webSocket("/ws", webSocketHandler);
         // Register your endpoints and handle exceptions here.
         Spark.post("/user", registerHandler);
         Spark.post("/session", loginHandler);
