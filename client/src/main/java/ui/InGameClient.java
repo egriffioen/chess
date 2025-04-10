@@ -93,22 +93,15 @@ public class InGameClient {
 
     public String leave(String... params) throws ResponseException {
         if (observer) {
-            //ws = new WebSocketFacade(serverUrl, notificationHandler);
             ws.leave(authToken, gameID);
             return String.format("You left game #%d", gameID);
         }
         else if (Objects.equals(colorPerspective, "WHITE")) {
-//            LeaveGameRequest leaveGameRequest = new LeaveGameRequest(authToken, "WHITE", gameID);
-//            LeaveGameResult leaveGameResult = server.leaveGame(leaveGameRequest);
-            //ws = new WebSocketFacade(serverUrl, notificationHandler);
             ws.leave(authToken, gameID);
             return String.format("You left game #%d", gameID);
 
         }
         else if (Objects.equals(colorPerspective, "BLACK")) {
-//            LeaveGameRequest leaveGameRequest = new LeaveGameRequest(authToken, "BLACK", gameID);
-//            LeaveGameResult leaveGameResult = server.leaveGame(leaveGameRequest);
-            //ws = new WebSocketFacade(serverUrl, notificationHandler);
             ws.leave(authToken, gameID);
             return String.format("You left game #%d", gameID);
         }
@@ -171,25 +164,12 @@ public class InGameClient {
             ChessPiece.PieceType type = ChessPiece.PieceType.valueOf(promotion);
             move = new ChessMove(startPosition, endPosition, type);
         }
-//        try {
-//            chessGame.makeMove(move);
-//        }
-//        catch (InvalidMoveException e) {
-//            throw new ResponseException(400, "Invalid Move: " + e.getMessage());
-//        }
-//        if (chessGame.isInCheckmate(ChessGame.TeamColor.BLACK) || chessGame.isInCheckmate(ChessGame.TeamColor.WHITE)) {
-//            gameComplete = true;
-//            System.out.println("Checkmate: game over");
-//        }
-//        if (chessGame.isInStalemate(ChessGame.TeamColor.BLACK) || chessGame.isInStalemate(ChessGame.TeamColor.WHITE)) {
-//            gameComplete = true;
-//            System.out.println("Stalemate: game over");
-//        }
-//        GameData updatedGameData = new GameData(currentGameData.gameID(), currentGameData.whiteUsername(), currentGameData.blackUsername(), currentGameData.gameName(), chessGame);
-//        UpdateGameRequest updateGameRequest = new UpdateGameRequest(authToken, gameID, updatedGameData);
-//        UpdateGameResult updateGameResult = server.updateGame(updateGameRequest);
-//        printChessBoard(colorPerspective);
-        //ws = new WebSocketFacade(serverUrl, notificationHandler);
+        try {
+            chessGame.makeMove(move);
+        }
+        catch (InvalidMoveException e) {
+            throw new ResponseException(400, "Invalid Move: " + e.getMessage());
+        }
         ws.makeMove(authToken, gameID, move);
         return String.format("You moved %s to %s.", startpos, endpos);
     }
@@ -214,8 +194,6 @@ public class InGameClient {
             return "You are an observer, you cannot resign";
         }
         if(chessGame.isGameResigned()) {
-//            ws = new WebSocketFacade(serverUrl, notificationHandler);
-//            ws.resign(authToken, gameID);
             return "Game is already resigned";
         }
         if(chessGame.isInCheckmate(ChessGame.TeamColor.BLACK) || chessGame.isInCheckmate(ChessGame.TeamColor.WHITE)) {
@@ -229,7 +207,6 @@ public class InGameClient {
         String line = scanner.nextLine();
         if (line.equalsIgnoreCase("y")||line.equalsIgnoreCase("yes")){
             gameComplete = true;
-            //ws = new WebSocketFacade(serverUrl, notificationHandler);
             ws.resign(authToken, gameID);
             return "You resigned from the game. Game is over";
         }

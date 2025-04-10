@@ -56,18 +56,12 @@ public class Repl implements NotificationHandler {
                         colorPerspective = "WHITE";
                         inGameClient = new InGameClient(serverUrl, postLoginClient.getGameID(), preLoginClient.getAuthToken(), colorPerspective, postLoginClient.getObserver(), this, ws);
                         System.out.println();
-//                        ws = new WebSocketFacade(serverUrl, this);
-//                        ws.connectToGame(authToken, postLoginClient.getGameID());
-                        //inGameClient.printChessBoard(colorPerspective);
                     }
                     else if ((result.contains("You joined") && result.contains("black"))) {
                         state = State.INGAME;
                         colorPerspective = "BLACK";
                         inGameClient = new InGameClient(serverUrl, postLoginClient.getGameID(), preLoginClient.getAuthToken(), colorPerspective, postLoginClient.getObserver(), this, ws);
                         System.out.println();
-//                        ws = new WebSocketFacade(serverUrl, this);
-//                        ws.connectToGame(authToken, postLoginClient.getGameID());
-                        //inGameClient.printChessBoard(colorPerspective);
                     }
                     if (result.contains("You logged out")) {
                         state = State.SIGNEDOUT;

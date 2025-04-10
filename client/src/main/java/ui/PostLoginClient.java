@@ -99,8 +99,6 @@ public class PostLoginClient {
                     JoinGameRequest joinGameRequest = new JoinGameRequest(authToken, "WHITE", realGameID);
                     JoinGameResult joinGameResult = server.joinGame(joinGameRequest);
                     ws.connectToGame(authToken, joinedGameID);
-//                    ws = new WebSocketFacade(serverUrl, notificationHandler);
-//                    ws.connectToGame(authToken, joinedGameID);
                     return String.format("You joined game #%d as white.", gameID);
 
                 }
@@ -108,10 +106,6 @@ public class PostLoginClient {
                     JoinGameRequest joinGameRequest = new JoinGameRequest(authToken, "BLACK", realGameID);
                     JoinGameResult joinGameResult = server.joinGame(joinGameRequest);
                     ws.connectToGame(authToken, joinedGameID);
-
-
-//                    ws = new WebSocketFacade(serverUrl, notificationHandler);
-//                    ws.connectToGame(authToken, joinedGameID);
                     return String.format("You joined game #%d as black.", gameID);
 
                 }
@@ -175,7 +169,6 @@ public class PostLoginClient {
                 }
                 else {
                     observer = true;
-                    ws = new WebSocketFacade(serverUrl, notificationHandler);
                     ws.connectToGame(authToken, joinedGameID);
                     return String.format("You are observing game #%d.", gameID);
                 }
