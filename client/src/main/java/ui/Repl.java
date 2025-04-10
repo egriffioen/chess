@@ -54,13 +54,15 @@ public class Repl implements NotificationHandler {
                     if ((result.contains("You joined") && result.contains("white")) || result.contains("You are observing")) {
                         state = State.INGAME;
                         colorPerspective = "WHITE";
-                        inGameClient = new InGameClient(serverUrl, postLoginClient.getGameID(), preLoginClient.getAuthToken(), colorPerspective, postLoginClient.getObserver(), this, ws);
+                        inGameClient = new InGameClient(serverUrl, postLoginClient.getGameID(), preLoginClient.getAuthToken(),
+                                colorPerspective, postLoginClient.getObserver(), this, ws);
                         System.out.println();
                     }
                     else if ((result.contains("You joined") && result.contains("black"))) {
                         state = State.INGAME;
                         colorPerspective = "BLACK";
-                        inGameClient = new InGameClient(serverUrl, postLoginClient.getGameID(), preLoginClient.getAuthToken(), colorPerspective, postLoginClient.getObserver(), this, ws);
+                        inGameClient = new InGameClient(serverUrl, postLoginClient.getGameID(), preLoginClient.getAuthToken(),
+                                colorPerspective, postLoginClient.getObserver(), this, ws);
                         System.out.println();
                     }
                     if (result.contains("You logged out")) {

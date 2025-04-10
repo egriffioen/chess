@@ -14,10 +14,6 @@ public class ErrorMessage extends ServerMessage{
         return errorMessage;
     }
 
-//    @Override
-//    public String toString() {
-//        return "Error: " + errorMessage;
-//    }
     @Override
     public String toString() {
         return new Gson().toJson(this);

@@ -25,9 +25,9 @@ public class ConnectionManager {
         for (var c : connections.values()) {
             if (c.session.isOpen()) {
                 if (!c.visitorName.equals(excludeVisitorName)) {
-                    if(c.gameID.equals(gameID))
+                    if(c.gameID.equals(gameID)) {
                         c.send(new Gson().toJson(serverMessage));
-                    //c.send(serverMessage.toString());
+                    }
                 }
             } else {
                 removeList.add(c);
@@ -48,7 +48,6 @@ public class ConnectionManager {
                     if(c.gameID.equals(gameID)) {
                         c.send(new Gson().toJson(serverMessage));
                     }
-                    //c.send(serverMessage.toString());
                 }
             } else {
                 removeList.add(c);

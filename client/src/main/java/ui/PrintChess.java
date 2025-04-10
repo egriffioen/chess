@@ -137,25 +137,6 @@ public class PrintChess {
                     ? EscapeSequences.SET_BG_COLOR_LIGHT_GREY
                     : EscapeSequences.SET_BG_COLOR_DARK_GREY;
             String pieceColor = "";
-//            if (colorPerspective.equals("BLACK")) {
-//                if (row <= 1) {
-//                    pieceColor = EscapeSequences.SET_TEXT_COLOR_WHITE;
-//                } else if (row >= 6) {
-//                    pieceColor = EscapeSequences.SET_TEXT_COLOR_BLACK;
-//                } else {
-//                    pieceColor = "";
-//                }
-//            }
-//
-//            else if(colorPerspective.equals("WHITE")) {
-//                if (row <= 1) {
-//                    pieceColor = EscapeSequences.SET_TEXT_COLOR_BLACK;
-//                } else if (row >= 6) {
-//                    pieceColor = EscapeSequences.SET_TEXT_COLOR_WHITE;
-//                } else {
-//                    pieceColor = "";
-//                }
-//            }
             System.out.print(squareColor + pieceColor + square + EscapeSequences.RESET_TEXT_COLOR +
                     EscapeSequences.RESET_BG_COLOR);
         }

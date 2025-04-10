@@ -30,7 +30,8 @@ public class InGameClient {
     private final NotificationHandler notificationHandler;
     private WebSocketFacade ws;
 
-    public InGameClient(String serverUrl, int gameID, String authToken, String colorPerspective, boolean observer, NotificationHandler notificationHandler, WebSocketFacade ws) throws ResponseException {
+    public InGameClient(String serverUrl, int gameID, String authToken, String colorPerspective, boolean observer,
+                        NotificationHandler notificationHandler, WebSocketFacade ws) throws ResponseException {
         server = new ServerFacade(serverUrl);
         this.serverUrl = serverUrl;
         this.gameID = gameID;
@@ -80,7 +81,8 @@ public class InGameClient {
         printedBoard.print();
     }
 
-    public void printHighlightedChessBoard(String colorPerspective, Collection<ChessMove> validMoves, ChessPosition position) throws ResponseException {
+    public void printHighlightedChessBoard(String colorPerspective, Collection<ChessMove> validMoves, ChessPosition position)
+            throws ResponseException {
         GameData currentGame = getCurrentGame();
         PrintHighlightedChess highlightedBoard = new PrintHighlightedChess(colorPerspective, currentGame.game(), validMoves, position);
         highlightedBoard.print();

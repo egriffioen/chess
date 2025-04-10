@@ -178,13 +178,6 @@ class UserServiceTest {
         CreateGameResult createGameResult = gameService.createGame(createGameRequest);
         ListGamesRequest listGamesRequest = new ListGamesRequest(registerResult.authToken());
         ListGamesResult listGamesResult = gameService.listGames(listGamesRequest);
-
-//        List<Map<String, Object>> expectedGames = new ArrayList<>();
-//        Map<String, Object> gameInfo = new HashMap<>();
-//        gameInfo.put("gameID", createGameResult.gameID());
-//        gameInfo.put("whiteUsername", null);
-//        gameInfo.put("blackUsername", null);
-//        gameInfo.put("gameName", "chess");
         GameData gameData = new GameData(createGameResult.gameID(), null, null, "chess", new ChessGame());
         ArrayList<GameData> expectedGames = null;
         expectedGames.add(gameData);

@@ -20,22 +20,6 @@ public class MemoryGameDAO implements GameDAO{
         return gameID;
     }
 
-//    public List<Map<String, Object>> listGames() throws ResponseException {
-//        List<Map<String, Object>> gamesList = new ArrayList<>();
-//
-//        for (GameData gameData : games.values()) {
-//            Map<String, Object> gameInfo = new HashMap<>();
-//            gameInfo.put("gameID", gameData.gameID());
-//            gameInfo.put("whiteUsername", gameData.whiteUsername());
-//            gameInfo.put("blackUsername", gameData.blackUsername());
-//            gameInfo.put("gameName", gameData.gameName());
-//
-//            gamesList.add(gameInfo);
-//        }
-//
-//        return gamesList;
-//    }
-
     public ArrayList<GameData> listGames() throws ResponseException {
         ArrayList<GameData> gamesList = new ArrayList<>();
 

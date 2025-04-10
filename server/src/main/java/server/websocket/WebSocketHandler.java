@@ -177,66 +177,73 @@ public class WebSocketHandler {
             connections.broadcastAllOthers(username, loadGame, gameID);
             connections.broadcastRootClient(username, loadGame, gameID);
 
-            var notificationMessage = String.format("%s moved %s to %s", username, move.getStartPosition().toString(), move.getEndPosition().toString());
+            var notificationMessage = String.format("%s moved %s to %s",
+                    username, move.getStartPosition().toString(), move.getEndPosition().toString());
             var notification = new NotificationMessage(notificationMessage);
             connections.broadcastAllOthers(username, notification, gameID);
 
-            if (game.isInCheckmate(ChessGame.TeamColor.BLACK)) {
-                gameData.game().setGameResigned(true);
-                gameDAO.updateGame(gameID, gameData);
-                var checkMate = String.format("%s (Black) is in Checkmate", gameData.blackUsername());
-                var checkMateNotification = new NotificationMessage(checkMate);
-                connections.broadcastAllOthers(username, checkMateNotification, gameID);
-                connections.broadcastRootClient(username, checkMateNotification, gameID);
-                return;
-            }
-            if (game.isInCheckmate(ChessGame.TeamColor.WHITE)) {
-                gameData.game().setGameResigned(true);
-                gameDAO.updateGame(gameID, gameData);
-                var checkMate = String.format("%s (White) is in Checkmate", gameData.whiteUsername());
-                var checkMateNotification = new NotificationMessage(checkMate);
-                connections.broadcastAllOthers(username, checkMateNotification, gameID);
-                connections.broadcastRootClient(username, checkMateNotification, gameID);
-                return;
-            }
+            checkEndGame(gameData, username, gameID);
 
-            if (game.isInCheck(ChessGame.TeamColor.BLACK)) {
-                var check = String.format("%s (Black) is in Check", gameData.blackUsername());
-                var checkNotification = new NotificationMessage(check);
-                connections.broadcastAllOthers(username, checkNotification, gameID);
-                connections.broadcastRootClient(username, checkNotification, gameID);
-                return;
-            }
-            if (game.isInCheck(ChessGame.TeamColor.WHITE)) {
-                var check = String.format("%s (White) is in Check", gameData.whiteUsername());
-                var checkNotification = new NotificationMessage(check);
-                connections.broadcastAllOthers(username, checkNotification, gameID);
-                connections.broadcastRootClient(username, checkNotification, gameID);
-                return;
-            }
-
-            if (game.isInStalemate(ChessGame.TeamColor.BLACK)) {
-                gameData.game().setGameResigned(true);
-                gameDAO.updateGame(gameID, gameData);
-                var staleMate = String.format("%s (Black) is in Stalemate", gameData.blackUsername());
-                var staleMateNotification = new NotificationMessage(staleMate);
-                connections.broadcastAllOthers(username, staleMateNotification, gameID);
-                connections.broadcastRootClient(username, staleMateNotification, gameID);
-                return;
-            }
-            if (game.isInStalemate(ChessGame.TeamColor.WHITE)) {
-                gameData.game().setGameResigned(true);
-                gameDAO.updateGame(gameID, gameData);
-                var staleMate = String.format("%s (White) is in Stalemate", gameData.whiteUsername());
-                var staleMateNotification = new NotificationMessage(staleMate);
-                connections.broadcastAllOthers(username, staleMateNotification, gameID);
-                connections.broadcastRootClient(username, staleMateNotification, gameID);
-                return;
-            }
         }
         catch (InvalidMoveException e) {
             var error = new ErrorMessage(e.getMessage());
             connections.broadcastRootClient(username, error, gameID);
+        }
+    }
+
+    private void checkEndGame(GameData gameData, String username, Integer gameID) throws ResponseException, IOException {
+        ChessGame game = gameData.game();
+        if (game.isInCheckmate(ChessGame.TeamColor.BLACK)) {
+            gameData.game().setGameResigned(true);
+            gameDAO.updateGame(gameID, gameData);
+            var checkMate = String.format("%s (Black) is in Checkmate", gameData.blackUsername());
+            var checkMateNotification = new NotificationMessage(checkMate);
+            connections.broadcastAllOthers(username, checkMateNotification, gameID);
+            connections.broadcastRootClient(username, checkMateNotification, gameID);
+            return;
+        }
+        if (game.isInCheckmate(ChessGame.TeamColor.WHITE)) {
+            gameData.game().setGameResigned(true);
+            gameDAO.updateGame(gameID, gameData);
+            var checkMate = String.format("%s (White) is in Checkmate", gameData.whiteUsername());
+            var checkMateNotification = new NotificationMessage(checkMate);
+            connections.broadcastAllOthers(username, checkMateNotification, gameID);
+            connections.broadcastRootClient(username, checkMateNotification, gameID);
+            return;
+        }
+
+        if (game.isInCheck(ChessGame.TeamColor.BLACK)) {
+            var check = String.format("%s (Black) is in Check", gameData.blackUsername());
+            var checkNotification = new NotificationMessage(check);
+            connections.broadcastAllOthers(username, checkNotification, gameID);
+            connections.broadcastRootClient(username, checkNotification, gameID);
+            return;
+        }
+        if (game.isInCheck(ChessGame.TeamColor.WHITE)) {
+            var check = String.format("%s (White) is in Check", gameData.whiteUsername());
+            var checkNotification = new NotificationMessage(check);
+            connections.broadcastAllOthers(username, checkNotification, gameID);
+            connections.broadcastRootClient(username, checkNotification, gameID);
+            return;
+        }
+
+        if (game.isInStalemate(ChessGame.TeamColor.BLACK)) {
+            gameData.game().setGameResigned(true);
+            gameDAO.updateGame(gameID, gameData);
+            var staleMate = String.format("%s (Black) is in Stalemate", gameData.blackUsername());
+            var staleMateNotification = new NotificationMessage(staleMate);
+            connections.broadcastAllOthers(username, staleMateNotification, gameID);
+            connections.broadcastRootClient(username, staleMateNotification, gameID);
+            return;
+        }
+        if (game.isInStalemate(ChessGame.TeamColor.WHITE)) {
+            gameData.game().setGameResigned(true);
+            gameDAO.updateGame(gameID, gameData);
+            var staleMate = String.format("%s (White) is in Stalemate", gameData.whiteUsername());
+            var staleMateNotification = new NotificationMessage(staleMate);
+            connections.broadcastAllOthers(username, staleMateNotification, gameID);
+            connections.broadcastRootClient(username, staleMateNotification, gameID);
+            return;
         }
     }
 
