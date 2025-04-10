@@ -45,18 +45,14 @@ public class WebSocketFacade extends Endpoint {
                                 break;
                             case LOAD_GAME:
                                 LoadGameMessage loadGameMessage = new Gson().fromJson(message, LoadGameMessage.class);
-                                try {
-                                    notificationHandler.notify(loadGameMessage);
-                                } catch (ResponseException e) {
-                                    throw new RuntimeException(e);
-                                }
+                                notificationHandler.notify(loadGameMessage);
                                 break;
                             case ERROR:
                                 ErrorMessage errorMessage = new Gson().fromJson(message, ErrorMessage.class);
                                 notificationHandler.notify(errorMessage);
                                 break;
                         }
-                    }catch(InterruptedException e){
+                    }catch(InterruptedException | ResponseException e){
                         System.out.print("Error: Interrupted");
                     }
                 }
