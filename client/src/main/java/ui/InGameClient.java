@@ -45,6 +45,7 @@ public class InGameClient {
 
     public String eval(String input) throws ResponseException, InvalidMoveException {
         try {
+            //Thread.sleep(2000);
             var tokens = input.toLowerCase().split(" ");
             var cmd = (tokens.length > 0) ? tokens[0] : "help";
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
@@ -59,6 +60,8 @@ public class InGameClient {
             };
         } catch (ResponseException ex) {
             return ex.getMessage();
+        //} catch (InterruptedException e) {
+            //throw new RuntimeException(e);
         }
     }
 

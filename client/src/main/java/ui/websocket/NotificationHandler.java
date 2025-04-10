@@ -7,7 +7,7 @@ import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 
 public interface NotificationHandler {
-    void notify(NotificationMessage message);
+    void notify(NotificationMessage message) throws InterruptedException;
     void notify(LoadGameMessage message) throws ResponseException;
-    void notify(ErrorMessage message);
+    void notify(ErrorMessage message) throws InterruptedException;
 }

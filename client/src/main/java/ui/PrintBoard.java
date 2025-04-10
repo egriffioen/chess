@@ -31,6 +31,7 @@ public abstract class PrintBoard {
     }
 
     private void printWhite() {
+        System.out.println();
         setBoardWhite();
         System.out.print(RESET_TEXT_COLOR);
         printLetterGrid();
@@ -45,6 +46,7 @@ public abstract class PrintBoard {
     }
 
     private void printBlack() {
+        System.out.println();
         setBoardBlack();
         System.out.print(RESET_TEXT_COLOR);
         printLetterGrid();

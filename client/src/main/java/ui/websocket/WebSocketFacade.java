@@ -37,23 +37,27 @@ public class WebSocketFacade extends Endpoint {
                 public void onMessage(String message) {
                     ServerMessage notification = new Gson().fromJson(message, ServerMessage.class);
                     var messageType = notification.getServerMessageType();
-                    switch(messageType) {
-                        case NOTIFICATION:
-                            NotificationMessage notificationMessage = new Gson().fromJson(message, NotificationMessage.class);
-                            notificationHandler.notify(notificationMessage);
-                            break;
-                        case LOAD_GAME:
-                            LoadGameMessage loadGameMessage = new Gson().fromJson(message, LoadGameMessage.class);
-                            try {
-                                notificationHandler.notify(loadGameMessage);
-                            } catch (ResponseException e) {
-                                throw new RuntimeException(e);
-                            }
-                            break;
-                        case ERROR:
-                            ErrorMessage errorMessage = new Gson().fromJson(message, ErrorMessage.class);
-                            notificationHandler.notify(errorMessage);
-                            break;
+                    try {
+                        switch (messageType) {
+                            case NOTIFICATION:
+                                NotificationMessage notificationMessage = new Gson().fromJson(message, NotificationMessage.class);
+                                notificationHandler.notify(notificationMessage);
+                                break;
+                            case LOAD_GAME:
+                                LoadGameMessage loadGameMessage = new Gson().fromJson(message, LoadGameMessage.class);
+                                try {
+                                    notificationHandler.notify(loadGameMessage);
+                                } catch (ResponseException e) {
+                                    throw new RuntimeException(e);
+                                }
+                                break;
+                            case ERROR:
+                                ErrorMessage errorMessage = new Gson().fromJson(message, ErrorMessage.class);
+                                notificationHandler.notify(errorMessage);
+                                break;
+                        }
+                    }catch(InterruptedException e){
+                        System.out.print("Error: Interrupted");
                     }
                 }
             });

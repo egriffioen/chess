@@ -28,7 +28,7 @@ public class Repl implements NotificationHandler {
         this.serverUrl = serverUrl;
     }
 
-    public void run() {
+    public void run() throws InterruptedException {
         System.out.println("Welcome to 240 chess");
         System.out.print(preLoginClient.help());
 
@@ -56,14 +56,14 @@ public class Repl implements NotificationHandler {
                         colorPerspective = "WHITE";
                         inGameClient = new InGameClient(serverUrl, postLoginClient.getGameID(), preLoginClient.getAuthToken(),
                                 colorPerspective, postLoginClient.getObserver(), this, ws);
-                        System.out.println();
+                        //System.out.println();
                     }
                     else if ((result.contains("You joined") && result.contains("black"))) {
                         state = State.INGAME;
                         colorPerspective = "BLACK";
                         inGameClient = new InGameClient(serverUrl, postLoginClient.getGameID(), preLoginClient.getAuthToken(),
                                 colorPerspective, postLoginClient.getObserver(), this, ws);
-                        System.out.println();
+                        //System.out.println();
                     }
                     if (result.contains("You logged out")) {
                         state = State.SIGNEDOUT;
@@ -90,13 +90,13 @@ public class Repl implements NotificationHandler {
     }
 
     @Override
-    public void notify(NotificationMessage notificationMessage) {
+    public void notify(NotificationMessage notificationMessage) throws InterruptedException {
         System.out.println(SET_TEXT_COLOR_RED + notificationMessage.getMessage());
         printPrompt();
     }
 
     @Override
-    public void notify(ErrorMessage errorMessage) {
+    public void notify(ErrorMessage errorMessage) throws InterruptedException {
         System.out.println(SET_TEXT_COLOR_RED + errorMessage.getMessage());
         printPrompt();
     }
@@ -104,13 +104,14 @@ public class Repl implements NotificationHandler {
     @Override
     public void notify(LoadGameMessage loadGameMessage) throws ResponseException {
         //System.out.println();
-        System.out.println(RESET_TEXT_COLOR);
+        System.out.print(RESET_TEXT_COLOR);
         PrintChess printChess = new PrintChess(colorPerspective, loadGameMessage.getGame());
         printChess.print();
         //printPrompt();
     }
 
-    private void printPrompt() {
+    private void printPrompt() throws InterruptedException {
+        Thread.sleep(1000);
         System.out.print(RESET_TEXT_COLOR + "\n[" + state + "]" + ">>> " + SET_TEXT_COLOR_GREEN);
     }
 
