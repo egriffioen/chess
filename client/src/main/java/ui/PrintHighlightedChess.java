@@ -36,16 +36,7 @@ public class PrintHighlightedChess extends PrintBoard{
                 if (position.equals(positionPrinted)) {
                     squareColor = SET_BG_COLOR_YELLOW;
                 }
-                for (ChessMove move: validMoves) {
-                    if (move.getEndPosition().equals(positionPrinted) && squareColor.equals(EscapeSequences.SET_BG_COLOR_DARK_GREY)) {
-                        squareColor = SET_BG_COLOR_DARK_GREEN;
-                        break;
-                    }
-                    if (move.getEndPosition().equals(positionPrinted) && squareColor.equals(SET_BG_COLOR_LIGHT_GREY)) {
-                        squareColor = SET_BG_COLOR_GREEN;
-                        break;
-                    }
-                }
+                squareColor = getSquareColor(positionPrinted, squareColor);
             }
 
             if (colorPerspective.equals("BLACK")) {
@@ -53,21 +44,26 @@ public class PrintHighlightedChess extends PrintBoard{
                 if (position.equals(positionPrinted)) {
                     squareColor = SET_BG_COLOR_YELLOW;
                 }
-                for (ChessMove move: validMoves) {
-                    if (move.getEndPosition().equals(positionPrinted) && squareColor.equals(EscapeSequences.SET_BG_COLOR_DARK_GREY)) {
-                        squareColor = SET_BG_COLOR_DARK_GREEN;
-                        break;
-                    }
-                    if (move.getEndPosition().equals(positionPrinted) && squareColor.equals(SET_BG_COLOR_LIGHT_GREY)) {
-                        squareColor = SET_BG_COLOR_GREEN;
-                        break;
-                    }
-                }
+                squareColor = getSquareColor(positionPrinted, squareColor);
             }
 
             System.out.print(squareColor + pieceColor + square + EscapeSequences.RESET_TEXT_COLOR +
                     EscapeSequences.RESET_BG_COLOR);
         }
+    }
+
+    private String getSquareColor(ChessPosition positionPrinted, String squareColor) {
+        for (ChessMove move: validMoves) {
+            if (move.getEndPosition().equals(positionPrinted) && squareColor.equals(EscapeSequences.SET_BG_COLOR_DARK_GREY)) {
+                squareColor = SET_BG_COLOR_DARK_GREEN;
+                break;
+            }
+            if (move.getEndPosition().equals(positionPrinted) && squareColor.equals(SET_BG_COLOR_LIGHT_GREY)) {
+                squareColor = SET_BG_COLOR_GREEN;
+                break;
+            }
+        }
+        return squareColor;
     }
 
 
