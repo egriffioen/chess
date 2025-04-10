@@ -88,15 +88,7 @@ public class PostLoginClient {
                     realGameID = games.get(gameID - 1).gameID();
                     joinedGameID = realGameID;
                 }
-//                int gameIDFromList = 1;
-//                for (GameData game : games) {
-////                    var gameIDFromList = ((Number) game.gameID());
-//                    if (gameIDFromList == gameID) {
-//                        gameExists = true;
-//                        break;
-//                    }
-//                    gameIDFromList++;
-//                }
+
                 if (!gameExists) {
                     throw new ResponseException(400, "Invalid game ID. Please choose a valid game.");
                 }
@@ -165,14 +157,6 @@ public class PostLoginClient {
                     throw new ResponseException(400, "No available games to observe.");
                 }
 
-//                boolean gameExists = false;
-//                for (GameData game : games) {
-//                    var gameIDFromList = game.gameID();
-//                    if (gameIDFromList == gameID) {
-//                        gameExists = true;
-//                        break;
-//                    }
-//                }
                 int realGameID = 0;
                 boolean gameExists = false;
                 if (gameID > 0 && gameID <= games.size()) {

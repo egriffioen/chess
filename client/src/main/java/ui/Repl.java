@@ -34,7 +34,6 @@ public class Repl implements NotificationHandler {
         var result = "";
         while (!result.equals("quit")) {
             printPrompt();
-            System.out.println();
             String line = scanner.nextLine();
 
             try {
@@ -102,7 +101,7 @@ public class Repl implements NotificationHandler {
     public void notify(LoadGameMessage loadGameMessage) throws ResponseException {
         System.out.println();
         System.out.println(SET_TEXT_COLOR_RED + loadGameMessage.getMessage());
-        System.out.print(RESET_TEXT_COLOR);
+        System.out.println(RESET_TEXT_COLOR);
         inGameClient.printChessBoard(colorPerspective);
         printPrompt();
     }
