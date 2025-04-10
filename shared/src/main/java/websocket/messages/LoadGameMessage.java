@@ -1,19 +1,22 @@
 package websocket.messages;
 
-public class LoadGameMessage extends ServerMessage{
-    private final String game;
+import chess.ChessGame;
+import com.google.gson.Gson;
 
-    public LoadGameMessage(String game) {
+public class LoadGameMessage extends ServerMessage{
+    private final ChessGame game;
+
+    public LoadGameMessage(ChessGame game) {
         super(ServerMessageType.LOAD_GAME); // Always set the type to NOTIFICATION
         this.game = game;
     }
 
-    public String getMessage() {
+    public ChessGame getGame() {
         return game;
     }
 
     @Override
     public String toString() {
-        return "NotificationMessage: " + game;
+        return new Gson().toJson(this);
     }
 }

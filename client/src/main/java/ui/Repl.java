@@ -2,6 +2,7 @@ package ui;
 
 import exception.ResponseException;
 import ui.websocket.NotificationHandler;
+import ui.websocket.WebSocketFacade;
 import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
@@ -19,8 +20,9 @@ public class Repl implements NotificationHandler {
     private String authToken = null;
     private String serverUrl;
     private String colorPerspective = null;
+    private WebSocketFacade ws;
 
-    public Repl(String serverUrl) {
+    public Repl(String serverUrl) throws ResponseException {
         preLoginClient = new PreLoginClient(serverUrl);
         state = State.SIGNEDOUT;
         this.serverUrl = serverUrl;
@@ -42,7 +44,8 @@ public class Repl implements NotificationHandler {
                     System.out.print(SET_TEXT_COLOR_BLUE + result);
                     if (result.contains("You signed in as")) {
                         state = State.SIGNEDIN;
-                        postLoginClient = new PostLoginClient(serverUrl, preLoginClient.getAuthToken(), this);
+                        ws = new WebSocketFacade(serverUrl, this);
+                        postLoginClient = new PostLoginClient(serverUrl, preLoginClient.getAuthToken(), this, ws);
                     }
                 }
                 else if (state == State.SIGNEDIN) {
@@ -51,15 +54,19 @@ public class Repl implements NotificationHandler {
                     if ((result.contains("You joined") && result.contains("white")) || result.contains("You are observing")) {
                         state = State.INGAME;
                         colorPerspective = "WHITE";
-                        inGameClient = new InGameClient(serverUrl, postLoginClient.getGameID(), preLoginClient.getAuthToken(), colorPerspective, postLoginClient.getObserver(), this);
+                        inGameClient = new InGameClient(serverUrl, postLoginClient.getGameID(), preLoginClient.getAuthToken(), colorPerspective, postLoginClient.getObserver(), this, ws);
                         System.out.println();
+//                        ws = new WebSocketFacade(serverUrl, this);
+//                        ws.connectToGame(authToken, postLoginClient.getGameID());
                         //inGameClient.printChessBoard(colorPerspective);
                     }
                     else if ((result.contains("You joined") && result.contains("black"))) {
                         state = State.INGAME;
                         colorPerspective = "BLACK";
-                        inGameClient = new InGameClient(serverUrl, postLoginClient.getGameID(), preLoginClient.getAuthToken(), colorPerspective, postLoginClient.getObserver(), this);
+                        inGameClient = new InGameClient(serverUrl, postLoginClient.getGameID(), preLoginClient.getAuthToken(), colorPerspective, postLoginClient.getObserver(), this, ws);
                         System.out.println();
+//                        ws = new WebSocketFacade(serverUrl, this);
+//                        ws.connectToGame(authToken, postLoginClient.getGameID());
                         //inGameClient.printChessBoard(colorPerspective);
                     }
                     if (result.contains("You logged out")) {
@@ -74,7 +81,8 @@ public class Repl implements NotificationHandler {
                     System.out.print(SET_TEXT_COLOR_BLUE + result);
                     if (result.contains("quit --> Returning to Lobby")||result.contains("left")) {
                         state = State.SIGNEDIN;
-                        postLoginClient = new PostLoginClient(serverUrl, preLoginClient.getAuthToken(), this);
+                        ws = new WebSocketFacade(serverUrl, this);
+                        postLoginClient = new PostLoginClient(serverUrl, preLoginClient.getAuthToken(), this, ws);
                     }
                 }
             } catch (Throwable e) {
@@ -99,11 +107,11 @@ public class Repl implements NotificationHandler {
 
     @Override
     public void notify(LoadGameMessage loadGameMessage) throws ResponseException {
-        System.out.println();
-        System.out.println(SET_TEXT_COLOR_RED + loadGameMessage.getMessage());
+        //System.out.println();
         System.out.println(RESET_TEXT_COLOR);
-        inGameClient.printChessBoard(colorPerspective);
-        printPrompt();
+        PrintChess printChess = new PrintChess(colorPerspective, loadGameMessage.getGame());
+        printChess.print();
+        //printPrompt();
     }
 
     private void printPrompt() {

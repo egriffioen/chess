@@ -38,7 +38,7 @@ public class WebSocketHandler {
         switch (userGameCommand.getCommandType()) {
             case CONNECT -> connect(userGameCommand.getAuthToken(), session, userGameCommand.getGameID());
             case LEAVE -> leave(userGameCommand.getAuthToken(), userGameCommand.getGameID());
-            case MAKE_MOVE -> makeMove(new Gson().fromJson(message, MakeMoveCommand.class));
+            case MAKE_MOVE -> makeMove(new Gson().fromJson(message, MakeMoveCommand.class), session);
             case RESIGN -> resign(userGameCommand.getAuthToken(), userGameCommand.getGameID());
         }
     }
@@ -46,21 +46,22 @@ public class WebSocketHandler {
     private void connect(String authToken, Session session, Integer gameID) throws IOException, ResponseException {
         AuthData authData = authDAO.getAuthToken(authToken);
         if (authData == null) {
-            connections.add("invalidAuthtoken", session);
+            connections.add(authToken, session, gameID);
             var error = new ErrorMessage("Invalid Authtoken");
-            connections.broadcastRootClient("invalidAuthtoken", error);
-            connections.remove("invalidAuthtoken");
+            connections.broadcastRootClient(authToken, error, gameID);
+            connections.remove(authToken);
             return;
         }
         String username = authData.username();
 
+
         String teamColor = null;
         GameData gameData = gameDAO.getGame(gameID);
         if (gameData == null) {
-            connections.add(authToken, session);
+            connections.add(username, session, gameID);
             var error = new ErrorMessage("Invalid GameID");
-            connections.broadcastRootClient(authToken, error);
-            connections.remove(authToken);
+            connections.broadcastRootClient(username, error, gameID);
+            connections.remove(username);
             return;
         }
         if (username.equals(gameData.whiteUsername())) {
@@ -73,19 +74,18 @@ public class WebSocketHandler {
             teamColor = "Observer";
         }
 
-        //TODO SEND LOAD_GAME BACK TO CLIENT
-        connections.add(authToken, session);
+        connections.add(username, session, gameID);
         var message = String.format("%s joined the game as %s", username, teamColor);
         var notification = new NotificationMessage(message);
-        connections.broadcastAllOthers(authToken, notification);
-        var loadGame = new LoadGameMessage(String.format("Loading Game %d", gameID));
-        connections.broadcastRootClient(authToken, loadGame);
+        connections.broadcastAllOthers(username, notification, gameID);
+        var loadGame = new LoadGameMessage(gameData.game());
+        connections.broadcastRootClient(username, loadGame, gameID);
     }
 
     private void leave(String authToken, Integer gameID) throws IOException, ResponseException {
-        connections.remove(authToken);
         AuthData authData = authDAO.getAuthToken(authToken);
         String username = authData.username();
+        connections.remove(username);
         String teamColor = null;
         GameData gameData = gameDAO.getGame(gameID);
         if (username.equals(gameData.whiteUsername())) {
@@ -103,7 +103,7 @@ public class WebSocketHandler {
 
         var message = String.format("%s left the game", username);
         var notification = new NotificationMessage(message);
-        connections.broadcastAllOthers(authToken, notification);
+        connections.broadcastAllOthers(username, notification, gameID);
     }
 
     private void resign(String authToken, Integer gameID) throws IOException, ResponseException {
@@ -112,31 +112,37 @@ public class WebSocketHandler {
         GameData gameData = gameDAO.getGame(gameID);
         if(!username.equals(gameData.whiteUsername()) && !username.equals(gameData.blackUsername())) {
             var error = new ErrorMessage("Observer can not resign");
-            connections.broadcastRootClient(authToken, error);
+            connections.broadcastRootClient(username, error, gameID);
             return;
         }
 
         if (gameData.game().isGameResigned()) {
             var error = new ErrorMessage("Game already resigned");
-            connections.broadcastRootClient(authToken, error);
+            connections.broadcastRootClient(username, error, gameID);
             return;
         }
         gameData.game().setGameResigned(true);
         gameDAO.updateGame(gameID, gameData);
         var message = String.format("%s resigned the game", username);
         var notification = new NotificationMessage(message);
-        connections.broadcastAllOthers(authToken, notification);
-        connections.broadcastRootClient(authToken, notification);
+        connections.broadcastAllOthers(username, notification, gameID);
+        connections.broadcastRootClient(username, notification, gameID);
     }
 
-    private void makeMove(MakeMoveCommand makeMoveCommand) throws IOException, ResponseException, InvalidMoveException {
+    private void makeMove(MakeMoveCommand makeMoveCommand, Session session) throws IOException, ResponseException, InvalidMoveException {
         String authToken = makeMoveCommand.getAuthToken();
         Integer gameID = makeMoveCommand.getGameID();
         ChessMove move = makeMoveCommand.getMove();
         AuthData authData = authDAO.getAuthToken(authToken);
+        if (authData == null) {
+            var error = new ErrorMessage("Invalid Authtoken");
+            session.getRemote().sendString(error.toString());
+            return;
+        }
         String username = authData.username();
         GameData gameData = gameDAO.getGame(gameID);
         ChessGame game = gameData.game();
+
         ChessGame.TeamColor teamColor = null;
         if (username.equals(gameData.whiteUsername())) {
             teamColor = ChessGame.TeamColor.WHITE;
@@ -144,84 +150,94 @@ public class WebSocketHandler {
         if (username.equals(gameData.blackUsername())) {
             teamColor = ChessGame.TeamColor.BLACK;
         }
+
         if(!username.equals(gameData.whiteUsername()) && !username.equals(gameData.blackUsername())) {
             var error = new ErrorMessage("Observer can not make move");
-            connections.broadcastRootClient(authToken, error);
+            connections.broadcastRootClient(username, error, gameID);
             return;
         }
 
         if (gameData.game().isGameResigned()) {
             var error = new ErrorMessage("Game already over");
-            connections.broadcastRootClient(authToken, error);
+            connections.broadcastRootClient(username, error, gameID);
+            return;
+        }
+        if (game.getBoard().getPiece(move.getStartPosition()).getTeamColor()!=teamColor) {
+            var error = new ErrorMessage("Not your team's piece");
+            connections.broadcastRootClient(username, error, gameID);
             return;
         }
 
-        Collection<ChessMove> validMoves = game.validMoves(move.getStartPosition());
-        for(ChessMove validMove: validMoves) {
-            if (move.equals(validMove)) {
-                game.makeMove(move);
-                gameData = new GameData(gameData.gameID(), gameData.whiteUsername(), gameData.blackUsername(), gameData.gameName(), game);
+        try {
+            game.makeMove(move);
+            gameData = new GameData(gameData.gameID(), gameData.whiteUsername(), gameData.blackUsername(), gameData.gameName(), game);
+            gameDAO.updateGame(gameID, gameData);
+
+            var loadGame = new LoadGameMessage(gameData.game());
+            connections.broadcastAllOthers(username, loadGame, gameID);
+            connections.broadcastRootClient(username, loadGame, gameID);
+
+            var notificationMessage = String.format("%s moved %s to %s", username, move.getStartPosition().toString(), move.getEndPosition().toString());
+            var notification = new NotificationMessage(notificationMessage);
+            connections.broadcastAllOthers(username, notification, gameID);
+
+            if (game.isInCheckmate(ChessGame.TeamColor.BLACK)) {
+                gameData.game().setGameResigned(true);
                 gameDAO.updateGame(gameID, gameData);
+                var checkMate = String.format("%s (Black) is in Checkmate", gameData.blackUsername());
+                var checkMateNotification = new NotificationMessage(checkMate);
+                connections.broadcastAllOthers(username, checkMateNotification, gameID);
+                connections.broadcastRootClient(username, checkMateNotification, gameID);
+                return;
+            }
+            if (game.isInCheckmate(ChessGame.TeamColor.WHITE)) {
+                gameData.game().setGameResigned(true);
+                gameDAO.updateGame(gameID, gameData);
+                var checkMate = String.format("%s (White) is in Checkmate", gameData.whiteUsername());
+                var checkMateNotification = new NotificationMessage(checkMate);
+                connections.broadcastAllOthers(username, checkMateNotification, gameID);
+                connections.broadcastRootClient(username, checkMateNotification, gameID);
+                return;
+            }
 
-                var message = String.format("Loading Game");
-                var loadGame = new LoadGameMessage(message);
-                connections.broadcastAllOthers(authToken, loadGame);
-                connections.broadcastRootClient(authToken, loadGame);
+            if (game.isInCheck(ChessGame.TeamColor.BLACK)) {
+                var check = String.format("%s (Black) is in Check", gameData.blackUsername());
+                var checkNotification = new NotificationMessage(check);
+                connections.broadcastAllOthers(username, checkNotification, gameID);
+                connections.broadcastRootClient(username, checkNotification, gameID);
+                return;
+            }
+            if (game.isInCheck(ChessGame.TeamColor.WHITE)) {
+                var check = String.format("%s (White) is in Check", gameData.whiteUsername());
+                var checkNotification = new NotificationMessage(check);
+                connections.broadcastAllOthers(username, checkNotification, gameID);
+                connections.broadcastRootClient(username, checkNotification, gameID);
+                return;
+            }
 
-                var notificationMessage = String.format("%s moved %s to %s", username, move.getStartPosition().toString(), move.getEndPosition().toString());
-                var notification = new NotificationMessage(notificationMessage);
-                connections.broadcastAllOthers(authToken, notification);
-
-                if (game.isInCheckmate(ChessGame.TeamColor.BLACK)) {
-                    var checkMate = String.format("%s (Black) is in Checkmate", gameData.blackUsername());
-                    var checkMateNotification = new NotificationMessage(checkMate);
-                    connections.broadcastAllOthers(authToken, checkMateNotification);
-                    connections.broadcastRootClient(authToken, checkMateNotification);
-                }
-                if (game.isInCheckmate(ChessGame.TeamColor.WHITE)) {
-                    var checkMate = String.format("%s (White) is in Checkmate", gameData.whiteUsername());
-                    var checkMateNotification = new NotificationMessage(checkMate);
-                    connections.broadcastAllOthers(authToken, checkMateNotification);
-                    connections.broadcastRootClient(authToken, checkMateNotification);
-                }
-
-                if (game.isInCheck(ChessGame.TeamColor.BLACK)) {
-                    var check = String.format("%s (Black) is in Check", gameData.blackUsername());
-                    var checkNotification = new NotificationMessage(check);
-                    connections.broadcastAllOthers(authToken, checkNotification);
-                    connections.broadcastRootClient(authToken, checkNotification);
-                }
-                if (game.isInCheck(ChessGame.TeamColor.WHITE)) {
-                    var check = String.format("%s (White) is in Check", gameData.whiteUsername());
-                    var checkNotification = new NotificationMessage(check);
-                    connections.broadcastAllOthers(authToken, checkNotification);
-                    connections.broadcastRootClient(authToken, checkNotification);
-                }
-
-                if (game.isInStalemate(ChessGame.TeamColor.BLACK)) {
-                    var staleMate = String.format("%s (Black) is in Stalemate", gameData.blackUsername());
-                    var staleMateNotification = new NotificationMessage(staleMate);
-                    connections.broadcastAllOthers(authToken, staleMateNotification);
-                    connections.broadcastRootClient(authToken, staleMateNotification);
-                }
-                if (game.isInStalemate(ChessGame.TeamColor.WHITE)) {
-                    var staleMate = String.format("%s (White) is in Stalemate", gameData.whiteUsername());
-                    var staleMateNotification = new NotificationMessage(staleMate);
-                    connections.broadcastAllOthers(authToken, staleMateNotification);
-                    connections.broadcastRootClient(authToken, staleMateNotification);
-                }
+            if (game.isInStalemate(ChessGame.TeamColor.BLACK)) {
+                gameData.game().setGameResigned(true);
+                gameDAO.updateGame(gameID, gameData);
+                var staleMate = String.format("%s (Black) is in Stalemate", gameData.blackUsername());
+                var staleMateNotification = new NotificationMessage(staleMate);
+                connections.broadcastAllOthers(username, staleMateNotification, gameID);
+                connections.broadcastRootClient(username, staleMateNotification, gameID);
+                return;
+            }
+            if (game.isInStalemate(ChessGame.TeamColor.WHITE)) {
+                gameData.game().setGameResigned(true);
+                gameDAO.updateGame(gameID, gameData);
+                var staleMate = String.format("%s (White) is in Stalemate", gameData.whiteUsername());
+                var staleMateNotification = new NotificationMessage(staleMate);
+                connections.broadcastAllOthers(username, staleMateNotification, gameID);
+                connections.broadcastRootClient(username, staleMateNotification, gameID);
+                return;
             }
         }
-
+        catch (InvalidMoveException e) {
+            var error = new ErrorMessage(e.getMessage());
+            connections.broadcastRootClient(username, error, gameID);
+        }
     }
 
-//    public void makeNoise(String petName, String sound) throws ResponseException {
-//        try {
-//            var message = String.format("%s says %s", petName, sound);
-//            var notification = new Notification(Notification.Type.NOISE, message);
-//            connections.broadcast("", notification);
-//        } catch (Exception ex) {
-//            throw new ResponseException(500, ex.getMessage());
-//        }
-//    }
 }

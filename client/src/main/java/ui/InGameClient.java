@@ -30,7 +30,7 @@ public class InGameClient {
     private final NotificationHandler notificationHandler;
     private WebSocketFacade ws;
 
-    public InGameClient(String serverUrl, int gameID, String authToken, String colorPerspective, boolean observer, NotificationHandler notificationHandler) throws ResponseException {
+    public InGameClient(String serverUrl, int gameID, String authToken, String colorPerspective, boolean observer, NotificationHandler notificationHandler, WebSocketFacade ws) throws ResponseException {
         server = new ServerFacade(serverUrl);
         this.serverUrl = serverUrl;
         this.gameID = gameID;
@@ -39,6 +39,7 @@ public class InGameClient {
         this.observer = observer;
         this.gameComplete = getCurrentGame().game().isGameResigned();
         this.notificationHandler = notificationHandler;
+        this.ws = ws;
     }
 
     public String eval(String input) throws ResponseException, InvalidMoveException {
@@ -92,14 +93,14 @@ public class InGameClient {
 
     public String leave(String... params) throws ResponseException {
         if (observer) {
-            ws = new WebSocketFacade(serverUrl, notificationHandler);
+            //ws = new WebSocketFacade(serverUrl, notificationHandler);
             ws.leave(authToken, gameID);
             return String.format("You left game #%d", gameID);
         }
         else if (Objects.equals(colorPerspective, "WHITE")) {
 //            LeaveGameRequest leaveGameRequest = new LeaveGameRequest(authToken, "WHITE", gameID);
 //            LeaveGameResult leaveGameResult = server.leaveGame(leaveGameRequest);
-            ws = new WebSocketFacade(serverUrl, notificationHandler);
+            //ws = new WebSocketFacade(serverUrl, notificationHandler);
             ws.leave(authToken, gameID);
             return String.format("You left game #%d", gameID);
 
@@ -107,7 +108,7 @@ public class InGameClient {
         else if (Objects.equals(colorPerspective, "BLACK")) {
 //            LeaveGameRequest leaveGameRequest = new LeaveGameRequest(authToken, "BLACK", gameID);
 //            LeaveGameResult leaveGameResult = server.leaveGame(leaveGameRequest);
-            ws = new WebSocketFacade(serverUrl, notificationHandler);
+            //ws = new WebSocketFacade(serverUrl, notificationHandler);
             ws.leave(authToken, gameID);
             return String.format("You left game #%d", gameID);
         }
@@ -188,8 +189,8 @@ public class InGameClient {
 //        UpdateGameRequest updateGameRequest = new UpdateGameRequest(authToken, gameID, updatedGameData);
 //        UpdateGameResult updateGameResult = server.updateGame(updateGameRequest);
 //        printChessBoard(colorPerspective);
-        ws = new WebSocketFacade(serverUrl, notificationHandler);
-        ws.makeMove(authToken, gameID);
+        //ws = new WebSocketFacade(serverUrl, notificationHandler);
+        ws.makeMove(authToken, gameID, move);
         return String.format("You moved %s to %s.", startpos, endpos);
     }
 
@@ -228,7 +229,7 @@ public class InGameClient {
         String line = scanner.nextLine();
         if (line.equalsIgnoreCase("y")||line.equalsIgnoreCase("yes")){
             gameComplete = true;
-            ws = new WebSocketFacade(serverUrl, notificationHandler);
+            //ws = new WebSocketFacade(serverUrl, notificationHandler);
             ws.resign(authToken, gameID);
             return "You resigned from the game. Game is over";
         }

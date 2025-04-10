@@ -20,12 +20,14 @@ public class PostLoginClient {
     private boolean observer = false;
     private final NotificationHandler notificationHandler;
     private WebSocketFacade ws;
+    private Thread backgroundThread;
 
-    public PostLoginClient(String serverUrl, String authToken, NotificationHandler notificationHandler) {
+    public PostLoginClient(String serverUrl, String authToken, NotificationHandler notificationHandler, WebSocketFacade ws) throws ResponseException {
         server = new ServerFacade(serverUrl);
         this.serverUrl = serverUrl;
         this.authToken = authToken;
         this.notificationHandler = notificationHandler;
+        this.ws = ws;
     }
 
     public String eval(String input) {
@@ -96,16 +98,20 @@ public class PostLoginClient {
                 if (Objects.equals(playerColor.toUpperCase(), "WHITE")) {
                     JoinGameRequest joinGameRequest = new JoinGameRequest(authToken, "WHITE", realGameID);
                     JoinGameResult joinGameResult = server.joinGame(joinGameRequest);
-                    ws = new WebSocketFacade(serverUrl, notificationHandler);
                     ws.connectToGame(authToken, joinedGameID);
+//                    ws = new WebSocketFacade(serverUrl, notificationHandler);
+//                    ws.connectToGame(authToken, joinedGameID);
                     return String.format("You joined game #%d as white.", gameID);
 
                 }
                 else if (Objects.equals(playerColor.toUpperCase(), "BLACK")) {
                     JoinGameRequest joinGameRequest = new JoinGameRequest(authToken, "BLACK", realGameID);
                     JoinGameResult joinGameResult = server.joinGame(joinGameRequest);
-                    ws = new WebSocketFacade(serverUrl, notificationHandler);
                     ws.connectToGame(authToken, joinedGameID);
+
+
+//                    ws = new WebSocketFacade(serverUrl, notificationHandler);
+//                    ws.connectToGame(authToken, joinedGameID);
                     return String.format("You joined game #%d as black.", gameID);
 
                 }
